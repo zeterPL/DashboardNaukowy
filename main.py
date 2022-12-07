@@ -1,2 +1,6 @@
+import requests
+import ApiConfig as apiconfig
+
 if __name__ == '__main__':
-    print('ttt')
+    response = requests.get(apiconfig.getMetricUrl)
+    apiconfig.jprint(response.json())
