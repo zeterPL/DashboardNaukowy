@@ -29,8 +29,7 @@ app = Dash(__name__)
 
 df = pd.DataFrame({
     "Rok": years,
-    "Ilosc publikacji czy czegos tam": valuesOverTheYears,
-    "type":"lines",
+    "Ilosc publikacji czy czegos tam": valuesOverTheYears
 })
 
 fig = px.bar(df, x="Rok", y="Ilosc publikacji czy czegos tam", title="Tytul diagramu1")
