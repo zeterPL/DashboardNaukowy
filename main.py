@@ -29,10 +29,11 @@ app = Dash(__name__)
 
 df = pd.DataFrame({
     "Rok": years,
-    "Ilosc publikacji czy czegos tam": valuesOverTheYears
+    "Ilosc publikacji czy czegos tam": valuesOverTheYears,
+    "type":"lines",
 })
 
-fig = px.bar(df, x="Rok", y="Ilosc publikacji czy czegos tam")
+fig = px.bar(df, x="Rok", y="Ilosc publikacji czy czegos tam", title="Tytul diagramu1")
 
 app.layout = html.Div(children=[
     html.H1(children='Wykres'),
@@ -44,6 +45,19 @@ app.layout = html.Div(children=[
     dcc.Graph(
         id='example-graph',
         figure=fig
+    ),
+    dcc.Graph(
+        id='example-graph2',
+        figure={
+                "data": [
+                    {
+                        "x": years,
+                        "y": valuesOverTheYears,
+                        "type": "lines",
+                    },
+                ],
+                "layout": {"title": "Tytul diagramu2"},
+        },
     )
 ])
 
