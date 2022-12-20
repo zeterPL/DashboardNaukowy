@@ -13,11 +13,11 @@ import json
 data = json.loads(x)
 
 years = []
-for i in range(apiconfig.numberOfYears-1, -1, -1):
+for i in range(apiconfig.yearRange-1, -1, -1):
     years.append(str(2021-i))
 #print(years)
 valuesOverTheYears = []
-for i in range(apiconfig.numberOfYears):
+for i in range(apiconfig.yearRange):
     valuesOverTheYears.append(data[years[i]])
 #print(valuesOverTheYears)
 
