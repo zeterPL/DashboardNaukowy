@@ -1,0 +1,91 @@
+date,amount,institution,category
+2011-01-01, 100, Politechnika Bialostocka, MATHEMATIC
+2012-01-01, 120, Politechnika Bialostocka, MATHEMATIC
+2013-01-01, 140, Politechnika Bialostocka, MATHEMATIC
+2014-01-01, 160, Politechnika Bialostocka, MATHEMATIC
+2015-01-01, 180, Politechnika Bialostocka, MATHEMATIC
+2016-01-01, 200, Politechnika Bialostocka, MATHEMATIC
+2017-01-01, 180, Politechnika Bialostocka, MATHEMATIC
+2018-01-01, 170, Politechnika Bialostocka, MATHEMATIC
+2019-01-01, 190, Politechnika Bialostocka, MATHEMATIC
+2020-01-01, 195, Politechnika Bialostocka, MATHEMATIC
+2011-01-01, 300, Politechnika Warszawska, MATHEMATIC
+2012-01-01, 350, Politechnika Warszawska, MATHEMATIC
+2013-01-01, 400, Politechnika Warszawska, MATHEMATIC
+2014-01-01, 350, Politechnika Warszawska, MATHEMATIC
+2015-01-01, 300, Politechnika Warszawska, MATHEMATIC
+2016-01-01, 350, Politechnika Warszawska, MATHEMATIC
+2017-01-01, 400, Politechnika Warszawska, MATHEMATIC
+2018-01-01, 310, Politechnika Warszawska, MATHEMATIC
+2019-01-01, 320, Politechnika Warszawska, MATHEMATIC
+2020-01-01, 350, Politechnika Warszawska, MATHEMATIC
+2011-01-01, 200, Akademia gorniczo hutnicza, MATHEMATIC
+2012-01-01, 210, Akademia gorniczo hutnicza, MATHEMATIC
+2013-01-01, 220, Akademia gorniczo hutnicza, MATHEMATIC
+2014-01-01, 230, Akademia gorniczo hutnicza, MATHEMATIC
+2015-01-01, 240, Akademia gorniczo hutnicza, MATHEMATIC
+2016-01-01, 250, Akademia gorniczo hutnicza, MATHEMATIC
+2017-01-01, 260, Akademia gorniczo hutnicza, MATHEMATIC
+2018-01-01, 270, Akademia gorniczo hutnicza, MATHEMATIC
+2019-01-01, 280, Akademia gorniczo hutnicza, MATHEMATIC
+2020-01-01, 300, Akademia gorniczo hutnicza, MATHEMATIC
+2011-01-01, 400, Politechnika Bialostocka, IT
+2012-01-01, 420, Politechnika Bialostocka, IT
+2013-01-01, 440, Politechnika Bialostocka, IT
+2014-01-01, 460, Politechnika Bialostocka, IT
+2015-01-01, 480, Politechnika Bialostocka, IT
+2016-01-01, 500, Politechnika Bialostocka, IT
+2017-01-01, 480, Politechnika Bialostocka, IT
+2018-01-01, 470, Politechnika Bialostocka, IT
+2019-01-01, 490, Politechnika Bialostocka, IT
+2020-01-01, 495, Politechnika Bialostocka, IT
+2011-01-01, 600, Politechnika Warszawska, IT
+2012-01-01, 650, Politechnika Warszawska, IT
+2013-01-01, 700, Politechnika Warszawska, IT
+2014-01-01, 650, Politechnika Warszawska, IT
+2015-01-01, 600, Politechnika Warszawska, IT
+2016-01-01, 650, Politechnika Warszawska, IT
+2017-01-01, 700, Politechnika Warszawska, IT
+2018-01-01, 610, Politechnika Warszawska, IT
+2019-01-01, 620, Politechnika Warszawska, IT
+2020-01-01, 650, Politechnika Warszawska, IT
+2011-01-01, 500, Akademia gorniczo hutnicza, IT
+2012-01-01, 510, Akademia gorniczo hutnicza, IT
+2013-01-01, 520, Akademia gorniczo hutnicza, IT
+2014-01-01, 530, Akademia gorniczo hutnicza, IT
+2015-01-01, 540, Akademia gorniczo hutnicza, IT
+2016-01-01, 550, Akademia gorniczo hutnicza, IT
+2017-01-01, 560, Akademia gorniczo hutnicza, IT
+2018-01-01, 570, Akademia gorniczo hutnicza, IT
+2019-01-01, 580, Akademia gorniczo hutnicza, IT
+2020-01-01, 600, Akademia gorniczo hutnicza, IT
+2011-01-01, 10, Politechnika Bialostocka, CHEMISTRY
+2012-01-01, 12, Politechnika Bialostocka, CHEMISTRY
+2013-01-01, 14, Politechnika Bialostocka, CHEMISTRY
+2014-01-01, 16, Politechnika Bialostocka, CHEMISTRY
+2015-01-01, 18, Politechnika Bialostocka, CHEMISTRY
+2016-01-01, 20, Politechnika Bialostocka, CHEMISTRY
+2017-01-01, 18, Politechnika Bialostocka, CHEMISTRY
+2018-01-01, 17, Politechnika Bialostocka, CHEMISTRY
+2019-01-01, 19, Politechnika Bialostocka, CHEMISTRY
+2020-01-01, 19, Politechnika Bialostocka, CHEMISTRY
+2011-01-01, 30, Politechnika Warszawska, CHEMISTRY
+2012-01-01, 35, Politechnika Warszawska, CHEMISTRY
+2013-01-01, 40, Politechnika Warszawska, CHEMISTRY
+2014-01-01, 35, Politechnika Warszawska, CHEMISTRY
+2015-01-01, 30, Politechnika Warszawska, CHEMISTRY
+2016-01-01, 35, Politechnika Warszawska, CHEMISTRY
+2017-01-01, 40, Politechnika Warszawska, CHEMISTRY
+2018-01-01, 31, Politechnika Warszawska, CHEMISTRY
+2019-01-01, 32, Politechnika Warszawska, CHEMISTRY
+2020-01-01, 35, Politechnika Warszawska, CHEMISTRY
+2011-01-01, 20, Akademia gorniczo hutnicza, CHEMISTRY
+2012-01-01, 21, Akademia gorniczo hutnicza, CHEMISTRY
+2013-01-01, 22, Akademia gorniczo hutnicza, CHEMISTRY
+2014-01-01, 23, Akademia gorniczo hutnicza, CHEMISTRY
+2015-01-01, 24, Akademia gorniczo hutnicza, CHEMISTRY
+2016-01-01, 25, Akademia gorniczo hutnicza, CHEMISTRY
+2017-01-01, 26, Akademia gorniczo hutnicza, CHEMISTRY
+2018-01-01, 27, Akademia gorniczo hutnicza, CHEMISTRY
+2019-01-01, 28, Akademia gorniczo hutnicza, CHEMISTRY
+2020-01-01, 30, Akademia gorniczo hutnicza, CHEMISTRY
