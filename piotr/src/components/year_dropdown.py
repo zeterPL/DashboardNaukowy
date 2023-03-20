@@ -2,12 +2,12 @@ import pandas as pd
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
 
-from ..data.loader import DataSchema
+from ..data.loader import DataSchema2
 from . import ids
 
 
 def render(app: Dash, data: pd.DataFrame) -> html.Div:
-    all_years: list[str] = data[DataSchema.YEAR].tolist()
+    all_years: list[str] = data[DataSchema2.YEAR].tolist()
     unique_years = sorted(set(all_years), key=int)
 
     @app.callback(

@@ -119,3 +119,23 @@ year,amount,institution,category
 2019,0,Poznan University of Economics and Business,Literature and Literary Theory
 2020,0,Poznan University of Economics and Business,Literature and Literary Theory
 2021,0,Poznan University of Economics and Business,Literature and Literary Theory
+2012,19,Warsaw University of Technology,Computer Science (miscellaneous)
+2013,25,Warsaw University of Technology,Computer Science (miscellaneous)
+2014,16,Warsaw University of Technology,Computer Science (miscellaneous)
+2015,6,Warsaw University of Technology,Computer Science (miscellaneous)
+2016,26,Warsaw University of Technology,Computer Science (miscellaneous)
+2017,9,Warsaw University of Technology,Computer Science (miscellaneous)
+2018,5,Warsaw University of Technology,Computer Science (miscellaneous)
+2019,15,Warsaw University of Technology,Computer Science (miscellaneous)
+2020,33,Warsaw University of Technology,Computer Science (miscellaneous)
+2021,29,Warsaw University of Technology,Computer Science (miscellaneous)
+2012,49,Cracow University of Technology,Mathematics
+2013,69,Cracow University of Technology,Mathematics
+2014,65,Cracow University of Technology,Mathematics
+2015,75,Cracow University of Technology,Mathematics
+2016,78,Cracow University of Technology,Mathematics
+2017,95,Cracow University of Technology,Mathematics
+2018,90,Cracow University of Technology,Mathematics
+2019,131,Cracow University of Technology,Mathematics
+2020,114,Cracow University of Technology,Mathematics
+2021,165,Cracow University of Technology,Mathematics

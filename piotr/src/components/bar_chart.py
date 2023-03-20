@@ -2,12 +2,13 @@ import pandas as pd
 import plotly.express as px
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
-
-from ..data.loader import DataSchema
 from . import ids
-
+from piotr.src.data.loader import *
+#from ..data.loader import DataSchema2
+from piotr.api.requests import *
 
 def render(app: Dash, data: pd.DataFrame) -> html.Div:
+
     @app.callback(
         Output(ids.BAR_CHART, "children"),
         [
@@ -17,44 +18,34 @@ def render(app: Dash, data: pd.DataFrame) -> html.Div:
         ],
     )
     def update_bar_chart(
-        years: list[str], institutions: list[str], categories: list[str]
+        years: list[str], universityIds: list[str], subjectAreaIds: list[str]
     ) -> html.Div:
         filtered_data = data.query(
-            "year in @years and institution in @institutions and category in @categories"
+            "year in @years and universityId in @universityIds and subjectAreaId in @subjectAreaIds"
         )
 
         if filtered_data.shape[0] == 0:
             return html.Div("No data selected.", id=ids.BAR_CHART)
-
-        def create_pivot_table() -> pd.DataFrame:
-            pt = filtered_data.pivot_table(
-                values=DataSchema.AMOUNT,
-                # index=[DataSchema.CATEGORY],
-                index=[DataSchema.YEAR],
-                aggfunc="sum",
-                fill_value=0,
-                dropna=False,
-            )
-            return pt.reset_index().sort_values(DataSchema.YEAR, ascending=True)
-
+        def changeIndxToName(indx):
+                return universityDictionary[indx]
         def create_table() -> pd.DataFrame:
             pt = filtered_data.pivot_table(
-                values=DataSchema.AMOUNT,
-                index=[DataSchema.YEAR, DataSchema.INSTITUTION],
+                values=DataSchema2.AMOUNT,
+                index=[DataSchema2.YEAR, DataSchema2.UNIVERSITYID],
                 aggfunc="sum",
                 fill_value=0,
                 dropna=False,
             )
-            return pt.reset_index().sort_values(DataSchema.YEAR, ascending=True)
+            dataTable = pt.reset_index().sort_values(DataSchema2.YEAR, ascending=True)
+            dataTable.columns = ['Rok', 'Uczelnia', 'Ilosc publikacji']
+            dataTable["Uczelnia"] = dataTable[["Uczelnia"]].applymap(changeIndxToName)
+            return dataTable
 
         fig = px.bar(
             create_table(),
-            # filtered_data,
-            #create_pivot_table(),
-            x=DataSchema.YEAR,
-            y=DataSchema.AMOUNT,
-            #color=DataSchema.YEAR,
-            color=DataSchema.INSTITUTION,
+            x='Rok',
+            y='Ilosc publikacji',
+            color='Uczelnia',
             barmode="group",
             text_auto=True,
             title="Diagram barowy",
