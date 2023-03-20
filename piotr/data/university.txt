@@ -1,0 +1,6 @@
+327005;Białystok University of Technology
+327038;Warsaw University of Technology
+327006;Cracow University of Technology
+327026;University of Białystok
+708405;Poznan University of Economics and Business
+327002;AGH University of Science and Technology
