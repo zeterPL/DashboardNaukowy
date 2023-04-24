@@ -10,7 +10,33 @@ from api.requests import *
 
 DATA_PATH = "./data/data.txt"
 
+def saveMetricsData():
+    print("Pobranie i zapisanie głównych danych")
+    downloadAndSaveMainData()
+
+def changeNullTo0():
+    metricTypes = ["OutputsInTopCitationPercentiles", "PublicationsInTopJournalPercentiles", "ScholarlyOutput","FieldWeightedCitationImpact", "CollaborationImpact", "CitationsPerPublication", "CitationCount","Collaboration"]
+    for metricType in metricTypes:
+        text = ""
+        with open('./data/metrics/' + metricType + '.txt', 'r', encoding="utf-8") as file:
+            for line in file:
+                elements = line.strip().split(',')
+                value_in_4_column = elements[3]
+                if value_in_4_column == 'None':
+                    elements[3] = '0'
+                    line_corrected = ','.join(elements)+'\n'
+                else:
+                    line_corrected = line
+                text += line_corrected
+
+        with open('./data/metrics/' + metricType + '.txt', 'w', encoding="utf-8") as file:
+            file.write(text)
+
+
 def main() -> None:
+    #pobranie i zapisanie w plikach wszystkich danych z API
+    #saveMetricsData()
+    #changeNullTo0()
 
     # load the data and create the data manager
     data = load_transaction_data(DATA_PATH)
