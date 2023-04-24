@@ -1,0 +1,27 @@
+/* -------- Variables -------- */
+:root {
+    --test-bg: rgba(0, 0, 0, 0.2);
+}
+
+/* -------- General -------- */
+* {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* -------- Containers -------- */
+#page-container {
+    z-index: 10;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    margin: 0px;
+    padding: 0px;
+    background-color: var(--test-bg);
+}
+
+/* --------  -------- */

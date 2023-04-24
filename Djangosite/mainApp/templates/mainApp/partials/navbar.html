@@ -1,0 +1,30 @@
+<div class="hamburger-menu">
+    <a href="{% url "contact-page" %}">Kontakt</a>
+    <a href="{% url "about-page" %}">O projekcie</a>
+    <a href="{% url "features-page"%}">Funkcje</a>
+    <a id="navbar-login-button" href="{% url "login-page" %}">Zaloguj się</a>
+</div>
+
+<header id="navbar">
+
+    <nav id="nabar-navigation">
+        <div>
+            <a id="navbar-logo" href="{% url "welcome-page" %}">Ranking<span>Naukowy</span></a>
+        </div>
+        <div>
+            <a href="{% url "contact-page" %}" class="navigation-link">Kontakt</a>
+            <a href="{% url "about-page" %}" class="navigation-link">O projekcie</a>
+            <a href="{% url "features-page"%}" class="navigation-link">Funkcje</a>
+        </div>
+        <div>
+            <a id="navbar-login-button" href="{% url "login-page" %}" class="navigation-link">Zaloguj się</a>
+        </div>
+
+        <div class="hamburger">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+    </nav>
+
+<header>

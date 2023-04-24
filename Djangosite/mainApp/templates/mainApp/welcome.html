@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Budget planner {% endblock %}
+
+{% block css_files %}
+    <link rel="stylesheet" href="{% static "mainApp/welcome.css" %}">
+    <link rel="stylesheet" href="{% static "mainApp/partials/navbar.css" %}">
+{% endblock %}
+
+{% block content %}
+
+    {% include "mainApp/partials/navbar.html" %}
+
+{% endblock %}
