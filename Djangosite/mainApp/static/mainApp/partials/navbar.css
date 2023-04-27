@@ -1,16 +1,34 @@
+#navbar-container {
+    width: 100vw;
+    height: fit-content;
+    padding: 20px 0px;
+}
+
 #navbar {
-    position: absolute;
+    position: relative;
     z-index: 10;
-    top: 20px;
     width: 100%;
     height: 50px;
-    background-color: gray;
+    background-color: var(--test-bg);
     padding: 0 10%;
 }
 
 #navbar a {
     text-decoration: none;
-    color: white;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+#navigation-links {
+    font-size: 14px;
+}
+
+#navigation-links a {
+    transition: all 150ms ease-in-out
+}
+
+#navigation-links a:hover {
+    color: rgba(255, 255, 255, 1);
 }
 
 #nabar-navigation {
@@ -20,6 +38,12 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+}
+
+#log-in-navbar-link-container {
+    text-align: right;
+    width: 160px;
+    font-size: 14px;
 }
 
 #nabar-navigation div:nth-of-type(2) {
@@ -57,6 +81,7 @@
 
 .hamburger-menu {
     position: fixed;
+    z-index: 1;
     top: 0;
     left: 0;
     width: 100%;
@@ -65,11 +90,12 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: var(--test-bg);
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(30px);
     gap: 30px;
     padding: 30px 0;
-    clip-path: circle(10px at 88% 40px);
-    -webkit-clip-path: circle(10px at 88% 40px);
+    clip-path: circle(0px at 88% 40px);
+    -webkit-clip-path: circle(0px at 88% 40px);
     transition: all 1s ease-out;
     pointer-events: none;
 }

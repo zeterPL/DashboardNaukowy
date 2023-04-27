@@ -1,0 +1,20 @@
+.footer-container {
+    bottom: 0px;
+    left: 0;
+    width: 100vw;
+    height: 50px;
+    background-color: var(--test-bg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.footer-container a {
+    font-size: 12px;
+    font-weight: 200 !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    cursor: pointer;
+}

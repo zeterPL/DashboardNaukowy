@@ -1,0 +1,107 @@
+#welcome-page-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#welcome-page-content-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 80px;
+    padding: 0% 10%;
+}
+
+#welcome-page-content {
+    width: 50%;
+    height: 100%;
+    /* background-color: orange; */
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 40px;
+
+    color: white;
+}
+
+#welcome-page-content h1 {
+    font-size: 48px;
+    font-weight: 500;
+    color: var(--ranking-teal);
+    letter-spacing: 2px;
+}
+
+#welcome-page-content h2 {
+    font-size: 24px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.9);
+    letter-spacing: 2px;
+}
+
+#welcome-page-content-paragraph {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#paragraph-accent-line {
+    background-color: var(--ranking-teal);
+    width: 15px;
+    height: 90%;
+    margin-right: 20px;
+}
+
+#welcome-page-content p {
+    font-size: 14px;
+    font-weight: 300;
+    text-align: justify;
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 30.4px;
+}
+
+#welcome-page-content-login-button {}
+
+#login-button-container {
+    background-color: rgba(0, 0, 0, 0.5);
+    font-size: 14px;
+    width: 10rem;
+    height: 2.5rem;
+    padding: 0.6rem 3.5rem;
+    border-radius: 4rem;
+    font-weight: 300;
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+#login-button-effect {}
+
+#login-button-container a {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* #welcome-page-content-login-button .hover {
+    clip-path: circle(50px at 88% 40px);
+    -webkit-clip-path: circle(1100px at 88% 40px);
+} */
+
+#welcome-page-illustration {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    height: 100%;
+    /* background-color: orange; */
+}
+
+#welcome-page-illustration img {
+    height: 75%;
+}

@@ -1,6 +1,8 @@
 /* -------- Variables -------- */
 :root {
     --test-bg: rgba(0, 0, 0, 0.2);
+
+    --ranking-teal: hsl(176, 100%, 42%);
 }
 
 /* -------- General -------- */
@@ -21,7 +23,7 @@
     left: 0px;
     margin: 0px;
     padding: 0px;
-    background-color: var(--test-bg);
+    /* background-color: var(--test-bg); */
 }
 
 /* --------  -------- */
