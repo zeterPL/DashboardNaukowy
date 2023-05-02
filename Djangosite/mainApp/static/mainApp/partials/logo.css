@@ -1,0 +1,13 @@
+.logo-container {
+    width: 10rem;
+}
+
+.logo-container .logo-part-one {
+    color: var(--ranking-teal);
+    font-weight: 600;
+}
+
+.logo-container .logo-part-two {
+    color: rgba(255, 255, 255, 1);
+    font-weight: 600;
+}

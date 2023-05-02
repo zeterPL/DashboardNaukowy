@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Ranking naukowy {% endblock %}
+
+{% block css_files %}
+    <link rel="stylesheet" href="{% static "mainApp/welcome.css" %}">
+    <link rel="stylesheet" href="{% static "mainApp/partials/background.css" %}">
+    <link rel="stylesheet" href="{% static "mainApp/partials/logo.css" %}">
+{% endblock %}
+
+{% block content %}
+
+    <div id="welcome-page-container">
+        {% include "mainApp/partials/navbar.html" %}
+        <div id="welcome-page-content-container">
+            
+            <div id="welcome-page-content">
+                <div id="welcome-page-content-header">
+                    <h1>Ranking</h1>
+                    <h2>Naukowy</h2>
+                </div>
+
+                <div id="welcome-page-content-paragraph">
+                    <p> 
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+                        sed do eiusmod tempor incididunt ut labore et dolore magna 
+                        aliqua. Ut enim ad minim veniam, quis nostrud exercitation 
+                        ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+                        Duis aute irure dolor in reprehenderit in voluptate velit 
+                        esse cillum dolore eu fugiat nulla pariatur.
+                    </p>
+                </div>
+
+                <div id="login-button-container">
+                    <div id="login-button-effect">
+                    </div>
+                    
+                    <a href="{% url "login-page" %}" id="welcome-page-content-login-button">Zaloguj się</a>
+                </div>
+            </div>
+
+            <div id="welcome-page-illustration">
+                <img src="{% static "assets/welcome-page.svg" %}"/>
+            </div>
+        </div>
+
+        {% include "mainApp/partials/footer.html" %}
+    </div>
+
+    <script src="{% static "js/login-button-effect.js" %}"></script>
+{% endblock %}
