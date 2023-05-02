@@ -1,8 +1,10 @@
 /* -------- Variables -------- */
 :root {
     --test-bg: rgba(0, 0, 0, 0.2);
+    --bg-black-02: rgba(0, 0, 0, 0.2);
 
-    --ranking-teal: hsl(176, 100%, 42%);
+    --ranking-teal: rgb(0, 214, 200);
+    --ranking-teal-dark: rgb(0, 175, 164);
 }
 
 /* -------- General -------- */

@@ -1,8 +1,10 @@
 .footer-container {
-    bottom: 0px;
-    left: 0;
+    position: sticky;
+    top: 100vh;
+    z-index: 20;
     width: 100vw;
     height: 50px;
+    min-height: 50px;
     background-color: var(--test-bg);
     display: flex;
     flex-direction: column;
@@ -10,6 +12,7 @@
     text-align: center;
     align-items: center;
     margin-top: 20px;
+    flex-basis: 50px;
 }
 
 .footer-container a {

@@ -4,9 +4,11 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
-#welcome-page-content-container {
+/* #welcome-page-content-container {
     width: 100%;
     height: 100%;
     display: flex;
@@ -14,19 +16,29 @@
     justify-content: space-between;
     gap: 80px;
     padding: 0% 10%;
+} */
+
+#welcome-page-content-container {
+    width: 100%;
+    height: fit-content;
+    /* height: fit-content; */
+    /* overflow-y: hidden; */
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
+    grid-template-rows: 600px;
+    padding: 0% 10%;
+    align-items: center;
+    /* background-color: brown; */
 }
 
 #welcome-page-content {
-    width: 50%;
-    height: 100%;
-    /* background-color: orange; */
-
+    width: 100%;
+    gap: 40px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 40px;
-
     color: white;
+    /* background-color: palegreen; */
 }
 
 #welcome-page-content h1 {
@@ -41,17 +53,22 @@
     font-weight: 400;
     color: rgba(255, 255, 255, 0.9);
     letter-spacing: 2px;
+    margin-top: -10px;
 }
 
 #welcome-page-content-paragraph {
     display: flex;
     flex-direction: row;
+    justify-content: left;
     align-items: center;
+    padding-left: 20px;
+    border-left: 5px solid var(--ranking-teal);
 }
 
 #paragraph-accent-line {
     background-color: var(--ranking-teal);
-    width: 15px;
+    width: 5px;
+    min-width: 5px;
     height: 90%;
     margin-right: 20px;
 }
@@ -64,28 +81,49 @@
     line-height: 30.4px;
 }
 
-#welcome-page-content-login-button {}
-
+/* ---- Login button ---- */
 #login-button-container {
-    background-color: rgba(0, 0, 0, 0.5);
-    font-size: 14px;
-    width: 10rem;
-    height: 2.5rem;
-    padding: 0.6rem 3.5rem;
-    border-radius: 4rem;
-    font-weight: 300;
-    text-decoration: none;
-    color: rgba(255, 255, 255, 0.9);
+    position: relative;
+    background-color: rgba(0, 0, 0, 0.1);
+    width: fit-content;
+    border-radius: 2rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
 }
 
-#login-button-effect {}
+#welcome-page-content-login-button {
+    display: block;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0.5rem 4rem;
+    border-radius: 2rem;
+}
+
+#login-button-effect {
+    position: absolute;
+    width: 15rem;
+    height: 4rem;
+    background-color: var(--ranking-teal-dark);
+    clip-path: circle(0px at 50% 50%);
+    -webkit-clip-path: circle(0px at 50% 50%);
+    transition: all 300ms ease-in-out;
+}
+
+#login-button-effect.active {
+    clip-path: circle(120px at 50% 50%);
+    -webkit-clip-path: circle(120px at 50% 50%);
+}
 
 #login-button-container a {
     display: block;
     width: 100%;
     height: 100%;
     text-decoration: none;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(255, 255, 255, 1);
 }
 
 /* #welcome-page-content-login-button .hover {
@@ -95,13 +133,22 @@
 
 #welcome-page-illustration {
     display: flex;
-    justify-content: center;
+    justify-content: right;
     align-items: center;
-    width: 50%;
-    height: 100%;
-    /* background-color: orange; */
+    height: 90%;
+    /* width: 100%;
+    height: 100%; */
+    max-width: 100%;
+    /* background-color: palegreen; */
 }
 
 #welcome-page-illustration img {
-    height: 75%;
+    height: 90%;
+    width: 100%;
+}
+
+@media (max-width: 1005px) {
+    #welcome-page-illustration {
+        justify-content: center;
+    }
 }
