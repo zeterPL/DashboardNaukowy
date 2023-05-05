@@ -1,7 +1,19 @@
 /* -------- Variables -------- */
 :root {
     --test-bg: rgba(0, 0, 0, 0.2);
-    --bg-black-02: rgba(0, 0, 0, 0.2);
+    --black-01: rgba(0, 0, 0, 0.1);
+    --black-02: rgba(0, 0, 0, 0.2);
+    --black-03: rgba(0, 0, 0, 0.3);
+    --black-04: rgba(0, 0, 0, 0.4);
+
+    --white-02: rgba(255, 255, 255, 0.2);
+    --white-03: rgba(255, 255, 255, 0.3);
+    --white-04: rgba(255, 255, 255, 0.4);
+    --white-05: rgba(255, 255, 255, 0.5);
+    --white-08: rgba(255, 255, 255, 0.8);
+    --white-1: rgba(255, 255, 255, 1);
+
+    --shadow-01: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 
     --ranking-teal: rgb(0, 214, 200);
     --ranking-teal-dark: rgb(0, 175, 164);
@@ -16,7 +28,7 @@
 }
 
 /* -------- Containers -------- */
-#page-container {
+.app-container {
     z-index: 10;
     width: 100vw;
     height: 100vh;
@@ -28,4 +40,157 @@
     /* background-color: var(--test-bg); */
 }
 
-/* --------  -------- */
+.page-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* .page-content-container-column {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 80px;
+    background-color: bisque;
+} */
+
+.page-content-container-column {
+    width: 100%;
+    height: fit-content;
+    display: grid;
+    justify-items: center;
+    grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
+    grid-template-rows: 600px;
+    padding: 0% 10%;
+    align-items: center;
+}
+
+/* ---- Button hover effect ---- */
+.button-hover-effect {
+    position: absolute;
+    width: 20rem;
+    height: 4rem;
+    z-index: 1;
+    background-color: var(--ranking-teal-dark);
+    clip-path: circle(0px at 50% 50%);
+    -webkit-clip-path: circle(0px at 50% 50%);
+    transition: all 300ms ease-in-out;
+}
+
+.button-hover-effect.active {
+    clip-path: circle(100px at 50% 50%);
+    -webkit-clip-path: circle(100px at 50% 50%);
+}
+
+.button-hover-effect.large.active {
+    clip-path: circle(150px at 50% 50%);
+    -webkit-clip-path: circle(150px at 50% 50%);
+}
+
+/* -------- Form container -------- */
+.form-container {
+    background-color: var(--black-02);
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    width: 24rem;
+    padding: 4rem 2rem;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 40px;
+}
+
+.form-container .form-row {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-row {
+    position: relative;
+    width: 95%;
+    text-align: center;
+    gap: 20px;
+}
+
+.form-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--ranking-teal-dark);
+}
+
+.form-title-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--ranking-teal-dark);
+}
+
+.form-subtitle {
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--white-05);
+}
+
+.form-container .error-message {
+    transition: all 150ms ease-in-out;
+    color: var(--white-05);
+    font-size: 14px;
+    font-weight: 300;
+}
+
+/* -------- Form input -------- */
+.form-container input {
+    background: var(--black-02);
+    border: none;
+    border-bottom: solid rgb(0, 175, 164) 2px;
+    padding: 0.75rem 1rem 0.75rem 45px;
+    width: 100%;
+    color: var(--white-08);
+}
+
+.form-container input:focus {
+    outline: none;
+    background-color: var(--black-04);
+}
+
+.form-container input::placeholder {
+    color: var(--white-03);
+}
+
+.form-container .input-icon {
+    color: var(--white-03);
+    position: absolute;
+    left: 15px;
+    top: 13px;
+}
+
+/* -------- Form button -------- */
+.form-container .button-primary {
+    position: relative;
+    background-color: var(--black-02);
+    box-shadow: var(--shadow-01);
+    width: fit-content;
+    border: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    color: rgba(255, 255, 255, 1);
+    cursor: pointer;
+}
+
+.form-container .button-primary p {
+    display: block;
+    position: relative;
+    z-index: 2;
+    padding: 0.75rem 6.75rem;
+}
