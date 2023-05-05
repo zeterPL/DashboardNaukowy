@@ -5,6 +5,7 @@
 
 {% block css_files %}
     <link rel="stylesheet" href="{% static "mainApp/welcome.css" %}">
+    <link rel="stylesheet" href="{% static "mainApp/partials/background.css" %}">
     <link rel="stylesheet" href="{% static "mainApp/partials/logo.css" %}">
 {% endblock %}
 
@@ -31,8 +32,8 @@
                     </p>
                 </div>
 
-                <div id="login-button-container" class="hoverable-button">
-                    <div class="button-hover-effect large">
+                <div id="login-button-container">
+                    <div id="login-button-effect">
                     </div>
                     
                     <a href="{% url "login-page" %}" id="welcome-page-content-login-button">Zaloguj się</a>
@@ -47,5 +48,5 @@
         {% include "mainApp/partials/footer.html" %}
     </div>
 
-    <script src="{% static "js/button-hover-effect.js" %}"></script>
+    <script src="{% static "js/login-button-effect.js" %}"></script>
 {% endblock %}

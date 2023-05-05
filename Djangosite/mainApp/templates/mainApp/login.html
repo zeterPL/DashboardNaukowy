@@ -5,62 +5,7 @@
 {% block css_files %} <link rel="stylesheet" href="{% static "mainApp/login.css" %}"> {% endblock %}
 
 {% block content %}
-    <div class="page-container">
-        {% include "mainApp/partials/navbar.html" %}
 
-        <div class="page-content-container-column">
+WOLOLO
 
-                <form method="POST" class="form-container">
-                    {% csrf_token %}
-                    <div class="form-row">
-                        <i class="fa-solid fa-chart-line form-title-icon"></i>
-                        <h1 class="form-title">Witaj ponownie!</h1>
-                        <p class="form-subtitle">Zaloguj się, aby móc korzystać z serwisu</p>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-row">
-                            {{ form.username }}
-                            <i class="fa-solid fa-user input-icon"></i>
-                        </div>
-            
-                        <div class="form-row">
-                            {{ form.password }}
-                            <i class="fa-solid fa-key input-icon"></i>
-                        </div>
-                    </div>
-            
-                    <div class="form-row">
-                        <button class="button-primary hoverable-button" type="submit">
-                            <div class="button-hover-effect large">
-                            </div>
-                            <p>Zaloguj się</p> 
-                        </button>
-                        
-                        {% comment %} <div>
-                            <span>Need An Account?</span> <a href="{% url 'register-page' %}">Sign up now</a>
-                        </div> {% endcomment %}
-                    </div>
-            
-                    {% if form.errors %}
-                    <div>
-                        <p class="error-message">Wprowadzono błędne dane</p>
-                    </div>
-                    {% endif %}
-                </form>
-                
-        </div>
-
-        {% include "mainApp/partials/footer.html" %}
-    </div>
-
-    <script>
-        var form_fields = document.getElementsByTagName('input');
-
-        console.log(form_fields);
-
-        form_fields[1].placeholder = 'Nazwa użytkownika';
-        form_fields[2].placeholder = 'Hasło';
-    </script>
-    
 {% endblock %}
