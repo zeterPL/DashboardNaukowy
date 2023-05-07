@@ -6,7 +6,6 @@ from piotr.src.components import (
     category_dropdown,
     institution_dropdown,
     year_dropdown,
-    searchNewData,
 )
 
 
@@ -26,12 +25,5 @@ def create_layout(app: Dash, data: pd.DataFrame) -> html.Div:
             ),
             bar_chart.render(app, data),
             line_chart.render(app, data),
-            # html.H1("Dodawanie nowych danych do bazy danych: "),
-            # html.Div(
-            #     className="inputs-container",
-            #     children=[
-            #         searchNewData.render(app),
-            #     ],
-            # ),
         ],
     )

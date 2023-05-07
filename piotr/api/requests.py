@@ -92,8 +92,40 @@ def getMainSubjectAreas():
         mainSubjectsList.append(subjectName)
     return mainSubjectsList
 
+
 #uzyte tylko raz do pobrania i zapisania glownych danych
-def getMainData():
+def downloadAndSaveMainData():
+    mainData = []
+    universityList = []
+    with open('./data/university.txt', 'r', encoding="utf-8") as file:
+        for line in file:
+            line = line.strip().split(';')
+            universityList.append(line)
+    #print(universityList)
+    mainSubjectsList = []
+    with open('./data/subjectAreas.txt', 'r', encoding="utf-8") as file:
+        for line in file:
+            line = line.strip().split(';')
+            mainSubjectsList.append(line)
+    #print(mainSubjectsList)
+    metricTypes = ["OutputsInTopCitationPercentiles", "PublicationsInTopJournalPercentiles", "ScholarlyOutput", "FieldWeightedCitationImpact", "CollaborationImpact", "CitationsPerPublication", "CitationCount", "Collaboration"]
+    for metricType in metricTypes:
+        with open('./data/metrics/'+metricType+'.txt', 'a', encoding="utf-8") as file:
+            for univers in universityList:
+                for subject in mainSubjectsList:
+                    requestURL = "https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes="+metricType+"&institutionIds="+univers[0]+"&yearRange=10yrs&subjectAreaFilterURI=Class%2FASJC%2FCode%2F"+subject[0]+"&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey="+API_KEY
+                    response = requests.get(requestURL)
+                    if(metricType in {"ScholarlyOutput", "FieldWeightedCitationImpact", "CitationsPerPublication", "CitationCount"} ): #ScholarlyOutput, FieldWeightedCitationImpact, CitationsPerPublication, CitationCount
+                        yearsValues = response.json()['results'][0]['metrics'][0]['valueByYear']
+                    else:
+                        yearsValues = response.json()['results'][0]['metrics'][0]['values'][0]['valueByYear']
+                    amountInYear, years = extractDataFromJsonToArrays(yearsValues)
+                    for i in range(len(years)):
+                        file.write(str(years[i])+ "," + str(univers[0]) + "," + str(subject[0]) +  "," + str(amountInYear[i]) + "\n")
+
+
+#stara wersja tylko z jednym rodzajem domyślnej metryki
+def downloadAndSaveMainDataOldVersion():
     mainData = []
     universityList = []
     with open('./data/university.txt', 'r', encoding="utf-8") as file:
@@ -115,4 +147,4 @@ def getMainData():
                 yearsValues = response.json()['results'][0]['metrics'][0]['valueByYear']
                 amountInYear, years = extractDataFromJsonToArrays(yearsValues)
                 for i in range(len(years)):
-                    file.write(str(years[i])+ "," + str(univers[0]) + "," + str(subject[0]) + "," + str(subject[0]) + "," + str(amountInYear[i]) + "\n")
+                    file.write(str(years[i])+ "," + str(univers[0]) + "," + str(subject[0]) +  "," + str(amountInYear[i]) + "\n")
