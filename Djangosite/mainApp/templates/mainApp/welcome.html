@@ -12,13 +12,27 @@
 
     <div id="welcome-page-container">
         {% include "mainApp/partials/navbar.html" %}
+
+
+        {% if user.is_authenticated %}
+         <div>
+             Zalogowano jako {{user.username}} <a class="nav-link" href="{% url "logout" %}">LOGOUT</a>
+         </div>
+        {% else %}
+        <div>
+            nie zalogowano
+        </div>
+        {% endif %}
+
         <div id="welcome-page-content-container">
-            
+
             <div id="welcome-page-content">
                 <div id="welcome-page-content-header">
                     <h1>Ranking</h1>
                     <h2>Naukowy</h2>
                 </div>
+
+
 
                 <div id="welcome-page-content-paragraph">
                     <p> 
