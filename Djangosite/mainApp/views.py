@@ -36,16 +36,18 @@ def login(request):
 
         if user is not None:
             auth.login(request, user)
-            return redirect('welcome')
+            return redirect('home-page')
         else:
             messages.info(request, 'Invalid Username or Password')
             return redirect('login')
     else:
         return render(request, "mainApp/login.html")
 
+
 def logout(request):
     auth.logout(request)
     return redirect('welcome-page')
+
 
 def home(request):
     return render(request, "mainApp/home.html")
