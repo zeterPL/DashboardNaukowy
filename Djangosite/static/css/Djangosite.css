@@ -139,6 +139,10 @@
     color: var(--white-05);
 }
 
+.error-message {
+    text-align: center;
+}
+
 .form-container .error-message {
     transition: all 150ms ease-in-out;
     color: var(--white-05);

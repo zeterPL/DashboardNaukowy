@@ -22,7 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', auth_views.LoginView.as_view(template_name='mainApp/login.html'),
          name='login-page'),
-   #path('logout/', auth_views.LogoutView.as_view(template_name='mainApp/logout.html'), name='logout'),
+    # path('logout/', auth_views.LogoutView.as_view(template_name='mainApp/logout.html'), name='logout'),
     path('mainApp/', include('mainApp.urls'))
 
 ]
