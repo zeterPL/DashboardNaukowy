@@ -171,32 +171,28 @@ class CitationCountOutputAdmin(AbstractMetricAdmin):
     def upload_csv(self, request):
         return super().upload_csv(request, 'CitationCount')
 
-# @admin.register(ScholarlyOutput)
-# class ScholaryOutputAdmin(admin.ModelAdmin):
-#     list_display = ('year', 'value', 'universityId', 'subjectAreaId')
-#     raw_id_fields = ('universityId', 'subjectAreaId')
-#     list_filter = ('year', FloatRangeFilter, 'universityId', 'subjectAreaId')
-#     search_fields = ('year', 'value', 'universityId', 'subjectAreaId')
-#     ordering = ('subjectAreaId', 'universityId', 'year', 'value')
-#     def get_urls(self):
-#         urls = super().get_urls()
-#         new_urls = [path('upload-csv/', self.upload_csv),]
-#         return new_urls + urls
-#     def upload_csv(self, request):
-#         if request.method == "POST":
-#             csv_file = request.FILES["csv_upload"]
-#             file_data = csv_file.read().decode("utf-8")
-#             csv_data = file_data.replace('\r', '').split("\n")
-#             for x in csv_data:
-#                 fields = x.split(";")
-#                 created = ScholarlyOutput.objects.update_or_create(
-#                     year = fields[0],
-#                     universityId=University.objects.get(id=fields[1]),
-#                     subjectAreaId=SubjectArea.objects.get(id=fields[2]),
-#                     value=fields[3],
-#                 )
-#             url = reverse('admin:mainApp_scholarlyoutput_changelist')
-#             return HttpResponseRedirect(url)
-#         form = CsvImportForm()
-#         data = {"form": form}
-#         return render(request, "admin/csv_upload.html", data)
+@admin.register(Collaboration)
+class CollaborationAdmin(AbstractMetricAdmin):
+    def upload_csv(self, request):
+        return super().upload_csv(request, 'Collaboration')
+
+@admin.register(CollaborationImpact)
+class CollaborationImpactAdmin(AbstractMetricAdmin):
+    def upload_csv(self, request):
+        return super().upload_csv(request, 'CollaborationImpact')
+
+@admin.register(FieldWeightedCitationImpact)
+class FieldWeightedCitationImpactAdmin(AbstractMetricAdmin):
+    def upload_csv(self, request):
+        return super().upload_csv(request, 'FieldWeightedCitationImpact')
+@admin.register(PublicationsInTopJournalPercentiles)
+class PublicationsInTopJournalPercentilesAdmin(AbstractMetricAdmin):
+    def upload_csv(self, request):
+        return super().upload_csv(request, 'PublicationsInTopJournalPercentiles')
+
+@admin.register(OutputsInTopCitationPercentiles)
+class OutputsInTopCitationPercentilesAdmin(AbstractMetricAdmin):
+    def upload_csv(self, request):
+        return super().upload_csv(request, 'OutputsInTopCitationPercentiles')
+
+

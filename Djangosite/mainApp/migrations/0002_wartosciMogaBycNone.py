@@ -12,27 +12,27 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name="citationcount",
+            model_name="CitationCount",
             name="subjectAreaId",
             field=models.ForeignKey(
                 help_text="Id głównej dziedziny naukowej. Id opowiada Id z Scival-a",
                 on_delete=django.db.models.deletion.CASCADE,
-                to="mainApp.subjectarea",
+                to="mainApp.SubjectArea",
                 verbose_name="Id Dziedzina Naukowej",
             ),
         ),
         migrations.AlterField(
-            model_name="citationcount",
+            model_name="CitationCount",
             name="universityId",
             field=models.ForeignKey(
                 help_text="Id uczelni. Id opowiada Id z Scival-a",
                 on_delete=django.db.models.deletion.CASCADE,
-                to="mainApp.university",
+                to="mainApp.University",
                 verbose_name="Id Uczelni",
             ),
         ),
         migrations.AlterField(
-            model_name="citationcount",
+            model_name="CitationCount",
             name="value",
             field=models.FloatField(
                 blank=True,
@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AlterField(
-            model_name="citationcount",
+            model_name="CitationCount",
             name="year",
             field=models.CharField(
                 help_text="Rok metryki", max_length=10, verbose_name="Rok"
@@ -54,7 +54,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 help_text="Id głównej dziedziny naukowej. Id opowiada Id z Scival-a",
                 on_delete=django.db.models.deletion.CASCADE,
-                to="mainApp.subjectarea",
+                to="mainApp.SubjectArea",
                 verbose_name="Id Dziedzina Naukowej",
             ),
         ),
@@ -64,7 +64,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 help_text="Id uczelni. Id opowiada Id z Scival-a",
                 on_delete=django.db.models.deletion.CASCADE,
-                to="mainApp.university",
+                to="mainApp.University",
                 verbose_name="Id Uczelni",
             ),
         ),
@@ -91,7 +91,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 help_text="Id głównej dziedziny naukowej. Id opowiada Id z Scival-a",
                 on_delete=django.db.models.deletion.CASCADE,
-                to="mainApp.subjectarea",
+                to="mainApp.SubjectArea",
                 verbose_name="Id Dziedzina Naukowej",
             ),
         ),
@@ -101,7 +101,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 help_text="Id uczelni. Id opowiada Id z Scival-a",
                 on_delete=django.db.models.deletion.CASCADE,
-                to="mainApp.university",
+                to="mainApp.University",
                 verbose_name="Id Uczelni",
             ),
         ),
@@ -128,7 +128,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 help_text="Id głównej dziedziny naukowej. Id opowiada Id z Scival-a",
                 on_delete=django.db.models.deletion.CASCADE,
-                to="mainApp.subjectarea",
+                to="mainApp.SubjectArea",
                 verbose_name="Id Dziedzina Naukowej",
             ),
         ),
@@ -138,7 +138,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 help_text="Id uczelni. Id opowiada Id z Scival-a",
                 on_delete=django.db.models.deletion.CASCADE,
-                to="mainApp.university",
+                to="mainApp.University",
                 verbose_name="Id Uczelni",
             ),
         ),
@@ -165,7 +165,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 help_text="Id głównej dziedziny naukowej. Id opowiada Id z Scival-a",
                 on_delete=django.db.models.deletion.CASCADE,
-                to="mainApp.subjectarea",
+                to="mainApp.SubjectArea",
                 verbose_name="Id Dziedzina Naukowej",
             ),
         ),
@@ -175,7 +175,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 help_text="Id uczelni. Id opowiada Id z Scival-a",
                 on_delete=django.db.models.deletion.CASCADE,
-                to="mainApp.university",
+                to="mainApp.University",
                 verbose_name="Id Uczelni",
             ),
         ),
@@ -202,7 +202,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 help_text="Id głównej dziedziny naukowej. Id opowiada Id z Scival-a",
                 on_delete=django.db.models.deletion.CASCADE,
-                to="mainApp.subjectarea",
+                to="mainApp.SubjectArea",
                 verbose_name="Id Dziedzina Naukowej",
             ),
         ),
@@ -212,7 +212,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 help_text="Id uczelni. Id opowiada Id z Scival-a",
                 on_delete=django.db.models.deletion.CASCADE,
-                to="mainApp.university",
+                to="mainApp.University",
                 verbose_name="Id Uczelni",
             ),
         ),
@@ -239,7 +239,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 help_text="Id głównej dziedziny naukowej. Id opowiada Id z Scival-a",
                 on_delete=django.db.models.deletion.CASCADE,
-                to="mainApp.subjectarea",
+                to="mainApp.SubjectArea",
                 verbose_name="Id Dziedzina Naukowej",
             ),
         ),
@@ -249,7 +249,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 help_text="Id uczelni. Id opowiada Id z Scival-a",
                 on_delete=django.db.models.deletion.CASCADE,
-                to="mainApp.university",
+                to="mainApp.University",
                 verbose_name="Id Uczelni",
             ),
         ),
@@ -276,7 +276,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 help_text="Id głównej dziedziny naukowej. Id opowiada Id z Scival-a",
                 on_delete=django.db.models.deletion.CASCADE,
-                to="mainApp.subjectarea",
+                to="mainApp.SubjectArea",
                 verbose_name="Id Dziedzina Naukowej",
             ),
         ),
@@ -286,7 +286,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 help_text="Id uczelni. Id opowiada Id z Scival-a",
                 on_delete=django.db.models.deletion.CASCADE,
-                to="mainApp.university",
+                to="mainApp.University",
                 verbose_name="Id Uczelni",
             ),
         ),
@@ -313,7 +313,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 help_text="Id głównej dziedziny naukowej. Id opowiada Id z Scival-a",
                 on_delete=django.db.models.deletion.CASCADE,
-                to="mainApp.subjectarea",
+                to="mainApp.SubjectArea",
                 verbose_name="Id Dziedzina Naukowej",
             ),
         ),
@@ -323,7 +323,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 help_text="Id uczelni. Id opowiada Id z Scival-a",
                 on_delete=django.db.models.deletion.CASCADE,
-                to="mainApp.university",
+                to="mainApp.University",
                 verbose_name="Id Uczelni",
             ),
         ),
@@ -350,7 +350,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 help_text="Id głównej dziedziny naukowej. Id opowiada Id z Scival-a",
                 on_delete=django.db.models.deletion.CASCADE,
-                to="mainApp.subjectarea",
+                to="mainApp.SubjectArea",
                 verbose_name="Id Dziedzina Naukowej",
             ),
         ),
@@ -360,7 +360,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 help_text="Id uczelni. Id opowiada Id z Scival-a",
                 on_delete=django.db.models.deletion.CASCADE,
-                to="mainApp.university",
+                to="mainApp.University",
                 verbose_name="Id Uczelni",
             ),
         ),
@@ -387,7 +387,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 help_text="Id głównej dziedziny naukowej. Id opowiada Id z Scival-a",
                 on_delete=django.db.models.deletion.CASCADE,
-                to="mainApp.subjectarea",
+                to="mainApp.SubjectArea",
                 verbose_name="Id Dziedzina Naukowej",
             ),
         ),
@@ -397,7 +397,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 help_text="Id uczelni. Id opowiada Id z Scival-a",
                 on_delete=django.db.models.deletion.CASCADE,
-                to="mainApp.university",
+                to="mainApp.University",
                 verbose_name="Id Uczelni",
             ),
         ),
@@ -424,7 +424,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 help_text="Id głównej dziedziny naukowej. Id opowiada Id z Scival-a",
                 on_delete=django.db.models.deletion.CASCADE,
-                to="mainApp.subjectarea",
+                to="mainApp.SubjectArea",
                 verbose_name="Id Dziedzina Naukowej",
             ),
         ),
@@ -434,7 +434,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 help_text="Id uczelni. Id opowiada Id z Scival-a",
                 on_delete=django.db.models.deletion.CASCADE,
-                to="mainApp.university",
+                to="mainApp.University",
                 verbose_name="Id Uczelni",
             ),
         ),
@@ -456,27 +456,27 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AlterField(
-            model_name="scholarlyoutput",
+            model_name="ScholarlyOutput",
             name="subjectAreaId",
             field=models.ForeignKey(
                 help_text="Id głównej dziedziny naukowej. Id opowiada Id z Scival-a",
                 on_delete=django.db.models.deletion.CASCADE,
-                to="mainApp.subjectarea",
+                to="mainApp.SubjectArea",
                 verbose_name="Id Dziedzina Naukowej",
             ),
         ),
         migrations.AlterField(
-            model_name="scholarlyoutput",
+            model_name="ScholarlyOutput",
             name="universityId",
             field=models.ForeignKey(
                 help_text="Id uczelni. Id opowiada Id z Scival-a",
                 on_delete=django.db.models.deletion.CASCADE,
-                to="mainApp.university",
+                to="mainApp.University",
                 verbose_name="Id Uczelni",
             ),
         ),
         migrations.AlterField(
-            model_name="scholarlyoutput",
+            model_name="ScholarlyOutput",
             name="value",
             field=models.FloatField(
                 blank=True,
@@ -486,7 +486,7 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AlterField(
-            model_name="scholarlyoutput",
+            model_name="ScholarlyOutput",
             name="year",
             field=models.CharField(
                 help_text="Rok metryki", max_length=10, verbose_name="Rok"

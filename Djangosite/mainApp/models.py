@@ -42,11 +42,6 @@ class CitationsPerPublication(Abstractmetric):
         verbose_name = "Metryka CitationsPerPublication"
         verbose_name_plural = "Metryki CitationsPerPublication"
 
-class CitingPatentsCount(Abstractmetric):
-    class Meta:
-        verbose_name = "Metryka CitingPatentsCount"
-        verbose_name_plural = "Metryki CitingPatentsCount"
-
 class Collaboration(Abstractmetric):
     class Meta:
         verbose_name = "Metryka Collaboration"
@@ -61,26 +56,6 @@ class FieldWeightedCitationImpact(Abstractmetric):
     class Meta:
         verbose_name = "Metryka FieldWeightedCitationImpact"
         verbose_name_plural = "Metryki FieldWeightedCitationImpact"
-
-class Hindices(Abstractmetric):
-    class Meta:
-        verbose_name = "Metryka Hindices"
-        verbose_name_plural = "Metryki Hindices"
-
-class PatentCitationsCount(Abstractmetric):
-    class Meta:
-        verbose_name = "Metryka PatentCitationsCount"
-        verbose_name_plural = "Metryki PatentCitationsCount"
-
-class PatentCitationsPerScholarlyOutput(Abstractmetric):
-    class Meta:
-        verbose_name = "Metryka PatentCitationsPerScholarlyOutput"
-        verbose_name_plural = "Metryki PatentCitationsPerScholarlyOutput"
-
-class PatentCitedScholarlyOutput(Abstractmetric):
-    class Meta:
-        verbose_name = "Metryka PatentCitedScholarlyOutput"
-        verbose_name_plural = "Metryki PatentCitedScholarlyOutput"
 
 class PublicationsInTopJournalPercentiles(Abstractmetric):
     class Meta:

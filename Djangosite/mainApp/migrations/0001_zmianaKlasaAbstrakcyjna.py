@@ -100,14 +100,14 @@ class Migration(migrations.Migration):
                     "subjectAreaId",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="mainApp.subjectarea",
+                        to="mainApp.SubjectArea",
                     ),
                 ),
                 (
                     "universityId",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="mainApp.university",
+                        to="mainApp.University",
                     ),
                 ),
             ],
@@ -134,14 +134,14 @@ class Migration(migrations.Migration):
                     "subjectAreaId",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="mainApp.subjectarea",
+                        to="mainApp.SubjectArea",
                     ),
                 ),
                 (
                     "universityId",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="mainApp.university",
+                        to="mainApp.University",
                     ),
                 ),
             ],
@@ -168,14 +168,14 @@ class Migration(migrations.Migration):
                     "subjectAreaId",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="mainApp.subjectarea",
+                        to="mainApp.SubjectArea",
                     ),
                 ),
                 (
                     "universityId",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="mainApp.university",
+                        to="mainApp.University",
                     ),
                 ),
             ],
@@ -202,14 +202,14 @@ class Migration(migrations.Migration):
                     "subjectAreaId",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="mainApp.subjectarea",
+                        to="mainApp.SubjectArea",
                     ),
                 ),
                 (
                     "universityId",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="mainApp.university",
+                        to="mainApp.University",
                     ),
                 ),
             ],
@@ -236,14 +236,14 @@ class Migration(migrations.Migration):
                     "subjectAreaId",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="mainApp.subjectarea",
+                        to="mainApp.SubjectArea",
                     ),
                 ),
                 (
                     "universityId",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="mainApp.university",
+                        to="mainApp.University",
                     ),
                 ),
             ],
@@ -270,14 +270,14 @@ class Migration(migrations.Migration):
                     "subjectAreaId",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="mainApp.subjectarea",
+                        to="mainApp.SubjectArea",
                     ),
                 ),
                 (
                     "universityId",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="mainApp.university",
+                        to="mainApp.University",
                     ),
                 ),
             ],
@@ -304,14 +304,14 @@ class Migration(migrations.Migration):
                     "subjectAreaId",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="mainApp.subjectarea",
+                        to="mainApp.SubjectArea",
                     ),
                 ),
                 (
                     "universityId",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="mainApp.university",
+                        to="mainApp.University",
                     ),
                 ),
             ],
@@ -338,14 +338,14 @@ class Migration(migrations.Migration):
                     "subjectAreaId",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="mainApp.subjectarea",
+                        to="mainApp.SubjectArea",
                     ),
                 ),
                 (
                     "universityId",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="mainApp.university",
+                        to="mainApp.University",
                     ),
                 ),
             ],
@@ -372,14 +372,14 @@ class Migration(migrations.Migration):
                     "subjectAreaId",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="mainApp.subjectarea",
+                        to="mainApp.SubjectArea",
                     ),
                 ),
                 (
                     "universityId",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="mainApp.university",
+                        to="mainApp.University",
                     ),
                 ),
             ],
@@ -406,14 +406,14 @@ class Migration(migrations.Migration):
                     "subjectAreaId",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="mainApp.subjectarea",
+                        to="mainApp.SubjectArea",
                     ),
                 ),
                 (
                     "universityId",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="mainApp.university",
+                        to="mainApp.University",
                     ),
                 ),
             ],
@@ -440,14 +440,14 @@ class Migration(migrations.Migration):
                     "subjectAreaId",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="mainApp.subjectarea",
+                        to="mainApp.SubjectArea",
                     ),
                 ),
                 (
                     "universityId",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="mainApp.university",
+                        to="mainApp.University",
                     ),
                 ),
             ],
@@ -474,14 +474,14 @@ class Migration(migrations.Migration):
                     "subjectAreaId",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="mainApp.subjectarea",
+                        to="mainApp.SubjectArea",
                     ),
                 ),
                 (
                     "universityId",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="mainApp.university",
+                        to="mainApp.University",
                     ),
                 ),
             ],
@@ -508,14 +508,14 @@ class Migration(migrations.Migration):
                     "subjectAreaId",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="mainApp.subjectarea",
+                        to="mainApp.SubjectArea",
                     ),
                 ),
                 (
                     "universityId",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="mainApp.university",
+                        to="mainApp.University",
                     ),
                 ),
             ],
