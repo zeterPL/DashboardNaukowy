@@ -5,6 +5,7 @@ from django import forms
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.db.models import Q
+from django.apps import apps
 from .models import *
 
 # Username: Admin
@@ -125,43 +126,77 @@ class FloatRangeFilter(admin.SimpleListFilter):
         elif self.value() == '10000+':
             return queryset.filter(Q(value__gte=10000))
 
-@admin.register(ScholarlyOutput)
-class ScholaryOutputAdmin(admin.ModelAdmin):
+
+class AbstractMetricAdmin(admin.ModelAdmin):
     list_display = ('year', 'value', 'universityId', 'subjectAreaId')
     raw_id_fields = ('universityId', 'subjectAreaId')
     list_filter = ('year', FloatRangeFilter, 'universityId', 'subjectAreaId')
     search_fields = ('year', 'value', 'universityId', 'subjectAreaId')
-    ordering = ('universityId', 'subjectAreaId', 'year', 'value')
+    ordering = ('subjectAreaId', 'universityId', 'year', 'value')
     def get_urls(self):
         urls = super().get_urls()
         new_urls = [path('upload-csv/', self.upload_csv),]
         return new_urls + urls
-    def upload_csv(self, request):
+        return urls
+    def upload_csv(self, request, model_name):
         if request.method == "POST":
             csv_file = request.FILES["csv_upload"]
             file_data = csv_file.read().decode("utf-8")
             csv_data = file_data.replace('\r', '').split("\n")
             for x in csv_data:
                 fields = x.split(";")
-                created = ScholarlyOutput.objects.update_or_create(
-                    year = fields[0],
+                model = apps.get_model('mainApp', model_name)
+                if (fields[3].lower() == 'none' or fields[3].lower() == 'null' or fields[3] == ''):
+                    fields[3] = None;
+                created = model.objects.update_or_create(
+                    year=fields[0],
                     universityId=University.objects.get(id=fields[1]),
                     subjectAreaId=SubjectArea.objects.get(id=fields[2]),
                     value=fields[3],
                 )
-            url = reverse('admin:mainApp_scholarlyoutput_changelist')
+            url = reverse(f'admin:mainApp_{model_name.lower()}_changelist')
             return HttpResponseRedirect(url)
         form = CsvImportForm()
         data = {"form": form}
         return render(request, "admin/csv_upload.html", data)
 
-# class CitationCountInline(admin.TabularInline):
-#     model = CitationCount
-#
-# class CitationsPerPublicationInline(admin.TabularInline):
-#     model = CitationsPerPublication
-# @admin.register(CitationCount)
-# class DateAdmin(admin.ModelAdmin):
-#     inlines = [CitationCountInline,
-#                CitationsPerPublicationInline]
+
+@admin.register(ScholarlyOutput)
+class ScholaryOutputAdmin(AbstractMetricAdmin):
+    def upload_csv(self, request):
+        return super().upload_csv(request, 'ScholarlyOutput')
+
+@admin.register(CitationCount)
+class CitationCountOutputAdmin(AbstractMetricAdmin):
+    def upload_csv(self, request):
+        return super().upload_csv(request, 'CitationCount')
+
+# @admin.register(ScholarlyOutput)
+# class ScholaryOutputAdmin(admin.ModelAdmin):
 #     list_display = ('year', 'value', 'universityId', 'subjectAreaId')
+#     raw_id_fields = ('universityId', 'subjectAreaId')
+#     list_filter = ('year', FloatRangeFilter, 'universityId', 'subjectAreaId')
+#     search_fields = ('year', 'value', 'universityId', 'subjectAreaId')
+#     ordering = ('subjectAreaId', 'universityId', 'year', 'value')
+#     def get_urls(self):
+#         urls = super().get_urls()
+#         new_urls = [path('upload-csv/', self.upload_csv),]
+#         return new_urls + urls
+#     def upload_csv(self, request):
+#         if request.method == "POST":
+#             csv_file = request.FILES["csv_upload"]
+#             file_data = csv_file.read().decode("utf-8")
+#             csv_data = file_data.replace('\r', '').split("\n")
+#             for x in csv_data:
+#                 fields = x.split(";")
+#                 created = ScholarlyOutput.objects.update_or_create(
+#                     year = fields[0],
+#                     universityId=University.objects.get(id=fields[1]),
+#                     subjectAreaId=SubjectArea.objects.get(id=fields[2]),
+#                     value=fields[3],
+#                 )
+#             url = reverse('admin:mainApp_scholarlyoutput_changelist')
+#             return HttpResponseRedirect(url)
+#         form = CsvImportForm()
+#         data = {"form": form}
+#         return render(request, "admin/csv_upload.html", data)

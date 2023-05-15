@@ -25,83 +25,74 @@ class SubjectArea(models.Model):
         verbose_name = "Dziedzina naukowa"
         verbose_name_plural = "Dziedziny naukowe"
 
-class CitationCount(models.Model):
-    year = models.CharField(max_length=10)
-    value = models.FloatField()
-    universityId = models.ForeignKey(University, on_delete=models.CASCADE)
-    subjectAreaId = models.ForeignKey(SubjectArea, on_delete=models.CASCADE)
 
-class CitationsPerPublication(models.Model):
-    year = models.CharField(max_length=10)
-    value = models.FloatField()
-    universityId = models.ForeignKey(University, on_delete=models.CASCADE)
-    subjectAreaId = models.ForeignKey(SubjectArea, on_delete=models.CASCADE)
+class Abstractmetric(models.Model):
+    year = models.CharField(max_length=10, verbose_name='Rok', help_text='Rok metryki')
+    value = models.FloatField(null=True, blank=True, verbose_name='Wartość', help_text='Wartość danej metryki')
+    universityId = models.ForeignKey(University, on_delete=models.CASCADE, verbose_name='Id Uczelni', help_text='Id uczelni. Id opowiada Id z Scival-a')
+    subjectAreaId = models.ForeignKey(SubjectArea, on_delete=models.CASCADE, verbose_name='Id Dziedzina Naukowej', help_text='Id głównej dziedziny naukowej. Id opowiada Id z Scival-a')
+    class Meta:
+        abstract = True
+class CitationCount(Abstractmetric):
+    class Meta:
+        verbose_name = "Metryka CitationCount"
+        verbose_name_plural = "Metryki CitationCount"
+class CitationsPerPublication(Abstractmetric):
+    class Meta:
+        verbose_name = "Metryka CitationsPerPublication"
+        verbose_name_plural = "Metryki CitationsPerPublication"
 
-class CitingPatentsCount(models.Model):
-    year = models.CharField(max_length=10)
-    value = models.FloatField()
-    universityId = models.ForeignKey(University, on_delete=models.CASCADE)
-    subjectAreaId = models.ForeignKey(SubjectArea, on_delete=models.CASCADE)
+class CitingPatentsCount(Abstractmetric):
+    class Meta:
+        verbose_name = "Metryka CitingPatentsCount"
+        verbose_name_plural = "Metryki CitingPatentsCount"
 
-class Collaboration(models.Model):
-    year = models.CharField(max_length=10)
-    value = models.FloatField()
-    universityId = models.ForeignKey(University, on_delete=models.CASCADE)
-    subjectAreaId = models.ForeignKey(SubjectArea, on_delete=models.CASCADE)
+class Collaboration(Abstractmetric):
+    class Meta:
+        verbose_name = "Metryka Collaboration"
+        verbose_name_plural = "Metryki Collaboration"
 
-class CollaborationImpact(models.Model):
-    year = models.CharField(max_length=10)
-    value = models.FloatField()
-    universityId = models.ForeignKey(University, on_delete=models.CASCADE)
-    subjectAreaId = models.ForeignKey(SubjectArea, on_delete=models.CASCADE)
+class CollaborationImpact(Abstractmetric):
+    class Meta:
+        verbose_name = "Metryka CollaborationImpact"
+        verbose_name_plural = "Metryki CollaborationImpact"
 
-class FieldWeightedCitationImpact(models.Model):
-    year = models.CharField(max_length=10)
-    value = models.FloatField()
-    universityId = models.ForeignKey(University, on_delete=models.CASCADE)
-    subjectAreaId = models.ForeignKey(SubjectArea, on_delete=models.CASCADE)
+class FieldWeightedCitationImpact(Abstractmetric):
+    class Meta:
+        verbose_name = "Metryka FieldWeightedCitationImpact"
+        verbose_name_plural = "Metryki FieldWeightedCitationImpact"
 
-class Hindices(models.Model):
-    year = models.CharField(max_length=10)
-    value = models.FloatField()
-    universityId = models.ForeignKey(University, on_delete=models.CASCADE)
-    subjectAreaId = models.ForeignKey(SubjectArea, on_delete=models.CASCADE)
+class Hindices(Abstractmetric):
+    class Meta:
+        verbose_name = "Metryka Hindices"
+        verbose_name_plural = "Metryki Hindices"
 
-class PatentCitationsCount(models.Model):
-    year = models.CharField(max_length=10)
-    value = models.FloatField()
-    universityId = models.ForeignKey(University, on_delete=models.CASCADE)
-    subjectAreaId = models.ForeignKey(SubjectArea, on_delete=models.CASCADE)
+class PatentCitationsCount(Abstractmetric):
+    class Meta:
+        verbose_name = "Metryka PatentCitationsCount"
+        verbose_name_plural = "Metryki PatentCitationsCount"
 
-class PatentCitationsPerScholarlyOutput(models.Model):
-    year = models.CharField(max_length=10)
-    value = models.FloatField()
-    universityId = models.ForeignKey(University, on_delete=models.CASCADE)
-    subjectAreaId = models.ForeignKey(SubjectArea, on_delete=models.CASCADE)
+class PatentCitationsPerScholarlyOutput(Abstractmetric):
+    class Meta:
+        verbose_name = "Metryka PatentCitationsPerScholarlyOutput"
+        verbose_name_plural = "Metryki PatentCitationsPerScholarlyOutput"
 
-class PatentCitedScholarlyOutput(models.Model):
-    year = models.CharField(max_length=10)
-    value = models.FloatField()
-    universityId = models.ForeignKey(University, on_delete=models.CASCADE)
-    subjectAreaId = models.ForeignKey(SubjectArea, on_delete=models.CASCADE)
+class PatentCitedScholarlyOutput(Abstractmetric):
+    class Meta:
+        verbose_name = "Metryka PatentCitedScholarlyOutput"
+        verbose_name_plural = "Metryki PatentCitedScholarlyOutput"
 
-class PublicationsInTopJournalPercentiles(models.Model):
-    year = models.CharField(max_length=10)
-    value = models.FloatField()
-    universityId = models.ForeignKey(University, on_delete=models.CASCADE)
-    subjectAreaId = models.ForeignKey(SubjectArea, on_delete=models.CASCADE)
+class PublicationsInTopJournalPercentiles(Abstractmetric):
+    class Meta:
+        verbose_name = "Metryka PublicationsInTopJournalPercentiles"
+        verbose_name_plural = "Metryki PublicationsInTopJournalPercentiles"
 
-class OutputsInTopCitationPercentiles(models.Model):
-    year = models.CharField(max_length=10)
-    value = models.FloatField()
-    universityId = models.ForeignKey(University, on_delete=models.CASCADE)
-    subjectAreaId = models.ForeignKey(SubjectArea, on_delete=models.CASCADE)
+class OutputsInTopCitationPercentiles(Abstractmetric):
+    class Meta:
+        verbose_name = "Metryka OutputsInTopCitationPercentiles"
+        verbose_name_plural = "Metryki OutputsInTopCitationPercentiles"
 
-class ScholarlyOutput(models.Model):
-    year = models.CharField(max_length=10)
-    value = models.FloatField()
-    universityId = models.ForeignKey(University, on_delete=models.CASCADE)
-    subjectAreaId = models.ForeignKey(SubjectArea, on_delete=models.CASCADE)
+class ScholarlyOutput(Abstractmetric):
     class Meta:
         verbose_name = "Metryka ScholaryOutput"
         verbose_name_plural = "Metryki ScholaryOutput"
