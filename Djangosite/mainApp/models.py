@@ -102,3 +102,6 @@ class ScholarlyOutput(models.Model):
     value = models.FloatField()
     universityId = models.ForeignKey(University, on_delete=models.CASCADE)
     subjectAreaId = models.ForeignKey(SubjectArea, on_delete=models.CASCADE)
+    class Meta:
+        verbose_name = "Metryka ScholaryOutput"
+        verbose_name_plural = "Metryki ScholaryOutput"
