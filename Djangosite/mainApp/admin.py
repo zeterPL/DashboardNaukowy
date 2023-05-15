@@ -36,10 +36,14 @@ class UniversityAdmin(admin.ModelAdmin):
             csv_data = file_data.replace('\r', '').split("\n")
             for x in csv_data:
                 fields = x.split(";")
+                if (len(fields) < 3):
+                    countryX = 'Polska'
+                else:
+                    countryX = fields[2]
                 created = University.objects.update_or_create(
                     id = fields[0],
                     name = fields[1],
-                    country = fields[2],
+                    country = countryX,
                 )
             url = reverse('admin:mainApp_university_changelist')
             return HttpResponseRedirect(url)
@@ -185,6 +189,7 @@ class CollaborationImpactAdmin(AbstractMetricAdmin):
 class FieldWeightedCitationImpactAdmin(AbstractMetricAdmin):
     def upload_csv(self, request):
         return super().upload_csv(request, 'FieldWeightedCitationImpact')
+
 @admin.register(PublicationsInTopJournalPercentiles)
 class PublicationsInTopJournalPercentilesAdmin(AbstractMetricAdmin):
     def upload_csv(self, request):
