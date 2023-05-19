@@ -1,0 +1,45 @@
+{% load static %}
+
+{% block css_files %}
+    <link rel="stylesheet" href="{% static "mainApp/partials/navbar.css" %}">
+{% endblock %}
+
+<div class="hamburger-menu">
+    <a href="{% url "contact-page" %}">Kontakt</a>
+    <a href="{% url "about-page" %}">O projekcie</a>
+    <a href="{% url "features-page"%}">Funkcje</a>
+
+    <div id="hamburger-menu-login-button">
+        <div id="hamburger-menu-login-effect"></div>
+        <a id="hamburger-login-link" href="{% url "login-page" %}" class="navigation-link">Zaloguj się</a>
+    </div>
+
+</div>
+
+<div id="navbar-container">
+    <header id="navbar">
+
+        <nav id="nabar-navigation">
+    
+            {% include "mainApp/partials/logo.html" %}
+
+
+            <div id="navigation-links">
+                <a href="{% url "contact-page" %}" class="navigation-link">Kontakt</a>
+                <a href="{% url "about-page" %}" class="navigation-link">O projekcie</a>
+                <a href="{% url "features-page"%}" class="navigation-link">Funkcje</a>
+            </div>
+            <div id="navbar-login-button" class="hoverable-button">
+                <div class="button-hover-effect"></div>
+                <a id="navbar-login-link" href="{% url "login-page" %}" class="navigation-link navbar-login">Zaloguj się</a>
+            </div>
+    
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </nav>
+    
+    </header>
+</div>
