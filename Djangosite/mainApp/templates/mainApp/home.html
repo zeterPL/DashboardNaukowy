@@ -8,12 +8,14 @@
 
 {% if user.is_authenticated %}
 <div>
-    Zalogowano jako {{user.username}} <a class="nav-link" href="{% url "logout" %}">LOGOUT</a>
+    Zalogowano jako {{user.username}} <a class="nav-link" href="{% url "logout" %}">LOGOUT</a> <br/>
+    <a class="nav-link" href="{% url "profile-page" %}">profile</a> <br/>
+
+
+    HOME - tutaj główny dashboard
+
 </div>
 {% else %}
 Nie zalogowano :/
 {% endif %}
-
-HOME - tutaj główny dashboard
-
 {% endblock %}
