@@ -1,11 +1,29 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %} Budget planner {% endblock %}
+{% block title %} Ranking Naukowy - Profil uzytkownika {% endblock %}
 {% block css_files %} <link rel="stylesheet" href="{% static "mainApp/profile.css" %}"> {% endblock %}
 
 {% block content %}
 
-PROFIL
+<div class="profile-page-container">
+    {% include "mainApp/partials/sidebar.html" %}
+    {% include "mainApp/partials/header.html" %}
+
+
+    <div class="profile-content-container">
+        <div class="grid-tile profile-header">
+            <img src="https://t4.ftcdn.net/jpg/03/64/21/11/360_F_364211147_1qgLVxv1Tcq0Ohz3FawUfrtONzz8nq3e.jpg" class="header-profile-picture" />
+
+        </div>
+
+        <div class="grid-tile profile-side-tile"></div>
+        <div class="grid-tile profile-side-tile"></div>
+        <div class="grid-tile profile-side-tile"></div>
+        <div class="grid-tile profile-side-tile"></div>
+        
+    </div>
+
+</div>
 
 {% endblock %}

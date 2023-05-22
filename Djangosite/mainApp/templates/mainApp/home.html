@@ -1,19 +1,35 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %} Budget planner {% endblock %}
+{% block title %} Ranking Naukowy {% endblock %}
 {% block css_files %} <link rel="stylesheet" href="{% static "mainApp/home.css" %}"> {% endblock %}
 
 {% block content %}
 
-{% if user.is_authenticated %}
-<div>
-    Zalogowano jako {{user.username}} <a class="nav-link" href="{% url "logout" %}">LOGOUT</a>
-</div>
-{% else %}
-Nie zalogowano :/
-{% endif %}
+<div class="home-page-container">
+    {% include "mainApp/partials/sidebar.html" %}
+    {% include "mainApp/partials/header.html" %}
 
-HOME - tutaj główny dashboard
+
+    <div class="home-content-container">
+        <div class="grid-tile"></div>
+        <div class="grid-tile"></div>
+        <div class="grid-tile"></div>
+
+        <div class="grid-tile wide"></div>
+        <div class="grid-tile"></div>
+        <div class="grid-tile"></div>
+
+        <div class="grid-tile"></div>
+        <div class="grid-tile"></div>
+        <div class="grid-tile"></div>
+
+        <div class="grid-tile"></div>
+        <div class="grid-tile"></div>
+        <div class="grid-tile"></div>
+        
+    </div>
+
+</div>
 
 {% endblock %}

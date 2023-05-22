@@ -50,12 +50,28 @@ def logout(request):
 
 
 def home(request):
-    return render(request, "mainApp/home.html")
+    context = {
+        'viewName': 'Główny dashboard'
+    }
+    return render(request, "mainApp/home.html", context)
 
 
 def benchmarking(request):
-    return render(request, "mainApp/benchmarking.html")
+    context = {
+        'viewName': 'Porównanie uczelni'
+    }
+    return render(request, "mainApp/benchmarking.html", context)
 
 
 def profile(request):
-    return render(request, 'mainApp/profile.html')
+    context = {
+        'viewName': 'Profil użytkownika'
+    }
+    return render(request, 'mainApp/profile.html', context)
+
+
+def statistics(request):
+    context = {
+        'viewName': 'Statystyki uczelni'
+    }
+    return render(request, 'mainApp/statistics.html', context)

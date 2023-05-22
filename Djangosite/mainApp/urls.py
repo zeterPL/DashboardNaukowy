@@ -9,6 +9,8 @@ urlpatterns = [
     path('contact', views.contact, name='contact-page'),
     path('features', views.features, name='features-page'),
     path('home', views.home, name='home-page'),
+    path('profile', views.profile, name='profile'),
+    path('statistics', views.statistics, name='statistics'),
     path('benchmarking', views.benchmarking, name='benchmarking-page'),
     path('logout', views.logout, name='logout')
 ]
