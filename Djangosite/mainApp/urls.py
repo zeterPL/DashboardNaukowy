@@ -10,5 +10,6 @@ urlpatterns = [
     path('features', views.features, name='features-page'),
     path('home', views.home, name='home-page'),
     path('benchmarking', views.benchmarking, name='benchmarking-page'),
-    path('logout', views.logout, name='logout')
+    path('logout', views.logout, name='logout'),
+    path('view', views.roboczy_view_do_testowania_bazy, name='view')
 ]

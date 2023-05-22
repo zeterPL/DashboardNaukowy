@@ -1,10 +1,11 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import render, redirect
-from django.contrib.auth.models import User, auth
+from django.contrib.auth.models import auth
+
+from .API_Itf import API_Interface
+from .models import *
+from django.template import loader
+
 
 # Create your views here.
 
@@ -59,3 +60,14 @@ def benchmarking(request):
 
 def profile(request):
     return render(request, 'mainApp/profile.html')
+
+
+def roboczy_view_do_testowania_bazy(request):
+    interface = API_Interface()
+    interface.db_update_metric(CitationCount)
+    cc = CitationCount.objects.all().values()
+    template = loader.get_template('view.html')
+    context = {
+        'cc': cc,
+    }
+    return HttpResponse(template.render(context, request))

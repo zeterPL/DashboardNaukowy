@@ -4,8 +4,8 @@
 {% block title %} Ranking naukowy {% endblock %}
 
 {% block css_files %}
-    <link rel="stylesheet" href="{% static "mainApp/welcome.css" %}">
-    <link rel="stylesheet" href="{% static "mainApp/partials/logo.css" %}">
+    <link rel="stylesheet" href="{% static 'mainApp/welcome.css' %}">
+    <link rel="stylesheet" href="{% static 'mainApp/partials/logo.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -38,17 +38,17 @@
                     <div class="button-hover-effect large">
                     </div>
                     
-                    <a href="{% url "login-page" %}" id="welcome-page-content-login-button">Zaloguj się</a>
+                    <a href="{% url 'login-page' %}" id="welcome-page-content-login-button">Zaloguj się</a>
                 </div>
             </div>
 
             <div id="welcome-page-illustration">
-                <img src="{% static "assets/welcome-page.svg" %}"/>
+                <img src="{% static 'assets/welcome-page.svg' %}"/>
             </div>
         </div>
 
         {% include "mainApp/partials/footer.html" %}
     </div>
 
-    <script src="{% static "js/button-hover-effect.js" %}"></script>
+    <script src="{% static 'js/button-hover-effect.js' %}"></script>
 {% endblock %}

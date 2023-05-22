@@ -1,0 +1,36 @@
+2023-05-20 17:02:07,431 - elsapy.elsclient - INFO - Module loaded.
+2023-05-20 17:02:09,508 - elsapy.utils - INFO - Module loaded.
+2023-05-20 17:02:09,515 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=ScholarlyOutput%26institutionIds%3D508175%252C508076%26yearRange%3D5yrs%26includeSelfCitations%3Dtrue%26byYear%3Dtrue%26includedDocs%3DAllPublicationTypes%26journalImpactType%3DCiteScore%26showAsFieldWeighted%3Dfalse%26apiKey%3D7f59af901d2d86f78a1fd60c1bf9426a
+2023-05-20 21:43:14,426 - elsapy.elsclient - INFO - Module loaded.
+2023-05-20 21:43:15,757 - elsapy.utils - INFO - Module loaded.
+2023-05-20 21:43:15,763 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=ScholarlyOutput%26institutionIds%3D508175%252C508076%26yearRange%3D5yrs%26includeSelfCitations%3Dtrue%26byYear%3Dtrue%26includedDocs%3DAllPublicationTypes%26journalImpactType%3DCiteScore%26showAsFieldWeighted%3Dfalse%26apiKey%3D7f59af901d2d86f78a1fd60c1bf9426a
+2023-05-20 21:46:23,755 - elsapy.elsclient - INFO - Module loaded.
+2023-05-20 21:46:24,320 - elsapy.utils - INFO - Module loaded.
+2023-05-20 21:46:24,767 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=ScholarlyOutput&institutionIds=508175%2C508076&yearRange=5yrs&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=7f59af901d2d86f78a1fd60c1bf9426a
+2023-05-20 21:56:38,639 - elsapy.elsclient - INFO - Module loaded.
+2023-05-20 21:56:39,113 - elsapy.utils - INFO - Module loaded.
+2023-05-20 21:56:39,640 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=ScholarlyOutput&institutionIds=508175%2C508076&yearRange=5yrs&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=7f59af901d2d86f78a1fd60c1bf9426a
+2023-05-20 21:57:51,246 - elsapy.elsclient - INFO - Module loaded.
+2023-05-20 21:57:51,762 - elsapy.utils - INFO - Module loaded.
+2023-05-20 21:57:52,253 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=ScholarlyOutput&institutionIds=508175%2C508076&yearRange=5yrs&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=7f59af901d2d86f78a1fd60c1bf9426a
+2023-05-20 22:12:22,609 - elsapy.elsclient - INFO - Module loaded.
+2023-05-20 22:12:23,866 - elsapy.utils - INFO - Module loaded.
+2023-05-20 22:12:23,879 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=ScholarlyOutput&institutionIds=508175%2C508076&yearRange=5yrs&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=7f59af901d2d86f78a1fd60c1bf9426a
+2023-05-20 22:12:44,090 - elsapy.elsclient - INFO - Module loaded.
+2023-05-20 22:12:44,560 - elsapy.utils - INFO - Module loaded.
+2023-05-20 22:12:45,097 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=ScholarlyOutput&institutionIds=508175%2C508076&yearRange=5yrs&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=7f59af901d2d86f78a1fd60c1bf9426a
+2023-05-20 22:13:24,439 - elsapy.elsclient - INFO - Module loaded.
+2023-05-20 22:13:24,917 - elsapy.utils - INFO - Module loaded.
+2023-05-20 22:13:25,442 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=ScholarlyOutput&institutionIds=508175%2C508076&yearRange=5yrs&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=7f59af901d2d86f78a1fd60c1bf9426a
+2023-05-20 22:13:41,045 - elsapy.elsclient - INFO - Module loaded.
+2023-05-20 22:13:41,513 - elsapy.utils - INFO - Module loaded.
+2023-05-20 22:13:42,060 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=ScholarlyOutput&institutionIds=508175%2C508076&yearRange=5yrs&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=7f59af901d2d86f78a1fd60c1bf9426a
+2023-05-20 22:14:47,474 - elsapy.elsclient - INFO - Module loaded.
+2023-05-20 22:14:47,878 - elsapy.utils - INFO - Module loaded.
+2023-05-20 22:14:48,477 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=ScholarlyOutput&institutionIds=508175%2C508076&yearRange=5yrs&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=7f59af901d2d86f78a1fd60c1bf9426a
+2023-05-20 22:19:29,999 - elsapy.elsclient - INFO - Module loaded.
+2023-05-20 22:19:30,502 - elsapy.utils - INFO - Module loaded.
+2023-05-20 22:19:31,011 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/analytics/scival/institution/metrics?ScholarlyOutput&institutionIds=508175%2C508076&yearRange=5yrs&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=7f59af901d2d86f78a1fd60c1bf9426a
+2023-05-20 22:19:42,514 - elsapy.elsclient - INFO - Module loaded.
+2023-05-20 22:19:42,989 - elsapy.utils - INFO - Module loaded.
+2023-05-20 22:19:43,526 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=ScholarlyOutput&institutionIds=508175%2C508076&yearRange=5yrs&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=7f59af901d2d86f78a1fd60c1bf9426a
