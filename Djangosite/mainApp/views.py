@@ -6,6 +6,8 @@ from .API_Itf import API_Interface
 from .models import *
 from django.template import loader
 
+from django.contrib.auth.models import User, auth
+from .forms import EditProfileForm
 
 # Create your views here.
 
@@ -51,7 +53,10 @@ def logout(request):
 
 
 def home(request):
-    return render(request, "mainApp/home.html")
+    if request.user.is_authenticated:    
+         return render(request, 'mainApp/home.html')
+    else:
+        return redirect('welcome-page')
 
 
 def benchmarking(request):
@@ -59,7 +64,11 @@ def benchmarking(request):
 
 
 def profile(request):
-    return render(request, 'mainApp/profile.html')
+    if request.user.is_authenticated:    
+         return render(request, 'mainApp/profile.html')
+    else:
+        return redirect('welcome-page')
+
 
 
 def roboczy_view_do_testowania_bazy(request):
@@ -71,3 +80,25 @@ def roboczy_view_do_testowania_bazy(request):
         'cc': cc,
     }
     return HttpResponse(template.render(context, request))
+    
+
+
+def edit(request):
+    if request.user.is_authenticated:    
+         if request.method == 'POST':
+            form = EditProfileForm(request.POST, instance=request.user)
+            if form.is_valid:
+                 form.save()
+                 return redirect('profile-page')
+            else:
+                #TODO
+                return render(request, 'mainApp/edit.html', form)
+         else:
+            form = EditProfileForm(instance=request.user)
+            args = {
+            'form': form,
+            }
+            return render(request, 'mainApp/edit.html', args)
+           
+    else:
+        return redirect('welcome-page')
