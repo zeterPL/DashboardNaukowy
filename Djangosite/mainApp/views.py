@@ -71,18 +71,6 @@ def profile(request):
 
 
 
-def roboczy_view_do_testowania_bazy(request):
-    interface = API_Interface()
-    # interface.db_update_metric(CitationCount)
-    cc = CitationCount.objects.all().values()
-    template = loader.get_template('view.html')
-    context = {
-        'cc': cc,
-    }
-    return HttpResponse(template.render(context, request))
-    
-
-
 def edit(request):
     if request.user.is_authenticated:    
          if request.method == 'POST':
@@ -102,3 +90,5 @@ def edit(request):
            
     else:
         return redirect('welcome-page')
+
+

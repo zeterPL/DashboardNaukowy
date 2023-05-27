@@ -1,7 +1,7 @@
-from elsapy.elsclient import ElsClient
 import json
 import pandas as pd
 from elsapy.utils import recast_df
+
 
 
 # nasz API_KEY = "c16459404285717f102391e3e8008be0"
@@ -75,3 +75,5 @@ class ElsSearch:
         with open('dump.json', 'w') as f:
             f.write(json.dumps(self._results))
         self.results_df = recast_df(pd.DataFrame(self._results))
+
+

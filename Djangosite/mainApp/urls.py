@@ -11,7 +11,6 @@ urlpatterns = [
     path('home', views.home, name='home-page'),
     path('benchmarking', views.benchmarking, name='benchmarking-page'),
     path('logout', views.logout, name='logout'),
-    path('view', views.roboczy_view_do_testowania_bazy, name='view'),
     path('profile', views.profile, name='profile-page'),
     path('edit', views.edit, name="edit-user-page")
 ]
