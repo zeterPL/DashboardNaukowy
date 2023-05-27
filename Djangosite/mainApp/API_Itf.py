@@ -10,10 +10,13 @@ class API_Interface:
     # default API_KEY = "7f59af901d2d86f78a1fd60c1bf9426a"
 
     def __init__(self, apiKey="7f59af901d2d86f78a1fd60c1bf9426a"):
+        cc = CitationCount.objects.all()
+        ci = CollaborationImpact.objects.all()
+
         self.apiKey = apiKey
         self.client = ElsClient(apiKey)
         self.institutions = University.objects.all()
-        self.metrics = Abstractmetric.objects.all()
+        self.metrics = cc.union(ci).values()
         self.subjectAreas = SubjectArea.objects.all()
 
     def db_fill(self):
@@ -54,7 +57,7 @@ class API_Interface:
             for i in self.institutions:
                 for s in self.subjectAreas:
                     search = ElsSearch(
-                        Query(institutions=[i.id], metric=metric.__str__(), subjectAreaFilterURI=s.uri).parse_url(), self.apiKey)
+                        Query(institutions=[i.id], metric=metric.__str__(self), subjectAreaFilterURI=s.uri).parse_url(), self.apiKey)
                     search.execute(self.client, get_all=True)
 
                     # Data Frame from json response

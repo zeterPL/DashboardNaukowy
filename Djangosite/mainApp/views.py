@@ -73,7 +73,7 @@ def profile(request):
 
 def roboczy_view_do_testowania_bazy(request):
     interface = API_Interface()
-    interface.db_update_metric(CitationCount)
+    # interface.db_update_metric(CitationCount)
     cc = CitationCount.objects.all().values()
     template = loader.get_template('view.html')
     context = {

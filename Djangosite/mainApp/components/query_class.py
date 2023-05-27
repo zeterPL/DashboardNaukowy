@@ -20,7 +20,7 @@ class Query:
     def parse_url(self):
         result = self.metric + "&institutionIds="
         for i in self.institutions:
-            result += i
+            result += str(i)
             if i != self.institutions[len(self.institutions) - 1]:
                 result += "%2C"
             else:
