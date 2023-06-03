@@ -112,7 +112,7 @@ def updateDatabaseByApi(request):
     mainSubjectsList = SubjectArea.objects.values_list('id', flat=True)
     for metricType in metricTypes:
         model_obj = globals()[metricType]
-        model_obj.objects.all().delete()
+        #model_obj.objects.all().delete()
         for university in universityList:
             for subject in mainSubjectsList:
                 requestURL = "https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=" + metricType + "&institutionIds=" + str(university) + "&yearRange=10yrs&subjectAreaFilterURI=Class%2FASJC%2FCode%2F" + str(subject) + "&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=" + API_KEY
@@ -127,7 +127,11 @@ def updateDatabaseByApi(request):
                      valuesFromLast3yearsAndFuture = response2.json()['results'][0]['metrics'][0]['values'][0]['valueByYear']
                 amountInYear, years = extractDataFromJsonToArrays(valuesFromLast10years, valuesFromLast3yearsAndFuture)
                 for indx, y in enumerate(years):
-                    model_obj.objects.create(year=y, value=amountInYear[indx], universityId=University.objects.get(id=university), subjectAreaId=SubjectArea.objects.get(id=subject))
+                    #model_obj.objects.create(year=y, value=amountInYear[indx], universityId=University.objects.get(id=university), subjectAreaId=SubjectArea.objects.get(id=subject))
+                    metric, created = model_obj.objects.get_or_create(year=y, universityId=University.objects.get(id=university), subjectAreaId=SubjectArea.objects.get(id=subject))
+                    if not created:
+                        metric.value = amountInYear[indx]
+                        metric.save()
     referer = request.META.get('HTTP_REFERER')
     if referer:
         return redirect(referer)
