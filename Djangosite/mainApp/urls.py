@@ -12,5 +12,6 @@ urlpatterns = [
     path('benchmarking', views.benchmarking, name='benchmarking-page'),
     path('logout', views.logout, name='logout'),
     path('profile', views.profile, name='profile-page'),
-    path('edit', views.edit, name="edit-user-page")
+    path('edit', views.edit, name="edit-user-page"),
+    path('updateDatabaseFromApiPath', views.updateDatabaseByApi, name="updateDatabaseFromApi")
 ]

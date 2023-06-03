@@ -1,0 +1,7 @@
+{% extends "admin/mainApp/baseOperations.html." %}
+{% block object-tools-items %}
+    <li>
+        <a href="{% url 'updateDatabaseFromApi' %}" class="addlink">Zaaktualizuj bazę danych</a>
+    </li>
+    {{ block.super }}
+{% endblock %}

@@ -24,7 +24,7 @@ class UniversityAdmin(admin.ModelAdmin):
     list_display = ('id','name','country')
     list_filter = ('country',)
     search_fields = ('name', 'country')
-    ordering = ('id', 'name', 'country')
+    ordering = ('name', 'country', 'id')
     def get_urls(self):
         urls = super().get_urls()
         new_urls = [path('upload-csv/', self.upload_csv),]
@@ -68,7 +68,7 @@ class SubjectAreaAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'uri')
     list_filter = ('name',)
     search_fields = ('id', 'name', 'uri')
-    ordering = ('id', 'name', 'uri')
+    ordering = ('name', 'id', 'uri')
     def get_urls(self):
         urls = super().get_urls()
         new_urls = [path('upload-csv/', self.upload_csv),]
@@ -163,7 +163,6 @@ class AbstractMetricAdmin(admin.ModelAdmin):
         form = CsvImportForm()
         data = {"form": form}
         return render(request, "admin/csv_upload.html", data)
-
 
 @admin.register(ScholarlyOutput)
 class ScholaryOutputAdmin(AbstractMetricAdmin):

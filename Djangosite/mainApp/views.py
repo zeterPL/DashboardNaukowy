@@ -87,3 +87,9 @@ def edit(request):
            
     else:
         return redirect('welcome-page')
+
+def updateDatabaseByApi(request):
+    print("\n\nOK DZIALA WYWOLANIE FUNKCJI\n")
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
