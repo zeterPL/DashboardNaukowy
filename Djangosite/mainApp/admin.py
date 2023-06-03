@@ -170,9 +170,14 @@ class ScholaryOutputAdmin(AbstractMetricAdmin):
         return super().upload_csv(request, 'ScholarlyOutput')
 
 @admin.register(CitationCount)
-class CitationCountOutputAdmin(AbstractMetricAdmin):
+class CitationCountAdmin(AbstractMetricAdmin):
     def upload_csv(self, request):
         return super().upload_csv(request, 'CitationCount')
+
+@admin.register(CitationsPerPublication)
+class CitationsPerPublicationAdmin(AbstractMetricAdmin):
+    def upload_csv(self, request):
+        return super().upload_csv(request, 'CitationsPerPublication')
 
 @admin.register(Collaboration)
 class CollaborationAdmin(AbstractMetricAdmin):
