@@ -131,14 +131,25 @@ def updateTableByApi(metricType, universityList, mainSubjectsList):
                 except model_obj.DoesNotExist:
                     model_obj.objects.create(year=y, value=amountInYear[indx], universityId=University.objects.get(id=university), subjectAreaId=SubjectArea.objects.get(id=subject))
 
-def updateDatabaseByApi(request):
-    metricTypes = ["OutputsInTopCitationPercentiles", "PublicationsInTopJournalPercentiles", "ScholarlyOutput", "FieldWeightedCitationImpact", "CollaborationImpact", "CitationsPerPublication", "CitationCount", "Collaboration"]
+def updateDatabaseByApi(request, metric_name):
     universityList = University.objects.values_list('id', flat=True)
     mainSubjectsList = SubjectArea.objects.values_list('id', flat=True)
-    for metricType in metricTypes:
-        updateTableByApi(metricType, universityList, mainSubjectsList)
+    print("\n\nMetric name = ", metric_name)
+    #updateTableByApi(metric_name, universityList, mainSubjectsList)
     referer = request.META.get('HTTP_REFERER')
     if referer:
         return redirect(referer)
     else:
         return redirect('/admin/mainApp')
+
+# def updateDatabaseByApi(request):
+#     metricTypes = ["OutputsInTopCitationPercentiles", "PublicationsInTopJournalPercentiles", "ScholarlyOutput", "FieldWeightedCitationImpact", "CollaborationImpact", "CitationsPerPublication", "CitationCount", "Collaboration"]
+#     universityList = University.objects.values_list('id', flat=True)
+#     mainSubjectsList = SubjectArea.objects.values_list('id', flat=True)
+#     for metricType in metricTypes:
+#         updateTableByApi(metricType, universityList, mainSubjectsList)
+#     referer = request.META.get('HTTP_REFERER')
+#     if referer:
+#         return redirect(referer)
+#     else:
+#         return redirect('/admin/mainApp')

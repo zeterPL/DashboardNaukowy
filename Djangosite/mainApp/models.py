@@ -25,6 +25,21 @@ class SubjectArea(models.Model):
         verbose_name = "Dziedzina naukowa"
         verbose_name_plural = "Dziedziny naukowe"
 
+metric_names = [
+    {'EnglishName': 'CitationCount', 'PolishName': 'Liczba cytowan'},
+    {'EnglishName': 'CitationsPerPublication', 'PolishName': 'Liczba cytowan na publikacje'},
+    {'EnglishName': 'Collaboration', 'PolishName': 'Kolaboracje'},
+    {'EnglishName': 'CollaborationImpact', 'PolishName': 'Impakt kolaboracji'},
+    {'EnglishName': 'FieldWeightedCitationImpact', 'PolishName': 'Waga impaktu cytowan'},
+    {'EnglishName': 'PublicationsInTopJournalPercentiles', 'PolishName': 'Procent publikacji w topowych dziennikach'},
+    {'EnglishName': 'OutputsInTopCitationPercentiles', 'PolishName': 'Wyniki w najwyższych percentylach cytowań'},
+    {'EnglishName': 'ScholaryOutput', 'PolishName': 'Wyniki naukowe'}
+]
+def getEnglishNameReturnPolishName(english_name):
+    for metric in metric_names:
+        if metric['EnglishName'] == english_name:
+            return metric['PolishName']
+    return "Brak nazwy"
 
 class Abstractmetric(models.Model):
     year = models.CharField(max_length=10, verbose_name='Rok', help_text='Rok metryki')
@@ -35,39 +50,39 @@ class Abstractmetric(models.Model):
         abstract = True
 class CitationCount(Abstractmetric):
     class Meta:
-        verbose_name = "Metryka CitationCount"
-        verbose_name_plural = "Metryki CitationCount"
+        verbose_name = getEnglishNameReturnPolishName("CitationCount")
+        verbose_name_plural = getEnglishNameReturnPolishName("CitationCount")
 class CitationsPerPublication(Abstractmetric):
     class Meta:
-        verbose_name = "Metryka CitationsPerPublication"
-        verbose_name_plural = "Metryki CitationsPerPublication"
+        verbose_name =getEnglishNameReturnPolishName( "CitationsPerPublication")
+        verbose_name_plural = getEnglishNameReturnPolishName("CitationsPerPublication")
 
 class Collaboration(Abstractmetric):
     class Meta:
-        verbose_name = "Metryka Collaboration"
-        verbose_name_plural = "Metryki Collaboration"
+        verbose_name = getEnglishNameReturnPolishName("Collaboration")
+        verbose_name_plural = getEnglishNameReturnPolishName("Collaboration")
 
 class CollaborationImpact(Abstractmetric):
     class Meta:
-        verbose_name = "Metryka CollaborationImpact"
-        verbose_name_plural = "Metryki CollaborationImpact"
+        verbose_name = getEnglishNameReturnPolishName("CollaborationImpact")
+        verbose_name_plural = getEnglishNameReturnPolishName("CollaborationImpact")
 
 class FieldWeightedCitationImpact(Abstractmetric):
     class Meta:
-        verbose_name = "Metryka FieldWeightedCitationImpact"
-        verbose_name_plural = "Metryki FieldWeightedCitationImpact"
+        verbose_name = getEnglishNameReturnPolishName("FieldWeightedCitationImpact")
+        verbose_name_plural = getEnglishNameReturnPolishName("FieldWeightedCitationImpact")
 
 class PublicationsInTopJournalPercentiles(Abstractmetric):
     class Meta:
-        verbose_name = "Metryka PublicationsInTopJournalPercentiles"
-        verbose_name_plural = "Metryki PublicationsInTopJournalPercentiles"
+        verbose_name = getEnglishNameReturnPolishName("PublicationsInTopJournalPercentiles")
+        verbose_name_plural = getEnglishNameReturnPolishName("PublicationsInTopJournalPercentiles")
 
 class OutputsInTopCitationPercentiles(Abstractmetric):
     class Meta:
-        verbose_name = "Metryka OutputsInTopCitationPercentiles"
-        verbose_name_plural = "Metryki OutputsInTopCitationPercentiles"
+        verbose_name = getEnglishNameReturnPolishName("OutputsInTopCitationPercentiles")
+        verbose_name_plural = getEnglishNameReturnPolishName("OutputsInTopCitationPercentiles")
 
 class ScholarlyOutput(Abstractmetric):
     class Meta:
-        verbose_name = "Metryka ScholaryOutput"
-        verbose_name_plural = "Metryki ScholaryOutput"
+        verbose_name = getEnglishNameReturnPolishName("ScholaryOutput")
+        verbose_name_plural = getEnglishNameReturnPolishName("ScholaryOutput")

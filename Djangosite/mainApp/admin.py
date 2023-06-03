@@ -152,12 +152,18 @@ class AbstractMetricAdmin(admin.ModelAdmin):
                 model = apps.get_model('mainApp', model_name)
                 if (fields[3].lower() == 'none' or fields[3].lower() == 'null' or fields[3] == ''):
                     fields[3] = None;
-                created = model.objects.update_or_create(
-                    year=fields[0],
-                    universityId=University.objects.get(id=fields[1]),
-                    subjectAreaId=SubjectArea.objects.get(id=fields[2]),
-                    value=fields[3],
-                )
+                # created = model.objects.update_or_create(
+                #     year=fields[0],
+                #     universityId=University.objects.get(id=fields[1]),
+                #     subjectAreaId=SubjectArea.objects.get(id=fields[2]),
+                #     value=fields[3],
+                # )
+                try:
+                    metric = model.objects.get(year=fields[0], universityId=University.objects.get(id=fields[1]), subjectAreaId=SubjectArea.objects.get(id=fields[2]))
+                    metric.value = fields[3]
+                    metric.save()
+                except model.DoesNotExist:
+                    model.objects.create(year=fields[0], value=fields[3], universityId=University.objects.get(id=fields[1]), subjectAreaId=SubjectArea.objects.get(id=fields[2]))
             url = reverse(f'admin:mainApp_{model_name.lower()}_changelist')
             return HttpResponseRedirect(url)
         form = CsvImportForm()
