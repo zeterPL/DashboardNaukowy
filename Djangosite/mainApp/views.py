@@ -7,6 +7,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User, auth
 from .forms import EditProfileForm
 
+from .models import *
+import json
+import requests
+API_KEY  = '7f59af901d2d86f78a1fd60c1bf9426a'
 # Create your views here.
 
 from django.http import HttpResponse
@@ -88,8 +92,44 @@ def edit(request):
     else:
         return redirect('welcome-page')
 
+def extractDataFromJsonToArrays(dataFromApi, dataFromApi2):
+    yearRange = len(dataFromApi) + len(dataFromApi2) - 3
+    years = []
+    for i in range(yearRange - 1, -1, -1):
+        years.append(str(2023 - i))
+    #print(years)
+    valuesOverTheYears = []
+    for i in range(len(dataFromApi)):
+        valuesOverTheYears.append(dataFromApi[years[i]])
+    for i in range(len(dataFromApi), len(dataFromApi)+2):
+        valuesOverTheYears.append(dataFromApi2[years[i]])
+    #print(valuesOverTheYears)
+    return valuesOverTheYears, years
+
 def updateDatabaseByApi(request):
-    print("\n\nOK DZIALA WYWOLANIE FUNKCJI\n")
+    metricTypes = ["OutputsInTopCitationPercentiles", "PublicationsInTopJournalPercentiles", "ScholarlyOutput", "FieldWeightedCitationImpact", "CollaborationImpact", "CitationsPerPublication", "CitationCount", "Collaboration"]
+    universityList = University.objects.values_list('id', flat=True)
+    mainSubjectsList = SubjectArea.objects.values_list('id', flat=True)
+    for metricType in metricTypes:
+        model_obj = globals()[metricType]
+        model_obj.objects.all().delete()
+        for university in universityList:
+            for subject in mainSubjectsList:
+                requestURL = "https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=" + metricType + "&institutionIds=" + str(university) + "&yearRange=10yrs&subjectAreaFilterURI=Class%2FASJC%2FCode%2F" + str(subject) + "&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=" + API_KEY
+                requestURL2 = "https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=" + metricType + "&institutionIds=" + str(university) + "&yearRange=3yrsAndCurrentAndFuture&subjectAreaFilterURI=Class%2FASJC%2FCode%2F" + str(subject) + "&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=" + API_KEY
+                response = requests.get(requestURL)
+                response2 = requests.get(requestURL2)
+                if (metricType in {"ScholarlyOutput", "FieldWeightedCitationImpact", "CitationsPerPublication", "CitationCount"}):
+                    valuesFromLast10years = response.json()['results'][0]['metrics'][0]['valueByYear']
+                    valuesFromLast3yearsAndFuture = response2.json()['results'][0]['metrics'][0]['valueByYear']
+                else:
+                     valuesFromLast10years = response.json()['results'][0]['metrics'][0]['values'][0]['valueByYear']
+                     valuesFromLast3yearsAndFuture = response2.json()['results'][0]['metrics'][0]['values'][0]['valueByYear']
+                amountInYear, years = extractDataFromJsonToArrays(valuesFromLast10years, valuesFromLast3yearsAndFuture)
+                for indx, y in enumerate(years):
+                    model_obj.objects.create(year=y, value=amountInYear[indx], universityId=University.objects.get(id=university), subjectAreaId=SubjectArea.objects.get(id=subject))
     referer = request.META.get('HTTP_REFERER')
     if referer:
         return redirect(referer)
+    else:
+        return redirect('/admin/mainApp')
