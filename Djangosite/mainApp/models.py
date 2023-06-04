@@ -89,13 +89,27 @@ class CollaborationImpact(Abstractmetric):
         verbose_name = getEnglishNameReturnPolishName("CollaborationImpact")
         verbose_name_plural = getEnglishNameReturnPolishName("CollaborationImpact")
 class PublicationsInTopJournalPercentiles(Abstractmetric):
-    value = models.FloatField(null=True, blank=True, verbose_name='Wartość', help_text='Wartość danej metryki')  # kiedys moze sie zmieni na prawidlowe :P
+    threshold1Value = models.FloatField(null=True, blank=True, verbose_name='Wartość threshold1', help_text='Wartość threshold1')
+    threshold1PercentageValue = models.FloatField(null=True, blank=True, verbose_name='Procentowa wartość threshold1', help_text='Procentowa wartość threshold1')
+    threshold5Value = models.FloatField(null=True, blank=True, verbose_name='Wartość threshold5', help_text='Wartość threshold5')
+    threshold5PercentageValue = models.FloatField(null=True, blank=True, verbose_name='Procentowa wartość threshold5', help_text='Procentowa wartość threshold5')
+    threshold10Value = models.FloatField(null=True, blank=True, verbose_name='Wartość threshold10', help_text='Wartość threshold10')
+    threshold10PercentageValue = models.FloatField(null=True, blank=True, verbose_name='Procentowa wartość threshold10', help_text='Procentowa wartość threshold10')
+    threshold25Value = models.FloatField(null=True, blank=True, verbose_name='Wartość threshold25', help_text='Wartość threshold25')
+    threshold25PercentageValue = models.FloatField(null=True, blank=True, verbose_name='Procentowa wartość threshold25', help_text='Procentowa wartość threshold25')
     class Meta:
         verbose_name = getEnglishNameReturnPolishName("PublicationsInTopJournalPercentiles")
         verbose_name_plural = getEnglishNameReturnPolishName("PublicationsInTopJournalPercentiles")
 
 class OutputsInTopCitationPercentiles(Abstractmetric):
-    value = models.FloatField(null=True, blank=True, verbose_name='Wartość', help_text='Wartość danej metryki') # kiedys moze sie zmieni na prawidlowe :P
+    threshold1Value = models.FloatField(null=True, blank=True, verbose_name='Wartość threshold1', help_text='Wartość threshold1')
+    threshold1PercentageValue = models.FloatField(null=True, blank=True, verbose_name='Procentowa wartość threshold1', help_text='Procentowa wartość threshold1')
+    threshold5Value = models.FloatField(null=True, blank=True, verbose_name='Wartość threshold5', help_text='Wartość threshold5')
+    threshold5PercentageValue = models.FloatField(null=True, blank=True, verbose_name='Procentowa wartość threshold5', help_text='Procentowa wartość threshold5')
+    threshold10Value = models.FloatField(null=True, blank=True, verbose_name='Wartość threshold10', help_text='Wartość threshold10')
+    threshold10PercentageValue = models.FloatField(null=True, blank=True, verbose_name='Procentowa wartość threshold10', help_text='Procentowa wartość threshold10')
+    threshold25Value = models.FloatField(null=True, blank=True, verbose_name='Wartość threshold25', help_text='Wartość threshold25')
+    threshold25PercentageValue = models.FloatField(null=True, blank=True, verbose_name='Procentowa wartość threshold25', help_text='Procentowa wartość threshold25')
     class Meta:
         verbose_name = getEnglishNameReturnPolishName("OutputsInTopCitationPercentiles")
         verbose_name_plural = getEnglishNameReturnPolishName("OutputsInTopCitationPercentiles")

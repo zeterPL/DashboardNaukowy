@@ -184,16 +184,6 @@ class FieldWeightedCitationImpactAdmin(AbstractMetricAdmin):
     def upload_csv(self, request):
         return super().upload_csv(request, 'FieldWeightedCitationImpact')
 
-@admin.register(PublicationsInTopJournalPercentiles)
-class PublicationsInTopJournalPercentilesAdmin(AbstractMetricAdmin):
-    def upload_csv(self, request):
-        return super().upload_csv(request, 'PublicationsInTopJournalPercentiles')
-
-@admin.register(OutputsInTopCitationPercentiles)
-class OutputsInTopCitationPercentilesAdmin(AbstractMetricAdmin):
-    def upload_csv(self, request):
-        return super().upload_csv(request, 'OutputsInTopCitationPercentiles')
-
 
 class AbstractCollaborationMetricAdmin(admin.ModelAdmin):
     raw_id_fields = ('universityId', 'subjectAreaId')
@@ -253,3 +243,58 @@ class CollaborationImpactAdmin(AbstractCollaborationMetricAdmin):
     list_display = ('year', 'universityId', 'subjectAreaId', 'InstitutionalValue',  'InternationalValue', 'NationalValue', 'SingleAuthorshipValue')
     def upload_csv(self, request):
         return super().upload_csv(request, 'CollaborationImpact')
+
+
+class AbstractTopPercentilesMetricAdmin(admin.ModelAdmin):
+    raw_id_fields = ('universityId', 'subjectAreaId')
+    list_filter = ('year', 'universityId', 'subjectAreaId')
+    search_fields = ('year', 'universityId', 'subjectAreaId')
+    ordering = ('subjectAreaId', 'universityId', 'year')
+    def get_urls(self):
+        urls = super().get_urls()
+        new_urls = [path('upload-csv/', self.upload_csv),]
+        return new_urls + urls
+        return urls
+    def upload_csv(self, request, model_name):
+        if request.method == "POST":
+            csv_file = request.FILES["csv_upload"]
+            file_data = csv_file.read().decode("utf-8")
+            csv_data = file_data.replace('\r', '').split("\n")
+            for x in csv_data:
+                fields = x.split(";")
+                model = apps.get_model('mainApp', model_name)
+                for i in range(3, len(fields)):
+                    if (fields[i] and (fields[i].lower() == 'none' or fields[i].lower() == 'null' or fields[i] == '')):
+                        fields[i] = None;
+                try:
+                    metric = model.objects.get(year=fields[0], universityId=University.objects.get(id=fields[1]), subjectAreaId=SubjectArea.objects.get(id=fields[2]))
+                    metric.threshold1Value = fields[3]
+                    metric.threshold1PercentageValue = fields[4]
+                    metric.threshold5Value = fields[5]
+                    metric.threshold5PercentageValue = fields[6]
+                    metric.threshold10Value = fields[7]
+                    metric.threshold10PercentageValue = fields[8]
+                    metric.threshold25Value = fields[9]
+                    metric.threshold25PercentageValue = fields[10]
+                    metric.save()
+                except model.DoesNotExist:
+                    model.objects.create(year=fields[0], universityId=University.objects.get(id=fields[1]), subjectAreaId=SubjectArea.objects.get(id=fields[2]),
+                                         threshold1Value=fields[3], threshold1PercentageValue=fields[4], threshold5Value=fields[5], threshold5PercentageValue=fields[6],
+                                         threshold10Value=fields[7], threshold10PercentageValue=fields[8], threshold25Value=fields[9], threshold25PercentageValue=fields[10])
+            url = reverse(f'admin:mainApp_{model_name.lower()}_changelist')
+            return HttpResponseRedirect(url)
+        form = CsvImportForm()
+        data = {"form": form}
+        return render(request, "admin/csv_upload.html", data)
+
+@admin.register(PublicationsInTopJournalPercentiles)
+class PublicationsInTopJournalPercentilesAdmin(AbstractTopPercentilesMetricAdmin):
+    list_display = ('year', 'universityId', 'subjectAreaId', 'threshold1Value', 'threshold1PercentageValue', 'threshold5Value', 'threshold5PercentageValue', 'threshold10Value', 'threshold10PercentageValue', 'threshold25Value', 'threshold25PercentageValue')
+    def upload_csv(self, request):
+        return super().upload_csv(request, 'PublicationsInTopJournalPercentiles')
+
+@admin.register(OutputsInTopCitationPercentiles)
+class OutputsInTopCitationPercentilesAdmin(AbstractTopPercentilesMetricAdmin):
+    list_display = ('year', 'universityId', 'subjectAreaId', 'threshold1Value', 'threshold1PercentageValue', 'threshold5Value', 'threshold5PercentageValue', 'threshold10Value', 'threshold10PercentageValue', 'threshold25Value', 'threshold25PercentageValue')
+    def upload_csv(self, request):
+        return super().upload_csv(request, 'OutputsInTopCitationPercentiles')
