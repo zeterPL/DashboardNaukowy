@@ -152,12 +152,6 @@ class AbstractMetricAdmin(admin.ModelAdmin):
                 model = apps.get_model('mainApp', model_name)
                 if (fields[3].lower() == 'none' or fields[3].lower() == 'null' or fields[3] == ''):
                     fields[3] = None;
-                # created = model.objects.update_or_create(
-                #     year=fields[0],
-                #     universityId=University.objects.get(id=fields[1]),
-                #     subjectAreaId=SubjectArea.objects.get(id=fields[2]),
-                #     value=fields[3],
-                # )
                 try:
                     metric = model.objects.get(year=fields[0], universityId=University.objects.get(id=fields[1]), subjectAreaId=SubjectArea.objects.get(id=fields[2]))
                     metric.value = fields[3]
@@ -185,16 +179,6 @@ class CitationsPerPublicationAdmin(AbstractMetricAdmin):
     def upload_csv(self, request):
         return super().upload_csv(request, 'CitationsPerPublication')
 
-@admin.register(Collaboration)
-class CollaborationAdmin(AbstractMetricAdmin):
-    def upload_csv(self, request):
-        return super().upload_csv(request, 'Collaboration')
-
-@admin.register(CollaborationImpact)
-class CollaborationImpactAdmin(AbstractMetricAdmin):
-    def upload_csv(self, request):
-        return super().upload_csv(request, 'CollaborationImpact')
-
 @admin.register(FieldWeightedCitationImpact)
 class FieldWeightedCitationImpactAdmin(AbstractMetricAdmin):
     def upload_csv(self, request):
@@ -211,3 +195,61 @@ class OutputsInTopCitationPercentilesAdmin(AbstractMetricAdmin):
         return super().upload_csv(request, 'OutputsInTopCitationPercentiles')
 
 
+class AbstractCollaborationMetricAdmin(admin.ModelAdmin):
+    raw_id_fields = ('universityId', 'subjectAreaId')
+    list_filter = ('year', 'universityId', 'subjectAreaId')
+    search_fields = ('year', 'universityId', 'subjectAreaId')
+    ordering = ('subjectAreaId', 'universityId', 'year')
+    def get_urls(self):
+        urls = super().get_urls()
+        new_urls = [path('upload-csv/', self.upload_csv),]
+        return new_urls + urls
+        return urls
+    def upload_csv(self, request, model_name):
+        if request.method == "POST":
+            csv_file = request.FILES["csv_upload"]
+            file_data = csv_file.read().decode("utf-8")
+            csv_data = file_data.replace('\r', '').split("\n")
+            for x in csv_data:
+                fields = x.split(";")
+                model = apps.get_model('mainApp', model_name)
+                for i in range(3, len(fields)):
+                    if (fields[i] and (fields[i].lower() == 'none' or fields[i].lower() == 'null' or fields[i] == '')):
+                        fields[i] = None;
+                try:
+                    metric = model.objects.get(year=fields[0], universityId=University.objects.get(id=fields[1]), subjectAreaId=SubjectArea.objects.get(id=fields[2]))
+                    metric.InstitutionalValue = fields[3]
+                    metric.InternationalValue = fields[4]
+                    metric.NationalValue = fields[5]
+                    metric.SingleAuthorshipValue = fields[6]
+                    if(model_name == "Collaboration"):
+                        metric.InstitutionalPercentageValue = fields[7]
+                        metric.InternationalPercentageValue = fields[8]
+                        metric.NationalPercentageValue = fields[9]
+                        metric.SingleAuthorshipPercentageValue = fields[10]
+                    metric.save()
+                except model.DoesNotExist:
+                    if (model_name == "Collaboration"):
+                        model.objects.create(year=fields[0], universityId=University.objects.get(id=fields[1]), subjectAreaId=SubjectArea.objects.get(id=fields[2]),
+                                             InstitutionalValue=fields[3], InternationalValue=fields[4], NationalValue=fields[5], SingleAuthorshipValue=fields[6],
+                                             InstitutionalPercentageValue=fields[7], InternationalPercentageValue=fields[8], NationalPercentageValue=fields[9], SingleAuthorshipPercentageValue=fields[10])
+                    else:
+                        model.objects.create(year=fields[0], universityId=University.objects.get(id=fields[1]), subjectAreaId=SubjectArea.objects.get(id=fields[2]),
+                                                 InstitutionalValue=fields[3], InternationalValue=fields[4], NationalValue=fields[5], SingleAuthorshipValue=fields[6])
+            url = reverse(f'admin:mainApp_{model_name.lower()}_changelist')
+            return HttpResponseRedirect(url)
+        form = CsvImportForm()
+        data = {"form": form}
+        return render(request, "admin/csv_upload.html", data)
+
+@admin.register(Collaboration)
+class CollaborationAdmin(AbstractCollaborationMetricAdmin):
+    list_display = ('year', 'universityId', 'subjectAreaId', 'InstitutionalValue', 'InstitutionalPercentageValue', 'InternationalValue', 'InternationalPercentageValue', 'NationalValue', 'NationalPercentageValue', 'SingleAuthorshipValue', 'SingleAuthorshipPercentageValue')
+    def upload_csv(self, request):
+        return super().upload_csv(request, 'Collaboration')
+
+@admin.register(CollaborationImpact)
+class CollaborationImpactAdmin(AbstractCollaborationMetricAdmin):
+    list_display = ('year', 'universityId', 'subjectAreaId', 'InstitutionalValue',  'InternationalValue', 'NationalValue', 'SingleAuthorshipValue')
+    def upload_csv(self, request):
+        return super().upload_csv(request, 'CollaborationImpact')

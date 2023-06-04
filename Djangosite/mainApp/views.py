@@ -92,6 +92,21 @@ def edit(request):
     else:
         return redirect('welcome-page')
 
+def updateTableByApi(request, metric_name):
+    universityList = University.objects.values_list('id', flat=True)
+    mainSubjectsList = SubjectArea.objects.values_list('id', flat=True)
+    if(metric_name in {"ScholarlyOutput", "FieldWeightedCitationImpact", "CitationsPerPublication","CitationCount"}):
+        updateTableByApiSimpleType(metric_name, universityList, mainSubjectsList)
+    elif(metric_name in {"Collaboration", "CollaborationImpact"}):
+        updateTableByApiCollaborationType(metric_name, universityList, mainSubjectsList)
+    else:
+        print("\nNot implemented yet\n")
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
+    else:
+        return redirect('/admin/mainApp')
+
 def extractDataFromJsonToArrays(dataFromApi, dataFromApi2):
     yearRange = len(dataFromApi) + len(dataFromApi2) - 3
     years = []
@@ -106,7 +121,7 @@ def extractDataFromJsonToArrays(dataFromApi, dataFromApi2):
     #print(valuesOverTheYears)
     return valuesOverTheYears, years
 
-def updateTableByApi(metricType, universityList, mainSubjectsList):
+def updateTableByApiSimpleType(metricType, universityList, mainSubjectsList):
     model_obj = globals()[metricType]
     #model_obj.objects.all().delete() #usuwanie wszystkich rekordow z danej tabeli
     for university in universityList:
@@ -115,12 +130,8 @@ def updateTableByApi(metricType, universityList, mainSubjectsList):
             requestURL2 = "https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=" + metricType + "&institutionIds=" + str(university) + "&yearRange=3yrsAndCurrentAndFuture&subjectAreaFilterURI=Class%2FASJC%2FCode%2F" + str(subject) + "&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=" + API_KEY
             response = requests.get(requestURL)
             response2 = requests.get(requestURL2)
-            if (metricType in {"ScholarlyOutput", "FieldWeightedCitationImpact", "CitationsPerPublication","CitationCount"}):
-                valuesFromLast10years = response.json()['results'][0]['metrics'][0]['valueByYear']
-                valuesFromLast3yearsAndFuture = response2.json()['results'][0]['metrics'][0]['valueByYear']
-            else:
-                valuesFromLast10years = response.json()['results'][0]['metrics'][0]['values'][0]['valueByYear']
-                valuesFromLast3yearsAndFuture = response2.json()['results'][0]['metrics'][0]['values'][0]['valueByYear']
+            valuesFromLast10years = response.json()['results'][0]['metrics'][0]['valueByYear']
+            valuesFromLast3yearsAndFuture = response2.json()['results'][0]['metrics'][0]['valueByYear']
             amountInYear, years = extractDataFromJsonToArrays(valuesFromLast10years, valuesFromLast3yearsAndFuture)
             for indx, y in enumerate(years):
                 # model_obj.objects.create(year=y, value=amountInYear[indx], universityId=University.objects.get(id=university), subjectAreaId=SubjectArea.objects.get(id=subject)) #wersja z usuwaniem wszystkich rekordow
@@ -131,16 +142,74 @@ def updateTableByApi(metricType, universityList, mainSubjectsList):
                 except model_obj.DoesNotExist:
                     model_obj.objects.create(year=y, value=amountInYear[indx], universityId=University.objects.get(id=university), subjectAreaId=SubjectArea.objects.get(id=subject))
 
-def updateDatabaseByApi(request, metric_name):
-    universityList = University.objects.values_list('id', flat=True)
-    mainSubjectsList = SubjectArea.objects.values_list('id', flat=True)
-    print("\n\nMetric name = ", metric_name)
-    #updateTableByApi(metric_name, universityList, mainSubjectsList)
-    referer = request.META.get('HTTP_REFERER')
-    if referer:
-        return redirect(referer)
+def saveToDatabaseCollaboration(model_obj, metricType, universityID, subjectAreaID, InstitutionalValues, InternationalValues, NationalValues, SingleAuthorshipValues, InstitutionalPercentageValues=None, InternationalPercentageValues=None, NationalPercentageValues=None, SingleAuthorshipPercentageValues=None):
+    for year, InstitutionalValue in InstitutionalValues.items():
+        InternationalValue = InternationalValues.get(year)
+        NationalValue = NationalValues.get(year)
+        SingleAuthorshipValue = SingleAuthorshipValues.get(year)
+        if (metricType == "Collaboration"):
+            InstitutionalPercentageValue = InstitutionalPercentageValues.get(year)
+            InternationalPercentageValue = InternationalPercentageValues.get(year)
+            NationalPercentageValue = NationalPercentageValues.get(year)
+            SingleAuthorshipPercentageValue = SingleAuthorshipPercentageValues.get(year)
+        try:
+            metric = model_obj.objects.get(year=year, universityId=universityID, subjectAreaId=subjectAreaID)
+            metric.InstitutionalValue = InstitutionalValue
+            metric.InternationalValue = InternationalValue
+            metric.NationalValue = NationalValue
+            metric.SingleAuthorshipValue = SingleAuthorshipValue
+            if(metricType == "Collaboration"):
+                metric.InstitutionalPercentageValue = InstitutionalPercentageValue
+                metric.InternationalPercentageValue = InternationalPercentageValue
+                metric.NationalPercentageValue = NationalPercentageValue
+                metric.SingleAuthorshipPercentageValue = SingleAuthorshipPercentageValue
+            metric.save()
+        except model_obj.DoesNotExist:
+            if (metricType == "Collaboration"):
+                model_obj.objects.create(year=year, universityId=universityID, subjectAreaId=subjectAreaID, InstitutionalValue=InstitutionalValue,
+                                     InternationalValue=InternationalValue, NationalValue=NationalValue, SingleAuthorshipValue=SingleAuthorshipValue, InstitutionalPercentageValue=InstitutionalPercentageValue,
+                                     InternationalPercentageValue=InternationalPercentageValue, NationalPercentageValue=NationalPercentageValue, SingleAuthorshipPercentageValue=SingleAuthorshipPercentageValue)
+            else:
+                model_obj.objects.create(year=year, universityId=universityID, subjectAreaId=subjectAreaID, InstitutionalValue=InstitutionalValue,
+                                         InternationalValue=InternationalValue, NationalValue=NationalValue, SingleAuthorshipValue=SingleAuthorshipValue)
+
+def getValuesFromCollabType(values, valuesNew, collabType, metricType):
+    dict = next(item for item in values if item['collabType'] == collabType)
+    dict2 = next(item for item in valuesNew if item['collabType'] == collabType)
+    last_two_records_value = list(dict2['valueByYear'].keys())[-2:]
+    dict['valueByYear'].update({key: value for key, value in dict2['valueByYear'].items() if key in last_two_records_value})
+    if(metricType == "Collaboration"):
+        last_two_records_percentage = list(dict2['percentageByYear'].keys())[-2:]
+        dict['percentageByYear'].update({key: value for key, value in dict2['percentageByYear'].items() if key in last_two_records_percentage})
+        return dict['valueByYear'], dict['percentageByYear']
     else:
-        return redirect('/admin/mainApp')
+        return dict['valueByYear']
+
+def updateTableByApiCollaborationType(metricType, universityList, mainSubjectsList):
+    model_obj = globals()[metricType]
+    #model_obj.objects.all().delete() #usuwanie wszystkich rekordow z danej tabeli
+    for university in universityList:
+        for subject in mainSubjectsList:
+            requestURL = "https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=" + metricType + "&institutionIds=" + str(university) + "&yearRange=10yrs&subjectAreaFilterURI=Class%2FASJC%2FCode%2F" + str(subject) + "&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=" + API_KEY
+            requestURL2 = "https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=" + metricType + "&institutionIds=" + str(university) + "&yearRange=3yrsAndCurrentAndFuture&subjectAreaFilterURI=Class%2FASJC%2FCode%2F" + str(subject) + "&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=" + API_KEY
+            response = requests.get(requestURL)
+            response2 = requests.get(requestURL2)
+            valuesFromLast10years = response.json()['results'][0]['metrics'][0]['values']
+            valuesFromLast3yearsAndFuture = response2.json()['results'][0]['metrics'][0]['values']
+            universityId = University.objects.get(id=university)
+            subjectAreaId = SubjectArea.objects.get(id=subject)
+            if(metricType == "Collaboration"):
+                valueInstitutional, percentagevalueInstitutional = getValuesFromCollabType(valuesFromLast10years,valuesFromLast3yearsAndFuture, 'Institutional collaboration', metricType)
+                valueInternational, percentagevalueInternational = getValuesFromCollabType(valuesFromLast10years, valuesFromLast3yearsAndFuture, 'International collaboration', metricType)
+                valueNational, percentagevalueNational = getValuesFromCollabType(valuesFromLast10years, valuesFromLast3yearsAndFuture, 'National collaboration', metricType)
+                valueSingleAuthorship, percentagevalueSingleAuthorship = getValuesFromCollabType(valuesFromLast10years, valuesFromLast3yearsAndFuture, 'Single authorship', metricType)
+                saveToDatabaseCollaboration(model_obj, metricType, universityId, subjectAreaId, valueInstitutional, valueInternational, valueNational, valueSingleAuthorship, percentagevalueInstitutional, percentagevalueInternational, percentagevalueNational, percentagevalueSingleAuthorship)
+            else:
+                valueInstitutional = getValuesFromCollabType(valuesFromLast10years, valuesFromLast3yearsAndFuture, 'Institutional collaboration', metricType)
+                valueInternational = getValuesFromCollabType(valuesFromLast10years, valuesFromLast3yearsAndFuture, 'International collaboration', metricType)
+                valueNational = getValuesFromCollabType(valuesFromLast10years, valuesFromLast3yearsAndFuture, 'National collaboration', metricType)
+                valueSingleAuthorship = getValuesFromCollabType(valuesFromLast10years, valuesFromLast3yearsAndFuture, 'Single authorship', metricType)
+                saveToDatabaseCollaboration(model_obj, metricType, universityId, subjectAreaId, valueInstitutional, valueInternational, valueNational, valueSingleAuthorship)
 
 # def updateDatabaseByApi(request):
 #     metricTypes = ["OutputsInTopCitationPercentiles", "PublicationsInTopJournalPercentiles", "ScholarlyOutput", "FieldWeightedCitationImpact", "CollaborationImpact", "CitationsPerPublication", "CitationCount", "Collaboration"]
@@ -153,3 +222,28 @@ def updateDatabaseByApi(request, metric_name):
 #         return redirect(referer)
 #     else:
 #         return redirect('/admin/mainApp')
+
+# def updateTableByApiSimpleType(metricType, universityList, mainSubjectsList):
+#     model_obj = globals()[metricType]
+#     #model_obj.objects.all().delete() #usuwanie wszystkich rekordow z danej tabeli
+#     for university in universityList:
+#         for subject in mainSubjectsList:
+#             requestURL = "https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=" + metricType + "&institutionIds=" + str(university) + "&yearRange=10yrs&subjectAreaFilterURI=Class%2FASJC%2FCode%2F" + str(subject) + "&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=" + API_KEY
+#             requestURL2 = "https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=" + metricType + "&institutionIds=" + str(university) + "&yearRange=3yrsAndCurrentAndFuture&subjectAreaFilterURI=Class%2FASJC%2FCode%2F" + str(subject) + "&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=" + API_KEY
+#             response = requests.get(requestURL)
+#             response2 = requests.get(requestURL2)
+#             if (metricType in {"ScholarlyOutput", "FieldWeightedCitationImpact", "CitationsPerPublication","CitationCount"}):
+#                 valuesFromLast10years = response.json()['results'][0]['metrics'][0]['valueByYear']
+#                 valuesFromLast3yearsAndFuture = response2.json()['results'][0]['metrics'][0]['valueByYear']
+#             else:
+#                 valuesFromLast10years = response.json()['results'][0]['metrics'][0]['values'][0]['valueByYear']
+#                 valuesFromLast3yearsAndFuture = response2.json()['results'][0]['metrics'][0]['values'][0]['valueByYear']
+#             amountInYear, years = extractDataFromJsonToArrays(valuesFromLast10years, valuesFromLast3yearsAndFuture)
+#             for indx, y in enumerate(years):
+#                 # model_obj.objects.create(year=y, value=amountInYear[indx], universityId=University.objects.get(id=university), subjectAreaId=SubjectArea.objects.get(id=subject)) #wersja z usuwaniem wszystkich rekordow
+#                 try:
+#                     metric = model_obj.objects.get(year=y, universityId=University.objects.get(id=university), subjectAreaId=SubjectArea.objects.get(id=subject))
+#                     metric.value = amountInYear[indx]
+#                     metric.save()
+#                 except model_obj.DoesNotExist:
+#                     model_obj.objects.create(year=y, value=amountInYear[indx], universityId=University.objects.get(id=university), subjectAreaId=SubjectArea.objects.get(id=subject))

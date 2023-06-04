@@ -43,46 +43,59 @@ def getEnglishNameReturnPolishName(english_name):
 
 class Abstractmetric(models.Model):
     year = models.CharField(max_length=10, verbose_name='Rok', help_text='Rok metryki')
-    value = models.FloatField(null=True, blank=True, verbose_name='Wartość', help_text='Wartość danej metryki')
     universityId = models.ForeignKey(University, on_delete=models.CASCADE, verbose_name='Id Uczelni', help_text='Id uczelni. Id opowiada Id z Scival-a')
     subjectAreaId = models.ForeignKey(SubjectArea, on_delete=models.CASCADE, verbose_name='Id Dziedzina Naukowej', help_text='Id głównej dziedziny naukowej. Id opowiada Id z Scival-a')
     class Meta:
         abstract = True
+
+class ScholarlyOutput(Abstractmetric):
+    value = models.FloatField(null=True, blank=True, verbose_name='Wartość', help_text='Wartość danej metryki')
+    class Meta:
+        verbose_name = getEnglishNameReturnPolishName("ScholaryOutput")
+        verbose_name_plural = getEnglishNameReturnPolishName("ScholaryOutput")
 class CitationCount(Abstractmetric):
+    value = models.FloatField(null=True, blank=True, verbose_name='Wartość', help_text='Wartość danej metryki')
     class Meta:
         verbose_name = getEnglishNameReturnPolishName("CitationCount")
         verbose_name_plural = getEnglishNameReturnPolishName("CitationCount")
 class CitationsPerPublication(Abstractmetric):
+    value = models.FloatField(null=True, blank=True, verbose_name='Wartość', help_text='Wartość danej metryki')
     class Meta:
         verbose_name =getEnglishNameReturnPolishName( "CitationsPerPublication")
         verbose_name_plural = getEnglishNameReturnPolishName("CitationsPerPublication")
-
-class Collaboration(Abstractmetric):
-    class Meta:
-        verbose_name = getEnglishNameReturnPolishName("Collaboration")
-        verbose_name_plural = getEnglishNameReturnPolishName("Collaboration")
-
-class CollaborationImpact(Abstractmetric):
-    class Meta:
-        verbose_name = getEnglishNameReturnPolishName("CollaborationImpact")
-        verbose_name_plural = getEnglishNameReturnPolishName("CollaborationImpact")
-
 class FieldWeightedCitationImpact(Abstractmetric):
+    value = models.FloatField(null=True, blank=True, verbose_name='Wartość', help_text='Wartość danej metryki')
     class Meta:
         verbose_name = getEnglishNameReturnPolishName("FieldWeightedCitationImpact")
         verbose_name_plural = getEnglishNameReturnPolishName("FieldWeightedCitationImpact")
-
+class Collaboration(Abstractmetric):
+    InstitutionalValue = models.FloatField(null=True, blank=True, verbose_name='Wartość calkowita', help_text='Wartość calkowita kolaboracji')
+    InternationalValue = models.FloatField(null=True, blank=True, verbose_name='Wartość miedzynarodowa', help_text='Wartość miedzynarodowa kolaboracji')
+    NationalValue = models.FloatField(null=True, blank=True, verbose_name='Wartość narodowa', help_text='Wartość narodowa kolaboracji')
+    SingleAuthorshipValue = models.FloatField(null=True, blank=True, verbose_name='Wartość pojedynczego autorstwa', help_text='Wartość pojedynczego autorstwa kolaboracji')
+    InstitutionalPercentageValue = models.FloatField(null=True, blank=True, verbose_name='Procentowa wartość calkowita', help_text='Procentowa wartość calkowita kolaboracji')
+    InternationalPercentageValue = models.FloatField(null=True, blank=True, verbose_name='Procentowa wartość miedzynarodowa', help_text='Procentowa wartość miedzynarodowa kolaboracji')
+    NationalPercentageValue = models.FloatField(null=True, blank=True, verbose_name='Procentowa wartość narodowa', help_text='Procentowa wartość narodowa kolaboracji')
+    SingleAuthorshipPercentageValue = models.FloatField(null=True, blank=True, verbose_name='Procentowa wartość pojedynczego autorstwa', help_text='Procentowa wartość pojedynczego autorstwa kolaboracji')
+    class Meta:
+        verbose_name = getEnglishNameReturnPolishName("Collaboration")
+        verbose_name_plural = getEnglishNameReturnPolishName("Collaboration")
+class CollaborationImpact(Abstractmetric):
+    InstitutionalValue = models.FloatField(null=True, blank=True, verbose_name='Wartość calkowita', help_text='Wartość calkowita impaktu kolaboracji')
+    InternationalValue = models.FloatField(null=True, blank=True, verbose_name='Wartość miedzynarodowa', help_text='Wartość miedzynarodowa impaktu kolaboracji')
+    NationalValue = models.FloatField(null=True, blank=True, verbose_name='Wartość narodowa', help_text='Wartość narodowa impaktu kolaboracji')
+    SingleAuthorshipValue = models.FloatField(null=True, blank=True, verbose_name='Wartość pojedynczego autorstwa', help_text='Wartość pojedynczego autorstwa impaktu kolaboracji')
+    class Meta:
+        verbose_name = getEnglishNameReturnPolishName("CollaborationImpact")
+        verbose_name_plural = getEnglishNameReturnPolishName("CollaborationImpact")
 class PublicationsInTopJournalPercentiles(Abstractmetric):
+    value = models.FloatField(null=True, blank=True, verbose_name='Wartość', help_text='Wartość danej metryki')  # kiedys moze sie zmieni na prawidlowe :P
     class Meta:
         verbose_name = getEnglishNameReturnPolishName("PublicationsInTopJournalPercentiles")
         verbose_name_plural = getEnglishNameReturnPolishName("PublicationsInTopJournalPercentiles")
 
 class OutputsInTopCitationPercentiles(Abstractmetric):
+    value = models.FloatField(null=True, blank=True, verbose_name='Wartość', help_text='Wartość danej metryki') # kiedys moze sie zmieni na prawidlowe :P
     class Meta:
         verbose_name = getEnglishNameReturnPolishName("OutputsInTopCitationPercentiles")
         verbose_name_plural = getEnglishNameReturnPolishName("OutputsInTopCitationPercentiles")
-
-class ScholarlyOutput(Abstractmetric):
-    class Meta:
-        verbose_name = getEnglishNameReturnPolishName("ScholaryOutput")
-        verbose_name_plural = getEnglishNameReturnPolishName("ScholaryOutput")
