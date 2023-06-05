@@ -8,6 +8,10 @@ from django.db.models import Q
 from django.apps import apps
 from .models import *
 
+from django.shortcuts import render, redirect
+import requests
+API_KEY  = '7f59af901d2d86f78a1fd60c1bf9426a'
+
 # Username: Admin
 # email: admin@mail.com
 # Pass: 123
@@ -141,7 +145,6 @@ class AbstractMetricAdmin(admin.ModelAdmin):
         urls = super().get_urls()
         new_urls = [path('upload-csv/', self.upload_csv),]
         return new_urls + urls
-        return urls
     def upload_csv(self, request, model_name):
         if request.method == "POST":
             csv_file = request.FILES["csv_upload"]
@@ -194,7 +197,6 @@ class AbstractCollaborationMetricAdmin(admin.ModelAdmin):
         urls = super().get_urls()
         new_urls = [path('upload-csv/', self.upload_csv),]
         return new_urls + urls
-        return urls
     def upload_csv(self, request, model_name):
         if request.method == "POST":
             csv_file = request.FILES["csv_upload"]
@@ -254,7 +256,6 @@ class AbstractTopPercentilesMetricAdmin(admin.ModelAdmin):
         urls = super().get_urls()
         new_urls = [path('upload-csv/', self.upload_csv),]
         return new_urls + urls
-        return urls
     def upload_csv(self, request, model_name):
         if request.method == "POST":
             csv_file = request.FILES["csv_upload"]
@@ -298,3 +299,193 @@ class OutputsInTopCitationPercentilesAdmin(AbstractTopPercentilesMetricAdmin):
     list_display = ('year', 'universityId', 'subjectAreaId', 'threshold1Value', 'threshold1PercentageValue', 'threshold5Value', 'threshold5PercentageValue', 'threshold10Value', 'threshold10PercentageValue', 'threshold25Value', 'threshold25PercentageValue')
     def upload_csv(self, request):
         return super().upload_csv(request, 'OutputsInTopCitationPercentiles')
+
+
+
+#Function to update all database from API
+def updateDatabaseByApi(request):
+    metricTypes = ["OutputsInTopCitationPercentiles", "PublicationsInTopJournalPercentiles", "ScholarlyOutput", "FieldWeightedCitationImpact", "CollaborationImpact", "CitationsPerPublication", "CitationCount", "Collaboration"]
+    for metricType in metricTypes:
+        #globals()[metricType].objects.all().delete() #usuwanie wszystkich rekordow z danej tabeli
+        print("\nMetricType =", metricType)
+        updateTableByApi(request, metricType, True)
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
+    else:
+        return redirect('/admin/mainApp')
+#Function to update concrect table from API
+def updateTableByApi(request, metric_name, updateAllDatabase=False):
+    # model_obj = globals()[metric_name]
+    # model_obj.objects.all().delete() #usuwanie wszystkich rekordow z danej tabeli
+    universityList = University.objects.values_list('id', flat=True)
+    mainSubjectsList = SubjectArea.objects.values_list('id', flat=True)
+    if(metric_name in {"ScholarlyOutput", "FieldWeightedCitationImpact", "CitationsPerPublication","CitationCount"}):
+        updateTableByApiSimpleType(metric_name, universityList, mainSubjectsList)
+    elif(metric_name in {"Collaboration", "CollaborationImpact"}):
+        updateTableByApiCollaborationType(metric_name, universityList, mainSubjectsList)
+    elif (metric_name in {"PublicationsInTopJournalPercentiles", "OutputsInTopCitationPercentiles"}):
+        updateTableByApiTopPercentileType(metric_name, universityList, mainSubjectsList)
+    else:
+        print("\nNie ma takiej metryki\n")
+    if updateAllDatabase is False:
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        else:
+            return redirect('/admin/mainApp')
+#Functions used to updated simple table with only one value
+def extractDataFromJsonToArrays(dataFromApi, dataFromApi2):
+    yearRange = len(dataFromApi) + len(dataFromApi2) - 3
+    years = []
+    for i in range(yearRange - 1, -1, -1):
+        years.append(str(2023 - i))
+    #print(years)
+    valuesOverTheYears = []
+    for i in range(len(dataFromApi)):
+        valuesOverTheYears.append(dataFromApi[years[i]])
+    for i in range(len(dataFromApi), len(dataFromApi)+2):
+        valuesOverTheYears.append(dataFromApi2[years[i]])
+    #print(valuesOverTheYears)
+    return valuesOverTheYears, years
+def updateTableByApiSimpleType(metricType, universityList, mainSubjectsList):
+    model_obj = globals()[metricType]
+    #model_obj.objects.all().delete() #usuwanie wszystkich rekordow z danej tabeli
+    for university in universityList:
+        universityId = University.objects.get(id=university)
+        for subject in mainSubjectsList:
+            subjectAreaId = SubjectArea.objects.get(id=subject)
+            requestURL = "https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=" + metricType + "&institutionIds=" + str(university) + "&yearRange=10yrs&subjectAreaFilterURI=Class%2FASJC%2FCode%2F" + str(subject) + "&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=" + API_KEY
+            requestURL2 = "https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=" + metricType + "&institutionIds=" + str(university) + "&yearRange=3yrsAndCurrentAndFuture&subjectAreaFilterURI=Class%2FASJC%2FCode%2F" + str(subject) + "&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=" + API_KEY
+            response = requests.get(requestURL)
+            response2 = requests.get(requestURL2)
+            valuesFromLast10years = response.json()['results'][0]['metrics'][0]['valueByYear']
+            valuesFromLast3yearsAndFuture = response2.json()['results'][0]['metrics'][0]['valueByYear']
+            amountInYear, years = extractDataFromJsonToArrays(valuesFromLast10years, valuesFromLast3yearsAndFuture)
+            for indx, y in enumerate(years):
+                # model_obj.objects.create(year=y, value=amountInYear[indx], universityId=University.objects.get(id=university), subjectAreaId=SubjectArea.objects.get(id=subject)) #wersja z usuwaniem wszystkich rekordow
+                try:
+                    metric = model_obj.objects.get(year=y, universityId=universityId, subjectAreaId=subjectAreaId)
+                    metric.value = amountInYear[indx]
+                    metric.save()
+                except model_obj.DoesNotExist:
+                    model_obj.objects.create(year=y, value=amountInYear[indx], universityId=universityId, subjectAreaId=subjectAreaId)
+#Functions used to updated collaboration type table
+def saveToDatabaseCollaboration(model_obj, metricType, universityID, subjectAreaID, InstitutionalValues, InternationalValues, NationalValues, SingleAuthorshipValues, InstitutionalPercentageValues=None, InternationalPercentageValues=None, NationalPercentageValues=None, SingleAuthorshipPercentageValues=None):
+    for year, InstitutionalValue in InstitutionalValues.items():
+        InternationalValue = InternationalValues.get(year)
+        NationalValue = NationalValues.get(year)
+        SingleAuthorshipValue = SingleAuthorshipValues.get(year)
+        if (metricType == "Collaboration"):
+            InstitutionalPercentageValue = InstitutionalPercentageValues.get(year)
+            InternationalPercentageValue = InternationalPercentageValues.get(year)
+            NationalPercentageValue = NationalPercentageValues.get(year)
+            SingleAuthorshipPercentageValue = SingleAuthorshipPercentageValues.get(year)
+        try:
+            metric = model_obj.objects.get(year=year, universityId=universityID, subjectAreaId=subjectAreaID)
+            metric.InstitutionalValue = InstitutionalValue
+            metric.InternationalValue = InternationalValue
+            metric.NationalValue = NationalValue
+            metric.SingleAuthorshipValue = SingleAuthorshipValue
+            if(metricType == "Collaboration"):
+                metric.InstitutionalPercentageValue = InstitutionalPercentageValue
+                metric.InternationalPercentageValue = InternationalPercentageValue
+                metric.NationalPercentageValue = NationalPercentageValue
+                metric.SingleAuthorshipPercentageValue = SingleAuthorshipPercentageValue
+            metric.save()
+        except model_obj.DoesNotExist:
+            if (metricType == "Collaboration"):
+                model_obj.objects.create(year=year, universityId=universityID, subjectAreaId=subjectAreaID, InstitutionalValue=InstitutionalValue,
+                                     InternationalValue=InternationalValue, NationalValue=NationalValue, SingleAuthorshipValue=SingleAuthorshipValue, InstitutionalPercentageValue=InstitutionalPercentageValue,
+                                     InternationalPercentageValue=InternationalPercentageValue, NationalPercentageValue=NationalPercentageValue, SingleAuthorshipPercentageValue=SingleAuthorshipPercentageValue)
+            else:
+                model_obj.objects.create(year=year, universityId=universityID, subjectAreaId=subjectAreaID, InstitutionalValue=InstitutionalValue,
+                                         InternationalValue=InternationalValue, NationalValue=NationalValue, SingleAuthorshipValue=SingleAuthorshipValue)
+def getValuesFromCollabType(values, valuesNew, collabType, metricType):
+    dict = next(item for item in values if item['collabType'] == collabType)
+    dict2 = next(item for item in valuesNew if item['collabType'] == collabType)
+    last_two_records_value = list(dict2['valueByYear'].keys())[-2:]
+    dict['valueByYear'].update({key: value for key, value in dict2['valueByYear'].items() if key in last_two_records_value})
+    if(metricType == "Collaboration"):
+        last_two_records_percentage = list(dict2['percentageByYear'].keys())[-2:]
+        dict['percentageByYear'].update({key: value for key, value in dict2['percentageByYear'].items() if key in last_two_records_percentage})
+        return dict['valueByYear'], dict['percentageByYear']
+    else:
+        return dict['valueByYear']
+def updateTableByApiCollaborationType(metricType, universityList, mainSubjectsList):
+    model_obj = globals()[metricType]
+    #model_obj.objects.all().delete() #usuwanie wszystkich rekordow z danej tabeli
+    for university in universityList:
+        universityId = University.objects.get(id=university)
+        for subject in mainSubjectsList:
+            subjectAreaId = SubjectArea.objects.get(id=subject)
+            requestURL = "https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=" + metricType + "&institutionIds=" + str(university) + "&yearRange=10yrs&subjectAreaFilterURI=Class%2FASJC%2FCode%2F" + str(subject) + "&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=" + API_KEY
+            requestURL2 = "https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=" + metricType + "&institutionIds=" + str(university) + "&yearRange=3yrsAndCurrentAndFuture&subjectAreaFilterURI=Class%2FASJC%2FCode%2F" + str(subject) + "&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=" + API_KEY
+            response = requests.get(requestURL)
+            response2 = requests.get(requestURL2)
+            valuesFromLast10years = response.json()['results'][0]['metrics'][0]['values']
+            valuesFromLast3yearsAndFuture = response2.json()['results'][0]['metrics'][0]['values']
+            if(metricType == "Collaboration"):
+                valueInstitutional, percentagevalueInstitutional = getValuesFromCollabType(valuesFromLast10years,valuesFromLast3yearsAndFuture, 'Institutional collaboration', metricType)
+                valueInternational, percentagevalueInternational = getValuesFromCollabType(valuesFromLast10years, valuesFromLast3yearsAndFuture, 'International collaboration', metricType)
+                valueNational, percentagevalueNational = getValuesFromCollabType(valuesFromLast10years, valuesFromLast3yearsAndFuture, 'National collaboration', metricType)
+                valueSingleAuthorship, percentagevalueSingleAuthorship = getValuesFromCollabType(valuesFromLast10years, valuesFromLast3yearsAndFuture, 'Single authorship', metricType)
+                saveToDatabaseCollaboration(model_obj, metricType, universityId, subjectAreaId, valueInstitutional, valueInternational, valueNational, valueSingleAuthorship, percentagevalueInstitutional, percentagevalueInternational, percentagevalueNational, percentagevalueSingleAuthorship)
+            else:
+                valueInstitutional = getValuesFromCollabType(valuesFromLast10years, valuesFromLast3yearsAndFuture, 'Institutional collaboration', metricType)
+                valueInternational = getValuesFromCollabType(valuesFromLast10years, valuesFromLast3yearsAndFuture, 'International collaboration', metricType)
+                valueNational = getValuesFromCollabType(valuesFromLast10years, valuesFromLast3yearsAndFuture, 'National collaboration', metricType)
+                valueSingleAuthorship = getValuesFromCollabType(valuesFromLast10years, valuesFromLast3yearsAndFuture, 'Single authorship', metricType)
+                saveToDatabaseCollaboration(model_obj, metricType, universityId, subjectAreaId, valueInstitutional, valueInternational, valueNational, valueSingleAuthorship)
+#Functions used to updated top percentile type table
+def saveToDatabaseTopPercentile(model_obj, universityID, subjectAreaID, valuesThreshold1, percentageValuesThreshold1, valuesThreshold5, percentageValuesThreshold5, valuesThreshold10, percentageValuesThreshold10, valuesThreshold25, percentageValuesThreshold25):
+    for year, threshold1Value in valuesThreshold1.items():
+        threshold1PercentageValue = percentageValuesThreshold1.get(year)
+        threshold5Value = valuesThreshold5.get(year)
+        threshold5PercentageValue = percentageValuesThreshold5.get(year)
+        threshold10Value = valuesThreshold10.get(year)
+        threshold10PercentageValue = percentageValuesThreshold10.get(year)
+        threshold25Value = valuesThreshold25.get(year)
+        threshold25PercentageValue = percentageValuesThreshold25.get(year)
+        try:
+            metric = model_obj.objects.get(year=year, universityId=universityID, subjectAreaId=subjectAreaID)
+            metric.threshold1Value = threshold1Value
+            metric.threshold1PercentageValue = threshold1PercentageValue
+            metric.threshold5Value = threshold5Value
+            metric.threshold5PercentageValue = threshold5PercentageValue
+            metric.threshold10Value = threshold10Value
+            metric.threshold10PercentageValue = threshold10PercentageValue
+            metric.threshold25Value = threshold25Value
+            metric.threshold25PercentageValue = threshold25PercentageValue
+            metric.save()
+        except model_obj.DoesNotExist:
+            model_obj.objects.create(year=year, universityId=universityID, subjectAreaId=subjectAreaID, threshold1Value=threshold1Value, threshold1PercentageValue=threshold1PercentageValue,
+                                     threshold5Value=threshold5Value, threshold5PercentageValue=threshold5PercentageValue,
+                                     threshold10Value=threshold10Value, threshold10PercentageValue=threshold10PercentageValue,
+                                     threshold25Value=threshold25Value, threshold25PercentageValue=threshold25PercentageValue)
+def getValuesFromThresholdType(values, valuesNew, threshold):
+    dict = next(item for item in values if item['threshold'] == threshold)
+    dict2 = next(item for item in valuesNew if item['threshold'] == threshold)
+    last_two_records_value = list(dict2['valueByYear'].keys())[-2:]
+    dict['valueByYear'].update({key: value for key, value in dict2['valueByYear'].items() if key in last_two_records_value})
+    last_two_records_percentage = list(dict2['percentageByYear'].keys())[-2:]
+    dict['percentageByYear'].update({key: value for key, value in dict2['percentageByYear'].items() if key in last_two_records_percentage})
+    return dict['valueByYear'], dict['percentageByYear']
+def updateTableByApiTopPercentileType(metricType, universityList, mainSubjectsList):
+    model_obj = globals()[metricType]
+    #model_obj.objects.all().delete() #usuwanie wszystkich rekordow z danej tabeli
+    for university in universityList:
+        universityId = University.objects.get(id=university)
+        for subject in mainSubjectsList:
+            subjectAreaId = SubjectArea.objects.get(id=subject)
+            requestURL = "https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=" + metricType + "&institutionIds=" + str(university) + "&yearRange=10yrs&subjectAreaFilterURI=Class%2FASJC%2FCode%2F" + str(subject) + "&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=" + API_KEY
+            requestURL2 = "https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=" + metricType + "&institutionIds=" + str(university) + "&yearRange=3yrsAndCurrentAndFuture&subjectAreaFilterURI=Class%2FASJC%2FCode%2F" + str(subject) + "&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=" + API_KEY
+            response = requests.get(requestURL)
+            response2 = requests.get(requestURL2)
+            valuesFromLast10years = response.json()['results'][0]['metrics'][0]['values']
+            valuesFromLast3yearsAndFuture = response2.json()['results'][0]['metrics'][0]['values']
+            valueThreshold1, percentagevalueThreshold1 = getValuesFromThresholdType(valuesFromLast10years,valuesFromLast3yearsAndFuture, 1)
+            valueThreshold5, percentagevalueThreshold5 = getValuesFromThresholdType(valuesFromLast10years, valuesFromLast3yearsAndFuture, 5)
+            valueThreshold10, percentagevalueThreshold10 = getValuesFromThresholdType(valuesFromLast10years, valuesFromLast3yearsAndFuture, 10)
+            valueThreshold25, percentagevalueThreshold25 = getValuesFromThresholdType(valuesFromLast10years, valuesFromLast3yearsAndFuture, 25)
+            saveToDatabaseTopPercentile(model_obj, universityId, subjectAreaId, valueThreshold1, percentagevalueThreshold1, valueThreshold5, percentagevalueThreshold5, valueThreshold10, percentagevalueThreshold10, valueThreshold25, percentagevalueThreshold25)

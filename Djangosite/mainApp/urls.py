@@ -1,6 +1,7 @@
 from django.urls import path
 
 from . import views
+from . import admin
 
 urlpatterns = [
     path('', views.welcome, name='welcome-page'),
@@ -13,6 +14,6 @@ urlpatterns = [
     path('logout', views.logout, name='logout'),
     path('profile', views.profile, name='profile-page'),
     path('edit', views.edit, name="edit-user-page"),
-    path('updateTableFromApiPath/<str:metric_name>/', views.updateTableByApi, name="updateTableFromApi"),
-    path('updateDatabaseFromApiPath', views.updateDatabaseByApi, name="updateDatabaseFromApi")
+    path('updateTableFromApiPath/<str:metric_name>/', admin.updateTableByApi, name="updateTableFromApi"),
+    path('updateDatabaseFromApiPath', admin.updateDatabaseByApi, name="updateDatabaseFromApi")
 ]
