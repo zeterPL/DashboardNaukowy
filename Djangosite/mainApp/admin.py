@@ -24,6 +24,28 @@ API_KEY = '7f59af901d2d86f78a1fd60c1bf9426a'
 class CsvImportForm(forms.Form):
     csv_upload = forms.FileField()
 
+import os
+import csv
+def save_to_csv(modeladmin, request, queryset):
+    for record in queryset:
+        print(record)
+    # csv_file_path = os.path.join('D:\\zapisy_programow_python\\DashBoardNaukowy\\Git\\exportedCSVFiles', 'file.csv')
+    # # Define the CSV headers
+    # field_names = ['field1', 'field2', 'field3']
+    # # Open the CSV file in write mode
+    # with open(csv_file_path, 'w', newline='') as csv_file:
+    #     writer = csv.DictWriter(csv_file, fieldnames=field_names)
+    #     # Write the headers to the CSV file
+    #     writer.writeheader()
+    #     # Write each record to the CSV file
+    #     for obj in queryset:
+    #         writer.writerow({
+    #             'field1': obj.field1,
+    #             'field2': obj.field2,
+    #             'field3': obj.field3,
+    #         })
+save_to_csv.short_description = "Save selected records to CSV file"
+
 
 @admin.register(University)
 class UniversityAdmin(admin.ModelAdmin):
@@ -31,6 +53,7 @@ class UniversityAdmin(admin.ModelAdmin):
     list_filter = ('country',)
     search_fields = ('name', 'country')
     ordering = ('name', 'country', 'id')
+    actions = [save_to_csv]
 
     def get_urls(self):
         urls = super().get_urls()
@@ -44,7 +67,7 @@ class UniversityAdmin(admin.ModelAdmin):
             csv_data = file_data.replace('\r', '').split("\n")
             for x in csv_data:
                 fields = x.split(";")
-                if (len(fields) < 3):
+                if len(fields) < 3:
                     countryX = 'Polska'
                 else:
                     countryX = fields[2]
@@ -79,6 +102,7 @@ class SubjectAreaAdmin(admin.ModelAdmin):
     list_filter = ('name',)
     search_fields = ('id', 'name', 'uri')
     ordering = ('name', 'id', 'uri')
+    actions = [save_to_csv]
 
     def get_urls(self):
         urls = super().get_urls()
@@ -92,7 +116,7 @@ class SubjectAreaAdmin(admin.ModelAdmin):
             csv_data = file_data.replace('\r', '').split("\n")
             for x in csv_data:
                 fields = x.split(";")
-                if (len(fields) < 3):
+                if len(fields) < 3:
                     uriFieldX = 'Class/ASJC/Code/' + fields[0]
                 else:
                     uriFieldX = fields[2]
@@ -152,6 +176,7 @@ class AbstractMetricAdmin(admin.ModelAdmin):
     list_filter = ('year', FloatRangeFilter, 'universityId', 'subjectAreaId')
     search_fields = ('year', 'value', 'universityId', 'subjectAreaId')
     ordering = ('subjectAreaId', 'universityId', 'year', 'value')
+    actions = [save_to_csv]
 
     def get_urls(self):
         urls = super().get_urls()
@@ -166,7 +191,7 @@ class AbstractMetricAdmin(admin.ModelAdmin):
             for x in csv_data:
                 fields = x.split(";")
                 model = apps.get_model('mainApp', model_name)
-                if (fields[3].lower() == 'none' or fields[3].lower() == 'null' or fields[3] == ''):
+                if fields[3].lower() == 'none' or fields[3].lower() == 'null' or fields[3] == '':
                     fields[3] = None
                 try:
                     metric = model.objects.get(year=fields[0], universityId=University.objects.get(id=fields[1]),
@@ -213,6 +238,7 @@ class AbstractCollaborationMetricAdmin(admin.ModelAdmin):
     list_filter = ('year', 'universityId', 'subjectAreaId')
     search_fields = ('year', 'universityId', 'subjectAreaId')
     ordering = ('subjectAreaId', 'universityId', 'year')
+    actions = [save_to_csv]
 
     def get_urls(self):
         urls = super().get_urls()
@@ -228,7 +254,7 @@ class AbstractCollaborationMetricAdmin(admin.ModelAdmin):
                 fields = x.split(";")
                 model = apps.get_model('mainApp', model_name)
                 for i in range(3, len(fields)):
-                    if (fields[i] and (fields[i].lower() == 'none' or fields[i].lower() == 'null' or fields[i] == '')):
+                    if fields[i] and (fields[i].lower() == 'none' or fields[i].lower() == 'null' or fields[i] == ''):
                         fields[i] = None
                 try:
                     metric = model.objects.get(year=fields[0], universityId=University.objects.get(id=fields[1]),
@@ -237,14 +263,14 @@ class AbstractCollaborationMetricAdmin(admin.ModelAdmin):
                     metric.InternationalValue = fields[4]
                     metric.NationalValue = fields[5]
                     metric.SingleAuthorshipValue = fields[6]
-                    if (model_name == "Collaboration"):
+                    if model_name == "Collaboration":
                         metric.InstitutionalPercentageValue = fields[7]
                         metric.InternationalPercentageValue = fields[8]
                         metric.NationalPercentageValue = fields[9]
                         metric.SingleAuthorshipPercentageValue = fields[10]
                     metric.save()
                 except model.DoesNotExist:
-                    if (model_name == "Collaboration"):
+                    if model_name == "Collaboration":
                         model.objects.create(year=fields[0], universityId=University.objects.get(id=fields[1]),
                                              subjectAreaId=SubjectArea.objects.get(id=fields[2]),
                                              InstitutionalValue=fields[3], InternationalValue=fields[4],
@@ -267,9 +293,10 @@ class AbstractCollaborationMetricAdmin(admin.ModelAdmin):
 @admin.register(Collaboration)
 class CollaborationAdmin(AbstractCollaborationMetricAdmin):
     list_display = (
-    'year', 'universityId', 'subjectAreaId', 'InstitutionalValue', 'InstitutionalPercentageValue', 'InternationalValue',
-    'InternationalPercentageValue', 'NationalValue', 'NationalPercentageValue', 'SingleAuthorshipValue',
-    'SingleAuthorshipPercentageValue')
+        'year', 'universityId', 'subjectAreaId', 'InstitutionalValue', 'InstitutionalPercentageValue',
+        'InternationalValue',
+        'InternationalPercentageValue', 'NationalValue', 'NationalPercentageValue', 'SingleAuthorshipValue',
+        'SingleAuthorshipPercentageValue')
 
     def upload_csv(self, request, model_name='Collaboration'):
         return super().upload_csv(request, model_name)
@@ -278,8 +305,8 @@ class CollaborationAdmin(AbstractCollaborationMetricAdmin):
 @admin.register(CollaborationImpact)
 class CollaborationImpactAdmin(AbstractCollaborationMetricAdmin):
     list_display = (
-    'year', 'universityId', 'subjectAreaId', 'InstitutionalValue', 'InternationalValue', 'NationalValue',
-    'SingleAuthorshipValue')
+        'year', 'universityId', 'subjectAreaId', 'InstitutionalValue', 'InternationalValue', 'NationalValue',
+        'SingleAuthorshipValue')
 
     def upload_csv(self, request, model_name='CollaborationImpact'):
         return super().upload_csv(request, model_name)
@@ -290,6 +317,7 @@ class AbstractTopPercentilesMetricAdmin(admin.ModelAdmin):
     list_filter = ('year', 'universityId', 'subjectAreaId')
     search_fields = ('year', 'universityId', 'subjectAreaId')
     ordering = ('subjectAreaId', 'universityId', 'year')
+    actions = [save_to_csv]
 
     def get_urls(self):
         urls = super().get_urls()
@@ -305,7 +333,7 @@ class AbstractTopPercentilesMetricAdmin(admin.ModelAdmin):
                 fields = x.split(";")
                 model = apps.get_model('mainApp', model_name)
                 for i in range(3, len(fields)):
-                    if (fields[i] and (fields[i].lower() == 'none' or fields[i].lower() == 'null' or fields[i] == '')):
+                    if fields[i] and (fields[i].lower() == 'none' or fields[i].lower() == 'null' or fields[i] == ''):
                         fields[i] = None
                 try:
                     metric = model.objects.get(year=fields[0], universityId=University.objects.get(id=fields[1]),
@@ -336,9 +364,9 @@ class AbstractTopPercentilesMetricAdmin(admin.ModelAdmin):
 @admin.register(PublicationsInTopJournalPercentiles)
 class PublicationsInTopJournalPercentilesAdmin(AbstractTopPercentilesMetricAdmin):
     list_display = (
-    'year', 'universityId', 'subjectAreaId', 'threshold1Value', 'threshold1PercentageValue', 'threshold5Value',
-    'threshold5PercentageValue', 'threshold10Value', 'threshold10PercentageValue', 'threshold25Value',
-    'threshold25PercentageValue')
+        'year', 'universityId', 'subjectAreaId', 'threshold1Value', 'threshold1PercentageValue', 'threshold5Value',
+        'threshold5PercentageValue', 'threshold10Value', 'threshold10PercentageValue', 'threshold25Value',
+        'threshold25PercentageValue')
 
     def upload_csv(self, request, model_name='PublicationsInTopJournalPercentiles'):
         return super().upload_csv(request, model_name)
@@ -347,9 +375,9 @@ class PublicationsInTopJournalPercentilesAdmin(AbstractTopPercentilesMetricAdmin
 @admin.register(OutputsInTopCitationPercentiles)
 class OutputsInTopCitationPercentilesAdmin(AbstractTopPercentilesMetricAdmin):
     list_display = (
-    'year', 'universityId', 'subjectAreaId', 'threshold1Value', 'threshold1PercentageValue', 'threshold5Value',
-    'threshold5PercentageValue', 'threshold10Value', 'threshold10PercentageValue', 'threshold25Value',
-    'threshold25PercentageValue')
+        'year', 'universityId', 'subjectAreaId', 'threshold1Value', 'threshold1PercentageValue', 'threshold5Value',
+        'threshold5PercentageValue', 'threshold10Value', 'threshold10PercentageValue', 'threshold25Value',
+        'threshold25PercentageValue')
 
     def upload_csv(self, request, model_name='OutputsInTopCitationPercentiles'):
         return super().upload_csv(request, model_name)
@@ -377,11 +405,11 @@ def updateTableByApi(request, metric_name, updateAllDatabase=False):
     # model_obj.objects.all().delete() #usuwanie wszystkich rekordow z danej tabeli
     universityList = University.objects.values_list('id', flat=True)
     mainSubjectsList = SubjectArea.objects.values_list('id', flat=True)
-    if (metric_name in {"ScholarlyOutput", "FieldWeightedCitationImpact", "CitationsPerPublication", "CitationCount"}):
+    if metric_name in {"ScholarlyOutput", "FieldWeightedCitationImpact", "CitationsPerPublication", "CitationCount"}:
         updateTableByApiSimpleType(metric_name, universityList, mainSubjectsList)
-    elif (metric_name in {"Collaboration", "CollaborationImpact"}):
+    elif metric_name in {"Collaboration", "CollaborationImpact"}:
         updateTableByApiCollaborationType(metric_name, universityList, mainSubjectsList)
-    elif (metric_name in {"PublicationsInTopJournalPercentiles", "OutputsInTopCitationPercentiles"}):
+    elif metric_name in {"PublicationsInTopJournalPercentiles", "OutputsInTopCitationPercentiles"}:
         updateTableByApiTopPercentileType(metric_name, universityList, mainSubjectsList)
     else:
         print("\nNie ma takiej metryki\n")
@@ -447,7 +475,7 @@ def saveToDatabaseCollaboration(model_obj, metricType, universityID, subjectArea
         InternationalValue = InternationalValues.get(year)
         NationalValue = NationalValues.get(year)
         SingleAuthorshipValue = SingleAuthorshipValues.get(year)
-        if (metricType == "Collaboration"):
+        if metricType == "Collaboration":
             institutionalPercentageValue = InstitutionalPercentageValues.get(year)
             internationalPercentageValue = InternationalPercentageValues.get(year)
             nationalPercentageValue = NationalPercentageValues.get(year)
@@ -458,14 +486,14 @@ def saveToDatabaseCollaboration(model_obj, metricType, universityID, subjectArea
             metric.InternationalValue = InternationalValue
             metric.NationalValue = NationalValue
             metric.SingleAuthorshipValue = SingleAuthorshipValue
-            if (metricType == "Collaboration"):
+            if metricType == "Collaboration":
                 metric.InstitutionalPercentageValue = institutionalPercentageValue
                 metric.InternationalPercentageValue = internationalPercentageValue
                 metric.NationalPercentageValue = nationalPercentageValue
                 metric.SingleAuthorshipPercentageValue = singleAuthorshipPercentageValue
             metric.save()
         except model_obj.DoesNotExist:
-            if (metricType == "Collaboration"):
+            if metricType == "Collaboration":
                 model_obj.objects.create(year=year, universityId=universityID, subjectAreaId=subjectAreaID,
                                          InstitutionalValue=InstitutionalValue,
                                          InternationalValue=InternationalValue, NationalValue=NationalValue,
@@ -482,18 +510,18 @@ def saveToDatabaseCollaboration(model_obj, metricType, universityID, subjectArea
 
 
 def getValuesFromCollabType(values, valuesNew, collabType, metricType):
-    dict = next(item for item in values if item['collabType'] == collabType)
-    dict2 = next(item for item in valuesNew if item['collabType'] == collabType)
-    last_two_records_value = list(dict2['valueByYear'].keys())[-2:]
-    dict['valueByYear'].update(
-        {key: value for key, value in dict2['valueByYear'].items() if key in last_two_records_value})
-    if (metricType == "Collaboration"):
-        last_two_records_percentage = list(dict2['percentageByYear'].keys())[-2:]
-        dict['percentageByYear'].update(
-            {key: value for key, value in dict2['percentageByYear'].items() if key in last_two_records_percentage})
-        return dict['valueByYear'], dict['percentageByYear']
+    dict10yearsValues = next(item for item in values if item['collabType'] == collabType)
+    dict5lastYearsValues = next(item for item in valuesNew if item['collabType'] == collabType)
+    last_two_records_value = list(dict5lastYearsValues['valueByYear'].keys())[-2:]
+    dict10yearsValues['valueByYear'].update(
+        {key: value for key, value in dict5lastYearsValues['valueByYear'].items() if key in last_two_records_value})
+    if metricType == "Collaboration":
+        last_two_records_percentage = list(dict5lastYearsValues['percentageByYear'].keys())[-2:]
+        dict10yearsValues['percentageByYear'].update(
+            {key: value for key, value in dict5lastYearsValues['percentageByYear'].items() if key in last_two_records_percentage})
+        return dict10yearsValues['valueByYear'], dict10yearsValues['percentageByYear']
     else:
-        return dict['valueByYear']
+        return dict10yearsValues['valueByYear']
 
 
 def updateTableByApiCollaborationType(metricType, universityList, mainSubjectsList):
@@ -513,7 +541,7 @@ def updateTableByApiCollaborationType(metricType, universityList, mainSubjectsLi
             response2 = requests.get(requestURL2)
             valuesFromLast10years = response.json()['results'][0]['metrics'][0]['values']
             valuesFromLast3yearsAndFuture = response2.json()['results'][0]['metrics'][0]['values']
-            if (metricType == "Collaboration"):
+            if metricType == "Collaboration":
                 valueInstitutional, percentagevalueInstitutional = getValuesFromCollabType(valuesFromLast10years,
                                                                                            valuesFromLast3yearsAndFuture,
                                                                                            'Institutional collaboration',
@@ -582,15 +610,15 @@ def saveToDatabaseTopPercentile(model_obj, universityID, subjectAreaID, valuesTh
 
 
 def getValuesFromThresholdType(values, valuesNew, threshold):
-    dict = next(item for item in values if item['threshold'] == threshold)
-    dict2 = next(item for item in valuesNew if item['threshold'] == threshold)
-    last_two_records_value = list(dict2['valueByYear'].keys())[-2:]
-    dict['valueByYear'].update(
-        {key: value for key, value in dict2['valueByYear'].items() if key in last_two_records_value})
-    last_two_records_percentage = list(dict2['percentageByYear'].keys())[-2:]
-    dict['percentageByYear'].update(
-        {key: value for key, value in dict2['percentageByYear'].items() if key in last_two_records_percentage})
-    return dict['valueByYear'], dict['percentageByYear']
+    dict10yearsValues = next(item for item in values if item['threshold'] == threshold)
+    dict5lastYearsValues = next(item for item in valuesNew if item['threshold'] == threshold)
+    last_two_records_value = list(dict5lastYearsValues['valueByYear'].keys())[-2:]
+    dict10yearsValues['valueByYear'].update(
+        {key: value for key, value in dict5lastYearsValues['valueByYear'].items() if key in last_two_records_value})
+    last_two_records_percentage = list(dict5lastYearsValues['percentageByYear'].keys())[-2:]
+    dict10yearsValues['percentageByYear'].update(
+        {key: value for key, value in dict5lastYearsValues['percentageByYear'].items() if key in last_two_records_percentage})
+    return dict10yearsValues['valueByYear'], dict10yearsValues['percentageByYear']
 
 
 def updateTableByApiTopPercentileType(metricType, universityList, mainSubjectsList):
