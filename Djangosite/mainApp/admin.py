@@ -24,26 +24,15 @@ API_KEY = '7f59af901d2d86f78a1fd60c1bf9426a'
 class CsvImportForm(forms.Form):
     csv_upload = forms.FileField()
 
+def get_model_columns(model_name):
+    model = apps.get_model(app_label='mainApp', model_name=model_name)
+    if model:
+        return [field.name for field in model._meta.get_fields()]
+
 import os
 import csv
 def save_to_csv(modeladmin, request, queryset):
-    for record in queryset:
-        print(record)
-    # csv_file_path = os.path.join('D:\\zapisy_programow_python\\DashBoardNaukowy\\Git\\exportedCSVFiles', 'file.csv')
-    # # Define the CSV headers
-    # field_names = ['field1', 'field2', 'field3']
-    # # Open the CSV file in write mode
-    # with open(csv_file_path, 'w', newline='') as csv_file:
-    #     writer = csv.DictWriter(csv_file, fieldnames=field_names)
-    #     # Write the headers to the CSV file
-    #     writer.writeheader()
-    #     # Write each record to the CSV file
-    #     for obj in queryset:
-    #         writer.writerow({
-    #             'field1': obj.field1,
-    #             'field2': obj.field2,
-    #             'field3': obj.field3,
-    #         })
+    print()
 save_to_csv.short_description = "Save selected records to CSV file"
 
 
@@ -57,10 +46,10 @@ class UniversityAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super().get_urls()
-        new_urls = [path('upload-csv/', self.upload_csv), ]
+        new_urls = [path('upload-textFile/', self.upload_textFile), ]
         return new_urls + urls
 
-    def upload_csv(self, request):
+    def upload_textFile(self, request):
         if request.method == "POST":
             csv_file = request.FILES["csv_upload"]
             file_data = csv_file.read().decode("utf-8")
@@ -80,7 +69,7 @@ class UniversityAdmin(admin.ModelAdmin):
             return HttpResponseRedirect(url)
         form = CsvImportForm()
         data = {"form": form}
-        return render(request, "admin/csv_upload.html", data)
+        return render(request, "admin/textFile_upload.html", data)
 
 
 opis = "Domyślnie Uri jest tworzone 'Class/ASJC/Code/id' ale można zdefiniować własne"
@@ -106,10 +95,10 @@ class SubjectAreaAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super().get_urls()
-        new_urls = [path('upload-csv/', self.upload_csv), ]
+        new_urls = [path('upload-textFile/', self.upload_textFile), ]
         return new_urls + urls
 
-    def upload_csv(self, request):
+    def upload_textFile(self, request):
         if request.method == "POST":
             csv_file = request.FILES["csv_upload"]
             file_data = csv_file.read().decode("utf-8")
@@ -129,61 +118,102 @@ class SubjectAreaAdmin(admin.ModelAdmin):
             return HttpResponseRedirect(url)
         form = CsvImportForm()
         data = {"form": form}
-        return render(request, "admin/csv_upload.html", data)
+        return render(request, "admin/textFile_upload.html", data)
 
-
-class FloatRangeFilter(admin.SimpleListFilter):
-    title = 'Przedział wartości'
-    parameter_name = 'Przedział wartości'
+class AbstractRangeFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         return (
-            ('0-50', '0-50'),
+            ('0-10', '0-10'),
+            ('10-50', '10-50'),
             ('50-100', '50-100'),
             ('100-200', '100-200'),
             ('200-500', '200-500'),
             ('500-1000', '500-1000'),
-            ('1000-2000', '1000-2000'),
-            ('2000-5000', '2000-5000'),
-            ('5000-10000', '5000-10000'),
-            ('10000+', '10000+'),
+            ('1000+', '1000+'),
         )
 
     def queryset(self, request, queryset):
-        if self.value() == '0-50':
-            return queryset.filter(value__lt=50)
+        if self.value() == '0-10':
+            return queryset.filter(**{f'{self.parameter_name}__lt': 10})
+        elif self.value() == '10-50':
+            return queryset.filter(**{f'{self.parameter_name}__gte': 10, f'{self.parameter_name}__lt': 50})
         elif self.value() == '50-100':
-            return queryset.filter(Q(value__gte=50) & Q(value__lt=100))
+            return queryset.filter(**{f'{self.parameter_name}__gte': 50, f'{self.parameter_name}__lt': 100})
         elif self.value() == '100-200':
-            return queryset.filter(Q(value__gte=100) & Q(value__lt=200))
+            return queryset.filter(**{f'{self.parameter_name}__gte': 100, f'{self.parameter_name}__lt': 200})
         elif self.value() == '200-500':
-            return queryset.filter(Q(value__gte=200) & Q(value__lt=500))
+            return queryset.filter(**{f'{self.parameter_name}__gte': 200, f'{self.parameter_name}__lt': 500})
         elif self.value() == '500-1000':
-            return queryset.filter(Q(value__gte=500) & Q(value__lt=1000))
-        elif self.value() == '1000-2000':
-            return queryset.filter(Q(value__gte=1000) & Q(value__lt=2000))
-        elif self.value() == '2000-5000':
-            return queryset.filter(Q(value__gte=2000) & Q(value__lt=5000))
-        elif self.value() == '5000-10000':
-            return queryset.filter(Q(value__gte=5000) & Q(value__lt=10000))
-        elif self.value() == '10000+':
-            return queryset.filter(Q(value__gte=10000))
-
+            return queryset.filter(**{f'{self.parameter_name}__gte': 500, f'{self.parameter_name}__lt': 1000})
+        elif self.value() == '1000+':
+            return queryset.filter(**{f'{self.parameter_name}__gte': 1000})
+class ValueRangeFilter(AbstractRangeFilter):
+    columnName = 'value'
+    title, parameter_name = 'przedzial wartosci', columnName
+class InstitutionalValueRangeFilter(AbstractRangeFilter):
+    columnName = 'InstitutionalValue'
+    title, parameter_name = 'przedzial wartosci {}'.format(AbstractMetricCollaborationType._meta.get_field(columnName).help_text), columnName
+class InstitutionalPercentageValueRangeFilter(AbstractRangeFilter):
+    columnName = 'InstitutionalPercentageValue'
+    title, parameter_name = 'przedzial wartosci {}'.format(Collaboration._meta.get_field(columnName).help_text), columnName
+class InternationalValueRangeFilter(AbstractRangeFilter):
+    columnName = 'InternationalValue'
+    title, parameter_name = 'przedzial wartosci {}'.format(AbstractMetricCollaborationType._meta.get_field(columnName).help_text), columnName
+class InternationalPercentageValueRangeFilter(AbstractRangeFilter):
+    columnName = 'InternationalPercentageValue'
+    title, parameter_name = 'przedzial wartosci {}'.format(Collaboration._meta.get_field(columnName).help_text), columnName
+class NationalValueRangeFilter(AbstractRangeFilter):
+    columnName = 'NationalValue'
+    title, parameter_name = 'przedzial wartosci {}'.format(AbstractMetricCollaborationType._meta.get_field(columnName).help_text), columnName
+class NationalPercentageValueRangeFilter(AbstractRangeFilter):
+    columnName = 'NationalPercentageValue'
+    title, parameter_name = 'przedzial wartosci {}'.format(Collaboration._meta.get_field(columnName).help_text), columnName
+class SingleAuthorshipValueRangeFilter(AbstractRangeFilter):
+    columnName = 'SingleAuthorshipValue'
+    title, parameter_name = 'przedzial wartosci {}'.format(AbstractMetricCollaborationType._meta.get_field(columnName).help_text), columnName
+class SingleAuthorshipPercentageValueRangeFilter(AbstractRangeFilter):
+    columnName = 'SingleAuthorshipPercentageValue'
+    title, parameter_name = 'przedzial wartosci {}'.format(Collaboration._meta.get_field(columnName).help_text), columnName
+class Threshold1ValueRangeFilter(AbstractRangeFilter):
+    columnName = 'threshold1Value'
+    title, parameter_name = 'przedzial wartosci {}'.format(AbstractMetricTopPercentiles._meta.get_field(columnName).help_text), columnName
+class Threshold5ValueRangeFilter(AbstractRangeFilter):
+    columnName = 'threshold5Value'
+    title, parameter_name = 'przedzial wartosci {}'.format(AbstractMetricTopPercentiles._meta.get_field(columnName).help_text), columnName
+class Threshold10ValueRangeFilter(AbstractRangeFilter):
+    columnName = 'threshold10Value'
+    title, parameter_name = 'przedzial wartosci {}'.format(AbstractMetricTopPercentiles._meta.get_field(columnName).help_text), columnName
+class Threshold25ValueRangeFilter(AbstractRangeFilter):
+    columnName = 'threshold25Value'
+    title, parameter_name = 'przedzial wartosci {}'.format(AbstractMetricTopPercentiles._meta.get_field(columnName).help_text), columnName
+class Threshold1PercentageValueRangeFilter(AbstractRangeFilter):
+    columnName = 'threshold1PercentageValue'
+    title, parameter_name = 'przedzial wartosci {}'.format(AbstractMetricTopPercentiles._meta.get_field(columnName).help_text), columnName
+class Threshold5PercentageValueRangeFilter(AbstractRangeFilter):
+    columnName = 'threshold5PercentageValue'
+    title, parameter_name = 'przedzial wartosci {}'.format(AbstractMetricTopPercentiles._meta.get_field(columnName).help_text), columnName
+class Threshold10PercentageValueRangeFilter(AbstractRangeFilter):
+    columnName = 'threshold10PercentageValue'
+    title, parameter_name = 'przedzial wartosci {}'.format(AbstractMetricTopPercentiles._meta.get_field(columnName).help_text), columnName
+class Threshold25PercentageValueRangeFilter(AbstractRangeFilter):
+    columnName = 'threshold25PercentageValue'
+    title, parameter_name = 'przedzial wartosci {}'.format(AbstractMetricTopPercentiles._meta.get_field(columnName).help_text), columnName
 
 class AbstractMetricAdmin(admin.ModelAdmin):
     list_display = ('year', 'value', 'universityId', 'subjectAreaId')
     raw_id_fields = ('universityId', 'subjectAreaId')
-    list_filter = ('year', FloatRangeFilter, 'universityId', 'subjectAreaId')
+    list_filter = ('year', ValueRangeFilter, 'universityId', 'subjectAreaId')
     search_fields = ('year', 'value', 'universityId', 'subjectAreaId')
     ordering = ('subjectAreaId', 'universityId', 'year', 'value')
     actions = [save_to_csv]
 
     def get_urls(self):
         urls = super().get_urls()
-        new_urls = [path('upload-csv/', self.upload_csv), ]
+        new_urls = [path('upload-textFile/', self.upload_textFile), ]
         return new_urls + urls
 
-    def upload_csv(self, request, model_name):
+    def upload_textFile(self, request, model_name):
         if request.method == "POST":
             csv_file = request.FILES["csv_upload"]
             file_data = csv_file.read().decode("utf-8")
@@ -206,46 +236,45 @@ class AbstractMetricAdmin(admin.ModelAdmin):
             return HttpResponseRedirect(url)
         form = CsvImportForm()
         data = {"form": form}
-        return render(request, "admin/csv_upload.html", data)
+        return render(request, "admin/textFile_upload.html", data)
 
 
 @admin.register(ScholarlyOutput)
-class ScholaryOutputAdmin(AbstractMetricAdmin):
-    def upload_csv(self, request, model_name='ScholarlyOutput'):
-        return super().upload_csv(request, model_name)
+class ScholarlyOutputAdmin(AbstractMetricAdmin):
+    def upload_textFile(self, request, model_name='ScholarlyOutput'):
+        return super().upload_textFile(request, model_name)
 
 
 @admin.register(CitationCount)
 class CitationCountAdmin(AbstractMetricAdmin):
-    def upload_csv(self, request, model_name='CitationCount'):
-        return super().upload_csv(request, model_name)
+    def upload_textFile(self, request, model_name='CitationCount'):
+        return super().upload_textFile(request, model_name)
 
 
 @admin.register(CitationsPerPublication)
 class CitationsPerPublicationAdmin(AbstractMetricAdmin):
-    def upload_csv(self, request, model_name='CitationsPerPublication'):
-        return super().upload_csv(request, model_name)
+    def upload_textFile(self, request, model_name='CitationsPerPublication'):
+        return super().upload_textFile(request, model_name)
 
 
 @admin.register(FieldWeightedCitationImpact)
 class FieldWeightedCitationImpactAdmin(AbstractMetricAdmin):
-    def upload_csv(self, request, model_name='FieldWeightedCitationImpact'):
-        return super().upload_csv(request, model_name)
+    def upload_textFile(self, request, model_name='FieldWeightedCitationImpact'):
+        return super().upload_textFile(request, model_name)
 
 
 class AbstractCollaborationMetricAdmin(admin.ModelAdmin):
     raw_id_fields = ('universityId', 'subjectAreaId')
-    list_filter = ('year', 'universityId', 'subjectAreaId')
     search_fields = ('year', 'universityId', 'subjectAreaId')
     ordering = ('subjectAreaId', 'universityId', 'year')
     actions = [save_to_csv]
 
     def get_urls(self):
         urls = super().get_urls()
-        new_urls = [path('upload-csv/', self.upload_csv), ]
+        new_urls = [path('upload-textFile/', self.upload_textFile), ]
         return new_urls + urls
 
-    def upload_csv(self, request, model_name):
+    def upload_textFile(self, request, model_name):
         if request.method == "POST":
             csv_file = request.FILES["csv_upload"]
             file_data = csv_file.read().decode("utf-8")
@@ -287,19 +316,22 @@ class AbstractCollaborationMetricAdmin(admin.ModelAdmin):
             return HttpResponseRedirect(url)
         form = CsvImportForm()
         data = {"form": form}
-        return render(request, "admin/csv_upload.html", data)
+        return render(request, "admin/textFile_upload.html", data)
 
 
 @admin.register(Collaboration)
 class CollaborationAdmin(AbstractCollaborationMetricAdmin):
     list_display = (
         'year', 'universityId', 'subjectAreaId', 'InstitutionalValue', 'InstitutionalPercentageValue',
-        'InternationalValue',
-        'InternationalPercentageValue', 'NationalValue', 'NationalPercentageValue', 'SingleAuthorshipValue',
-        'SingleAuthorshipPercentageValue')
+        'InternationalValue', 'InternationalPercentageValue', 'NationalValue', 'NationalPercentageValue',
+        'SingleAuthorshipValue', 'SingleAuthorshipPercentageValue')
+    list_filter = ('year', 'universityId', 'subjectAreaId', InstitutionalValueRangeFilter, InstitutionalPercentageValueRangeFilter,
+                   InternationalValueRangeFilter, InternationalPercentageValueRangeFilter,
+                   NationalValueRangeFilter, NationalPercentageValueRangeFilter,
+                   SingleAuthorshipValueRangeFilter, SingleAuthorshipPercentageValueRangeFilter)
 
-    def upload_csv(self, request, model_name='Collaboration'):
-        return super().upload_csv(request, model_name)
+    def upload_textFile(self, request, model_name='Collaboration'):
+        return super().upload_textFile(request, model_name)
 
 
 @admin.register(CollaborationImpact)
@@ -307,24 +339,30 @@ class CollaborationImpactAdmin(AbstractCollaborationMetricAdmin):
     list_display = (
         'year', 'universityId', 'subjectAreaId', 'InstitutionalValue', 'InternationalValue', 'NationalValue',
         'SingleAuthorshipValue')
+    list_filter = ('year', 'universityId', 'subjectAreaId', InstitutionalValueRangeFilter,
+                   InternationalValueRangeFilter, NationalValueRangeFilter, SingleAuthorshipValueRangeFilter)
 
-    def upload_csv(self, request, model_name='CollaborationImpact'):
-        return super().upload_csv(request, model_name)
+    def upload_textFile(self, request, model_name='CollaborationImpact'):
+        return super().upload_textFile(request, model_name)
 
 
 class AbstractTopPercentilesMetricAdmin(admin.ModelAdmin):
+    list_display = (
+        'year', 'universityId', 'subjectAreaId', 'threshold1Value', 'threshold1PercentageValue', 'threshold5Value',
+        'threshold5PercentageValue', 'threshold10Value', 'threshold10PercentageValue', 'threshold25Value',
+        'threshold25PercentageValue')
     raw_id_fields = ('universityId', 'subjectAreaId')
-    list_filter = ('year', 'universityId', 'subjectAreaId')
+    list_filter = ('year', 'universityId', 'subjectAreaId', Threshold1ValueRangeFilter, Threshold1PercentageValueRangeFilter, Threshold5ValueRangeFilter, Threshold5PercentageValueRangeFilter, Threshold10ValueRangeFilter, Threshold10PercentageValueRangeFilter, Threshold25ValueRangeFilter, Threshold25PercentageValueRangeFilter)
     search_fields = ('year', 'universityId', 'subjectAreaId')
     ordering = ('subjectAreaId', 'universityId', 'year')
     actions = [save_to_csv]
 
     def get_urls(self):
         urls = super().get_urls()
-        new_urls = [path('upload-csv/', self.upload_csv), ]
+        new_urls = [path('upload-textFile/', self.upload_textFile), ]
         return new_urls + urls
 
-    def upload_csv(self, request, model_name):
+    def upload_textFile(self, request, model_name):
         if request.method == "POST":
             csv_file = request.FILES["csv_upload"]
             file_data = csv_file.read().decode("utf-8")
@@ -358,29 +396,19 @@ class AbstractTopPercentilesMetricAdmin(admin.ModelAdmin):
             return HttpResponseRedirect(url)
         form = CsvImportForm()
         data = {"form": form}
-        return render(request, "admin/csv_upload.html", data)
+        return render(request, "admin/textFile_upload.html", data)
 
 
 @admin.register(PublicationsInTopJournalPercentiles)
 class PublicationsInTopJournalPercentilesAdmin(AbstractTopPercentilesMetricAdmin):
-    list_display = (
-        'year', 'universityId', 'subjectAreaId', 'threshold1Value', 'threshold1PercentageValue', 'threshold5Value',
-        'threshold5PercentageValue', 'threshold10Value', 'threshold10PercentageValue', 'threshold25Value',
-        'threshold25PercentageValue')
-
-    def upload_csv(self, request, model_name='PublicationsInTopJournalPercentiles'):
-        return super().upload_csv(request, model_name)
+    def upload_textFile(self, request, model_name='PublicationsInTopJournalPercentiles'):
+        return super().upload_textFile(request, model_name)
 
 
 @admin.register(OutputsInTopCitationPercentiles)
 class OutputsInTopCitationPercentilesAdmin(AbstractTopPercentilesMetricAdmin):
-    list_display = (
-        'year', 'universityId', 'subjectAreaId', 'threshold1Value', 'threshold1PercentageValue', 'threshold5Value',
-        'threshold5PercentageValue', 'threshold10Value', 'threshold10PercentageValue', 'threshold25Value',
-        'threshold25PercentageValue')
-
-    def upload_csv(self, request, model_name='OutputsInTopCitationPercentiles'):
-        return super().upload_csv(request, model_name)
+    def upload_textFile(self, request, model_name='OutputsInTopCitationPercentiles'):
+        return super().upload_textFile(request, model_name)
 
 
 # Function to update all database from API
@@ -389,7 +417,7 @@ def updateDatabaseByApi(request):
                    "FieldWeightedCitationImpact", "CollaborationImpact", "CitationsPerPublication", "CitationCount",
                    "Collaboration"]
     for metricType in metricTypes:
-        # globals()[metricType].objects.all().delete() #usuwanie wszystkich rekordow z danej tabeli
+        #globals()[metricType].objects.all().delete() #usuwanie wszystkich rekordow z danej tabeli
         print("\nMetricType =", metricType)
         updateTableByApi(request, metricType, True)
     referer = request.META.get('HTTP_REFERER')
@@ -422,20 +450,14 @@ def updateTableByApi(request, metric_name, updateAllDatabase=False):
 
 
 # Functions used to updated simple table with only one value
-def extractDataFromJsonToArrays(dataFromApi, dataFromApi2):
-    yearRange = len(dataFromApi) + len(dataFromApi2) - 3
-    years = []
-    for i in range(yearRange - 1, -1, -1):
-        years.append(str(2023 - i))
-    # print(years)
-    valuesOverTheYears = []
-    for i in range(len(dataFromApi)):
-        valuesOverTheYears.append(dataFromApi[years[i]])
-    for i in range(len(dataFromApi), len(dataFromApi) + 2):
-        valuesOverTheYears.append(dataFromApi2[years[i]])
-    # print(valuesOverTheYears)
-    return valuesOverTheYears, years
-
+def getValuesFromSimpleType(values, valuesNew):
+    years = list(values[0]['valueByYear'].keys())
+    values = list(values[0]['valueByYear'].values())
+    yearsNew = list(valuesNew[0]['valueByYear'].keys())[-2:]
+    valuesNew = list(valuesNew[0]['valueByYear'].values())[-2:]
+    years.extend(yearsNew)
+    values.extend(valuesNew)
+    return values, years
 
 def updateTableByApiSimpleType(metricType, universityList, mainSubjectsList):
     model_obj = globals()[metricType]
@@ -452,9 +474,7 @@ def updateTableByApiSimpleType(metricType, universityList, mainSubjectsList):
                 subject) + "&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=" + API_KEY
             response = requests.get(requestURL)
             response2 = requests.get(requestURL2)
-            valuesFromLast10years = response.json()['results'][0]['metrics'][0]['valueByYear']
-            valuesFromLast3yearsAndFuture = response2.json()['results'][0]['metrics'][0]['valueByYear']
-            amountInYear, years = extractDataFromJsonToArrays(valuesFromLast10years, valuesFromLast3yearsAndFuture)
+            amountInYear, years = getValuesFromSimpleType(response.json()['results'][0]['metrics'], response2.json()['results'][0]['metrics'])
             for indx, y in enumerate(years):
                 # model_obj.objects.create(year=y, value=amountInYear[indx], universityId=University.objects.get(id=university), subjectAreaId=SubjectArea.objects.get(id=subject)) #wersja z usuwaniem wszystkich rekordow
                 try:
@@ -467,10 +487,7 @@ def updateTableByApiSimpleType(metricType, universityList, mainSubjectsList):
 
 
 # Functions used to updated collaboration type table
-def saveToDatabaseCollaboration(model_obj, metricType, universityID, subjectAreaID, InstitutionalValues,
-                                InternationalValues, NationalValues, SingleAuthorshipValues,
-                                InstitutionalPercentageValues=None, InternationalPercentageValues=None,
-                                NationalPercentageValues=None, SingleAuthorshipPercentageValues=None):
+def saveToDatabaseCollaboration(model_obj, metricType, universityID, subjectAreaID, InstitutionalValues, InternationalValues, NationalValues, SingleAuthorshipValues, InstitutionalPercentageValues=None, InternationalPercentageValues=None, NationalPercentageValues=None, SingleAuthorshipPercentageValues=None):
     for year, InstitutionalValue in InstitutionalValues.items():
         InternationalValue = InternationalValues.get(year)
         NationalValue = NationalValues.get(year)
@@ -575,9 +592,7 @@ def updateTableByApiCollaborationType(metricType, universityList, mainSubjectsLi
 
 
 # Functions used to updated top percentile type table
-def saveToDatabaseTopPercentile(model_obj, universityID, subjectAreaID, valuesThreshold1, percentageValuesThreshold1,
-                                valuesThreshold5, percentageValuesThreshold5, valuesThreshold10,
-                                percentageValuesThreshold10, valuesThreshold25, percentageValuesThreshold25):
+def saveToDatabaseTopPercentile(model_obj, universityID, subjectAreaID, valuesThreshold1, percentageValuesThreshold1, valuesThreshold5, percentageValuesThreshold5, valuesThreshold10, percentageValuesThreshold10, valuesThreshold25, percentageValuesThreshold25):
     for year, threshold1Value in valuesThreshold1.items():
         threshold1PercentageValue = percentageValuesThreshold1.get(year)
         threshold5Value = valuesThreshold5.get(year)
