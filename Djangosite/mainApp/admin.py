@@ -3,7 +3,6 @@ from django.urls import path
 from django import forms
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
-from django.utils import timezone
 from django.apps import apps
 from .models import *
 
@@ -24,12 +23,6 @@ API_KEY = '7f59af901d2d86f78a1fd60c1bf9426a'
 class CsvImportForm(forms.Form):
     csv_upload = forms.FileField()
 
-def get_model_columns(model_name):
-    model = apps.get_model(app_label='mainApp', model_name=model_name)
-    if model:
-        return [field.name for field in model._meta.get_fields()]
-
-import os
 import csv
 def save_to_csv(modeladmin, request, queryset):
     modelName = str(modeladmin)[len("mainApp."):len(str(modeladmin))-len("Admin")]
@@ -46,6 +39,39 @@ def save_to_csv(modeladmin, request, queryset):
 save_to_csv.short_description = "Save selected records to CSV file"
 
 
+def upload_csvFileUniversal(request, model_name):
+    model = apps.get_model(app_label='mainApp', model_name=model_name)
+    if request.method == "POST":
+        csv_file = request.FILES["csv_upload"]
+        file_data = csv_file.read().decode("utf-8-sig")
+        lines = file_data.strip().split('\n')
+        headers = lines[0].strip().split(';')
+        for line in lines[1:]:
+            values = line.strip().split(';')
+            instance = model()
+            for header, value in zip(headers, values):
+                if value.lower() == 'none' or value.lower() == 'null' or value.lower() == '':
+                    setattr(instance, header, None)
+                else:
+                    if (header == 'universityId'):
+                        setattr(instance, header, University.objects.get(name=value))
+                    elif (header == 'subjectAreaId'):
+                        setattr(instance, header, SubjectArea.objects.get(name=value))
+                    else:
+                        setattr(instance, header, value)
+            if model_name != "University" and model_name != "SubjectArea":
+                try:
+                    metric = model.objects.get(year=instance.year, universityId=instance.universityId, subjectAreaId=instance.subjectAreaId)
+                    metric.delete()
+                except model.DoesNotExist:
+                    pass
+            instance.save()
+        url = reverse(f'admin:mainApp_{model_name.lower()}_changelist')
+        return HttpResponseRedirect(url)
+    form = CsvImportForm()
+    data = {"form": form}
+    return render(request, "admin/csvFile_upload.html", data)
+
 @admin.register(University)
 class UniversityAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'country')
@@ -60,31 +86,10 @@ class UniversityAdmin(admin.ModelAdmin):
         return new_urls + urls
 
     def upload_csvFile(self, request):
-        if request.method == "POST":
-            csv_file = request.FILES["csv_upload"]
-            file_data = csv_file.read().decode("utf-8-sig")
-            csv_data = csv.reader(file_data.splitlines(), delimiter=';')
-            next(csv_data)
-            for fields in csv_data:
-                if len(fields) < 3:
-                    countryX = 'Polska'
-                else:
-                    countryX = fields[2]
-                created = University.objects.update_or_create(
-                    id=fields[0],
-                    name=fields[1],
-                    country=countryX,
-                )
-            url = reverse('admin:mainApp_university_changelist')
-            return HttpResponseRedirect(url)
-        form = CsvImportForm()
-        data = {"form": form}
-        return render(request, "admin/csvFile_upload.html", data)
+        return upload_csvFileUniversal(request, "University")
 
 
 opis = "Domyślnie Uri jest tworzone 'Class/ASJC/Code/id' ale można zdefiniować własne"
-
-
 @admin.register(SubjectArea)
 class SubjectAreaAdmin(admin.ModelAdmin):
     fieldsets = (
@@ -109,26 +114,7 @@ class SubjectAreaAdmin(admin.ModelAdmin):
         return new_urls + urls
 
     def upload_csvFile(self, request):
-        if request.method == "POST":
-            csv_file = request.FILES["csv_upload"]
-            file_data = csv_file.read().decode("utf-8-sig")
-            csv_data = csv.reader(file_data.splitlines(), delimiter=';')
-            next(csv_data)
-            for fields in csv_data:
-                if len(fields) < 3:
-                    uriFieldX = 'Class/ASJC/Code/' + fields[0]
-                else:
-                    uriFieldX = fields[2]
-                created = SubjectArea.objects.update_or_create(
-                    id=fields[0],
-                    name=fields[1],
-                    uri=uriFieldX,
-                )
-            url = reverse('admin:mainApp_subjectarea_changelist')
-            return HttpResponseRedirect(url)
-        form = CsvImportForm()
-        data = {"form": form}
-        return render(request, "admin/csvFile_upload.html", data)
+        return upload_csvFileUniversal(request, "SubjectArea")
 
 class AbstractRangeFilter(admin.SimpleListFilter):
 
@@ -223,54 +209,27 @@ class AbstractMetricAdmin(admin.ModelAdmin):
         new_urls = [path('upload-csvFile/', self.upload_csvFile), ]
         return new_urls + urls
 
-    def upload_csvFile(self, request, model_name):
-        if request.method == "POST":
-            csv_file = request.FILES["csv_upload"]
-            file_data = csv_file.read().decode("utf-8-sig")
-            csv_data = csv.reader(file_data.splitlines(), delimiter=';')
-            next(csv_data)
-            for fields in csv_data:
-                model = apps.get_model('mainApp', model_name)
-                if fields[1].lower() == 'none' or fields[1].lower() == 'null' or fields[1] == '':
-                    fields[1] = None
-                try:
-                    metric = model.objects.get(year=fields[0], universityId=University.objects.get(name=fields[2]),
-                                               subjectAreaId=SubjectArea.objects.get(name=fields[3]))
-                    metric.value = fields[1]
-                    metric.save()
-                except model.DoesNotExist:
-                    model.objects.create(year=fields[0], value=fields[1],
-                                         universityId=University.objects.get(name=fields[2]),
-                                         subjectAreaId=SubjectArea.objects.get(name=fields[3]))
-            url = reverse(f'admin:mainApp_{model_name.lower()}_changelist')
-            return HttpResponseRedirect(url)
-        form = CsvImportForm()
-        data = {"form": form}
-        return render(request, "admin/csvFile_upload.html", data)
+    def upload_csvFile(self, request):
+        modelName = str(self.model)[len("<class 'mainApp.models."):len(str(self.model)) - len("'>")]
+        return upload_csvFileUniversal(request, modelName)
 
 
 @admin.register(ScholarlyOutput)
 class ScholarlyOutputAdmin(AbstractMetricAdmin):
-    def upload_csvFile(self, request, model_name='ScholarlyOutput'):
-        return super().upload_csvFile(request, model_name)
-
+    pass
 
 @admin.register(CitationCount)
 class CitationCountAdmin(AbstractMetricAdmin):
-    def upload_csvFile(self, request, model_name='CitationCount'):
-        return super().upload_csvFile(request, model_name)
-
+    pass
 
 @admin.register(CitationsPerPublication)
 class CitationsPerPublicationAdmin(AbstractMetricAdmin):
-    def upload_csvFile(self, request, model_name='CitationsPerPublication'):
-        return super().upload_csvFile(request, model_name)
+    pass
 
 
 @admin.register(FieldWeightedCitationImpact)
 class FieldWeightedCitationImpactAdmin(AbstractMetricAdmin):
-    def upload_csvFile(self, request, model_name='FieldWeightedCitationImpact'):
-        return super().upload_csvFile(request, model_name)
+    pass
 
 
 class AbstractCollaborationMetricAdmin(admin.ModelAdmin):
@@ -284,49 +243,9 @@ class AbstractCollaborationMetricAdmin(admin.ModelAdmin):
         new_urls = [path('upload-csvFile/', self.upload_csvFile), ]
         return new_urls + urls
 
-    def upload_csvFile(self, request, model_name):
-        if request.method == "POST":
-            csv_file = request.FILES["csv_upload"]
-            file_data = csv_file.read().decode("utf-8-sig")
-            csv_data = csv.reader(file_data.splitlines(), delimiter=';')
-            next(csv_data)
-            for fields in csv_data:
-                model = apps.get_model('mainApp', model_name)
-                for i in range(3, len(fields)):
-                    if fields[i] and (fields[i].lower() == 'none' or fields[i].lower() == 'null' or fields[i] == ''):
-                        fields[i] = None
-                try:
-                    metric = model.objects.get(year=fields[0], universityId=University.objects.get(name=fields[1]),
-                                               subjectAreaId=SubjectArea.objects.get(name=fields[2]))
-                    metric.InstitutionalValue = fields[3]
-                    metric.InternationalValue = fields[4]
-                    metric.NationalValue = fields[5]
-                    metric.SingleAuthorshipValue = fields[6]
-                    if model_name == "Collaboration":
-                        metric.InstitutionalPercentageValue = fields[7]
-                        metric.InternationalPercentageValue = fields[8]
-                        metric.NationalPercentageValue = fields[9]
-                        metric.SingleAuthorshipPercentageValue = fields[10]
-                    metric.save()
-                except model.DoesNotExist:
-                    if model_name == "Collaboration":
-                        model.objects.create(year=fields[0], universityId=University.objects.get(name=fields[1]),
-                                             subjectAreaId=SubjectArea.objects.get(name=fields[2]),
-                                             InstitutionalValue=fields[3], InternationalValue=fields[4],
-                                             NationalValue=fields[5], SingleAuthorshipValue=fields[6],
-                                             InstitutionalPercentageValue=fields[7],
-                                             InternationalPercentageValue=fields[8], NationalPercentageValue=fields[9],
-                                             SingleAuthorshipPercentageValue=fields[10])
-                    else:
-                        model.objects.create(year=fields[0], universityId=University.objects.get(name=fields[1]),
-                                             subjectAreaId=SubjectArea.objects.get(name=fields[2]),
-                                             InstitutionalValue=fields[3], InternationalValue=fields[4],
-                                             NationalValue=fields[5], SingleAuthorshipValue=fields[6])
-            url = reverse(f'admin:mainApp_{model_name.lower()}_changelist')
-            return HttpResponseRedirect(url)
-        form = CsvImportForm()
-        data = {"form": form}
-        return render(request, "admin/csvFile_upload.html", data)
+    def upload_csvFile(self, request):
+        modelName = str(self.model)[len("<class 'mainApp.models."):len(str(self.model)) - len("'>")]
+        return upload_csvFileUniversal(request, modelName)
 
 
 @admin.register(Collaboration)
@@ -340,9 +259,6 @@ class CollaborationAdmin(AbstractCollaborationMetricAdmin):
                    NationalValueRangeFilter, NationalPercentageValueRangeFilter,
                    SingleAuthorshipValueRangeFilter, SingleAuthorshipPercentageValueRangeFilter)
 
-    def upload_csvFile(self, request, model_name='Collaboration'):
-        return super().upload_csvFile(request, model_name)
-
 
 @admin.register(CollaborationImpact)
 class CollaborationImpactAdmin(AbstractCollaborationMetricAdmin):
@@ -351,9 +267,6 @@ class CollaborationImpactAdmin(AbstractCollaborationMetricAdmin):
         'SingleAuthorshipValue')
     list_filter = ('year', 'universityId', 'subjectAreaId', InstitutionalValueRangeFilter,
                    InternationalValueRangeFilter, NationalValueRangeFilter, SingleAuthorshipValueRangeFilter)
-
-    def upload_csvFile(self, request, model_name='CollaborationImpact'):
-        return super().upload_csvFile(request, model_name)
 
 
 class AbstractTopPercentilesMetricAdmin(admin.ModelAdmin):
@@ -372,53 +285,19 @@ class AbstractTopPercentilesMetricAdmin(admin.ModelAdmin):
         new_urls = [path('upload-csvFile/', self.upload_csvFile), ]
         return new_urls + urls
 
-    def upload_csvFile(self, request, model_name):
-        if request.method == "POST":
-            csv_file = request.FILES["csv_upload"]
-            file_data = csv_file.read().decode("utf-8-sig")
-            csv_data = csv.reader(file_data.splitlines(), delimiter=';')
-            next(csv_data)
-            for fields in csv_data:
-                model = apps.get_model('mainApp', model_name)
-                for i in range(3, len(fields)):
-                    if fields[i] and (fields[i].lower() == 'none' or fields[i].lower() == 'null' or fields[i] == ''):
-                        fields[i] = None
-                try:
-                    metric = model.objects.get(year=fields[0], universityId=University.objects.get(name=fields[1]),
-                                               subjectAreaId=SubjectArea.objects.get(name=fields[2]))
-                    metric.threshold1Value = fields[3]
-                    metric.threshold1PercentageValue = fields[4]
-                    metric.threshold5Value = fields[5]
-                    metric.threshold5PercentageValue = fields[6]
-                    metric.threshold10Value = fields[7]
-                    metric.threshold10PercentageValue = fields[8]
-                    metric.threshold25Value = fields[9]
-                    metric.threshold25PercentageValue = fields[10]
-                    metric.save()
-                except model.DoesNotExist:
-                    model.objects.create(year=fields[0], universityId=University.objects.get(name=fields[1]),
-                                         subjectAreaId=SubjectArea.objects.get(name=fields[2]),
-                                         threshold1Value=fields[3], threshold1PercentageValue=fields[4],
-                                         threshold5Value=fields[5], threshold5PercentageValue=fields[6],
-                                         threshold10Value=fields[7], threshold10PercentageValue=fields[8],
-                                         threshold25Value=fields[9], threshold25PercentageValue=fields[10])
-            url = reverse(f'admin:mainApp_{model_name.lower()}_changelist')
-            return HttpResponseRedirect(url)
-        form = CsvImportForm()
-        data = {"form": form}
-        return render(request, "admin/csvFile_upload.html", data)
+    def upload_csvFile(self, request):
+        modelName = str(self.model)[len("<class 'mainApp.models."):len(str(self.model)) - len("'>")]
+        return upload_csvFileUniversal(request, modelName)
 
 
 @admin.register(PublicationsInTopJournalPercentiles)
 class PublicationsInTopJournalPercentilesAdmin(AbstractTopPercentilesMetricAdmin):
-    def upload_csvFile(self, request, model_name='PublicationsInTopJournalPercentiles'):
-        return super().upload_csvFile(request, model_name)
+    pass
 
 
 @admin.register(OutputsInTopCitationPercentiles)
 class OutputsInTopCitationPercentilesAdmin(AbstractTopPercentilesMetricAdmin):
-    def upload_csvFile(self, request, model_name='OutputsInTopCitationPercentiles'):
-        return super().upload_csvFile(request, model_name)
+    pass
 
 
 # Function to update all database from API
@@ -427,7 +306,7 @@ def updateDatabaseByApi(request):
                    "FieldWeightedCitationImpact", "CollaborationImpact", "CitationsPerPublication", "CitationCount",
                    "Collaboration"]
     for metricType in metricTypes:
-        #globals()[metricType].objects.all().delete() #usuwanie wszystkich rekordow z danej tabeli
+        # globals()[metricType].objects.all().delete() #usuwanie wszystkich rekordow z danej tabeli
         print("\nMetricType =", metricType)
         updateTableByApi(request, metricType, True)
     referer = request.META.get('HTTP_REFERER')
@@ -458,6 +337,16 @@ def updateTableByApi(request, metric_name, updateAllDatabase=False):
         else:
             return redirect('/admin/mainApp')
 
+def getRequestsReturnResponses(metricType, university, subject):
+    requestURL = "https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=" + metricType + "&institutionIds=" + str(
+        university) + "&yearRange=10yrs&subjectAreaFilterURI=Class%2FASJC%2FCode%2F" + str(
+        subject) + "&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=" + API_KEY
+    requestURL2 = "https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=" + metricType + "&institutionIds=" + str(
+        university) + "&yearRange=3yrsAndCurrentAndFuture&subjectAreaFilterURI=Class%2FASJC%2FCode%2F" + str(
+        subject) + "&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=" + API_KEY
+    response = requests.get(requestURL)
+    response2 = requests.get(requestURL2)
+    return response, response2
 
 # Functions used to updated simple table with only one value
 def getValuesFromSimpleType(values, valuesNew):
@@ -476,14 +365,7 @@ def updateTableByApiSimpleType(metricType, universityList, mainSubjectsList):
         universityId = University.objects.get(id=university)
         for subject in mainSubjectsList:
             subjectAreaId = SubjectArea.objects.get(id=subject)
-            requestURL = "https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=" + metricType + "&institutionIds=" + str(
-                university) + "&yearRange=10yrs&subjectAreaFilterURI=Class%2FASJC%2FCode%2F" + str(
-                subject) + "&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=" + API_KEY
-            requestURL2 = "https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=" + metricType + "&institutionIds=" + str(
-                university) + "&yearRange=3yrsAndCurrentAndFuture&subjectAreaFilterURI=Class%2FASJC%2FCode%2F" + str(
-                subject) + "&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=" + API_KEY
-            response = requests.get(requestURL)
-            response2 = requests.get(requestURL2)
+            response, response2 = getRequestsReturnResponses(metricType, university, subject)
             amountInYear, years = getValuesFromSimpleType(response.json()['results'][0]['metrics'], response2.json()['results'][0]['metrics'])
             for indx, y in enumerate(years):
                 # model_obj.objects.create(year=y, value=amountInYear[indx], universityId=University.objects.get(id=university), subjectAreaId=SubjectArea.objects.get(id=subject)) #wersja z usuwaniem wszystkich rekordow
@@ -548,7 +430,7 @@ def getValuesFromCollabType(values, valuesNew, collabType, metricType):
             {key: value for key, value in dict5lastYearsValues['percentageByYear'].items() if key in last_two_records_percentage})
         return dict10yearsValues['valueByYear'], dict10yearsValues['percentageByYear']
     else:
-        return dict10yearsValues['valueByYear']
+        return dict10yearsValues['valueByYear'], None
 
 
 def updateTableByApiCollaborationType(metricType, universityList, mainSubjectsList):
@@ -558,47 +440,17 @@ def updateTableByApiCollaborationType(metricType, universityList, mainSubjectsLi
         universityId = University.objects.get(id=university)
         for subject in mainSubjectsList:
             subjectAreaId = SubjectArea.objects.get(id=subject)
-            requestURL = "https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=" + metricType + "&institutionIds=" + str(
-                university) + "&yearRange=10yrs&subjectAreaFilterURI=Class%2FASJC%2FCode%2F" + str(
-                subject) + "&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=" + API_KEY
-            requestURL2 = "https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=" + metricType + "&institutionIds=" + str(
-                university) + "&yearRange=3yrsAndCurrentAndFuture&subjectAreaFilterURI=Class%2FASJC%2FCode%2F" + str(
-                subject) + "&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=" + API_KEY
-            response = requests.get(requestURL)
-            response2 = requests.get(requestURL2)
+            response, response2 = getRequestsReturnResponses(metricType, university, subject)
             valuesFromLast10years = response.json()['results'][0]['metrics'][0]['values']
             valuesFromLast3yearsAndFuture = response2.json()['results'][0]['metrics'][0]['values']
+            valueInstitutional, percentagevalueInstitutional = getValuesFromCollabType(valuesFromLast10years, valuesFromLast3yearsAndFuture, 'Institutional collaboration', metricType)
+            valueInternational, percentagevalueInternational = getValuesFromCollabType(valuesFromLast10years, valuesFromLast3yearsAndFuture, 'International collaboration', metricType)
+            valueNational, percentagevalueNational = getValuesFromCollabType(valuesFromLast10years, valuesFromLast3yearsAndFuture, 'National collaboration', metricType)
+            valueSingleAuthorship, percentagevalueSingleAuthorship = getValuesFromCollabType(valuesFromLast10years, valuesFromLast3yearsAndFuture, 'Single authorship', metricType)
             if metricType == "Collaboration":
-                valueInstitutional, percentagevalueInstitutional = getValuesFromCollabType(valuesFromLast10years,
-                                                                                           valuesFromLast3yearsAndFuture,
-                                                                                           'Institutional collaboration',
-                                                                                           metricType)
-                valueInternational, percentagevalueInternational = getValuesFromCollabType(valuesFromLast10years,
-                                                                                           valuesFromLast3yearsAndFuture,
-                                                                                           'International collaboration',
-                                                                                           metricType)
-                valueNational, percentagevalueNational = getValuesFromCollabType(valuesFromLast10years,
-                                                                                 valuesFromLast3yearsAndFuture,
-                                                                                 'National collaboration', metricType)
-                valueSingleAuthorship, percentagevalueSingleAuthorship = getValuesFromCollabType(valuesFromLast10years,
-                                                                                                 valuesFromLast3yearsAndFuture,
-                                                                                                 'Single authorship',
-                                                                                                 metricType)
-                saveToDatabaseCollaboration(model_obj, metricType, universityId, subjectAreaId, valueInstitutional,
-                                            valueInternational, valueNational, valueSingleAuthorship,
-                                            percentagevalueInstitutional, percentagevalueInternational,
-                                            percentagevalueNational, percentagevalueSingleAuthorship)
+                saveToDatabaseCollaboration(model_obj, metricType, universityId, subjectAreaId, valueInstitutional, valueInternational, valueNational, valueSingleAuthorship, percentagevalueInstitutional, percentagevalueInternational, percentagevalueNational, percentagevalueSingleAuthorship)
             else:
-                valueInstitutional = getValuesFromCollabType(valuesFromLast10years, valuesFromLast3yearsAndFuture,
-                                                             'Institutional collaboration', metricType)
-                valueInternational = getValuesFromCollabType(valuesFromLast10years, valuesFromLast3yearsAndFuture,
-                                                             'International collaboration', metricType)
-                valueNational = getValuesFromCollabType(valuesFromLast10years, valuesFromLast3yearsAndFuture,
-                                                        'National collaboration', metricType)
-                valueSingleAuthorship = getValuesFromCollabType(valuesFromLast10years, valuesFromLast3yearsAndFuture,
-                                                                'Single authorship', metricType)
-                saveToDatabaseCollaboration(model_obj, metricType, universityId, subjectAreaId, valueInstitutional,
-                                            valueInternational, valueNational, valueSingleAuthorship)
+                saveToDatabaseCollaboration(model_obj, metricType, universityId, subjectAreaId, valueInstitutional, valueInternational, valueNational, valueSingleAuthorship)
 
 
 # Functions used to updated top percentile type table
@@ -653,14 +505,7 @@ def updateTableByApiTopPercentileType(metricType, universityList, mainSubjectsLi
         universityId = University.objects.get(id=university)
         for subject in mainSubjectsList:
             subjectAreaId = SubjectArea.objects.get(id=subject)
-            requestURL = "https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=" + metricType + "&institutionIds=" + str(
-                university) + "&yearRange=10yrs&subjectAreaFilterURI=Class%2FASJC%2FCode%2F" + str(
-                subject) + "&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=" + API_KEY
-            requestURL2 = "https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=" + metricType + "&institutionIds=" + str(
-                university) + "&yearRange=3yrsAndCurrentAndFuture&subjectAreaFilterURI=Class%2FASJC%2FCode%2F" + str(
-                subject) + "&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=" + API_KEY
-            response = requests.get(requestURL)
-            response2 = requests.get(requestURL2)
+            response, response2 = getRequestsReturnResponses(metricType, university, subject)
             valuesFromLast10years = response.json()['results'][0]['metrics'][0]['values']
             valuesFromLast3yearsAndFuture = response2.json()['results'][0]['metrics'][0]['values']
             valueThreshold1, percentagevalueThreshold1 = getValuesFromThresholdType(valuesFromLast10years,
