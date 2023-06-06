@@ -1,9 +1,9 @@
 from django.contrib import admin
 from django.urls import path
 from django import forms
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
-from django.db.models import Q
+from django.utils import timezone
 from django.apps import apps
 from .models import *
 
@@ -32,7 +32,17 @@ def get_model_columns(model_name):
 import os
 import csv
 def save_to_csv(modeladmin, request, queryset):
-    print()
+    modelName = str(modeladmin)[len("mainApp."):len(str(modeladmin))-len("Admin")]
+    fileName = "{}{}records".format(modelName, str(len(queryset)))
+    response = HttpResponse(content_type='text/csv')
+    writer = csv.writer(response, delimiter=';')
+    fields = modeladmin.list_display
+    writer.writerow(fields)
+    for record in queryset:
+        record_fields = [str(getattr(record, field)) for field in modeladmin.list_display]
+        writer.writerow(record_fields)
+    response['Content-Disposition'] = f'attachment; filename="{fileName}.csv"'
+    return response
 save_to_csv.short_description = "Save selected records to CSV file"
 
 
@@ -46,16 +56,16 @@ class UniversityAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super().get_urls()
-        new_urls = [path('upload-textFile/', self.upload_textFile), ]
+        new_urls = [path('upload-csvFile/', self.upload_csvFile), ]
         return new_urls + urls
 
-    def upload_textFile(self, request):
+    def upload_csvFile(self, request):
         if request.method == "POST":
             csv_file = request.FILES["csv_upload"]
-            file_data = csv_file.read().decode("utf-8")
-            csv_data = file_data.replace('\r', '').split("\n")
-            for x in csv_data:
-                fields = x.split(";")
+            file_data = csv_file.read().decode("utf-8-sig")
+            csv_data = csv.reader(file_data.splitlines(), delimiter=';')
+            next(csv_data)
+            for fields in csv_data:
                 if len(fields) < 3:
                     countryX = 'Polska'
                 else:
@@ -69,7 +79,7 @@ class UniversityAdmin(admin.ModelAdmin):
             return HttpResponseRedirect(url)
         form = CsvImportForm()
         data = {"form": form}
-        return render(request, "admin/textFile_upload.html", data)
+        return render(request, "admin/csvFile_upload.html", data)
 
 
 opis = "Domyślnie Uri jest tworzone 'Class/ASJC/Code/id' ale można zdefiniować własne"
@@ -95,16 +105,16 @@ class SubjectAreaAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super().get_urls()
-        new_urls = [path('upload-textFile/', self.upload_textFile), ]
+        new_urls = [path('upload-csvFile/', self.upload_csvFile), ]
         return new_urls + urls
 
-    def upload_textFile(self, request):
+    def upload_csvFile(self, request):
         if request.method == "POST":
             csv_file = request.FILES["csv_upload"]
-            file_data = csv_file.read().decode("utf-8")
-            csv_data = file_data.replace('\r', '').split("\n")
-            for x in csv_data:
-                fields = x.split(";")
+            file_data = csv_file.read().decode("utf-8-sig")
+            csv_data = csv.reader(file_data.splitlines(), delimiter=';')
+            next(csv_data)
+            for fields in csv_data:
                 if len(fields) < 3:
                     uriFieldX = 'Class/ASJC/Code/' + fields[0]
                 else:
@@ -118,7 +128,7 @@ class SubjectAreaAdmin(admin.ModelAdmin):
             return HttpResponseRedirect(url)
         form = CsvImportForm()
         data = {"form": form}
-        return render(request, "admin/textFile_upload.html", data)
+        return render(request, "admin/csvFile_upload.html", data)
 
 class AbstractRangeFilter(admin.SimpleListFilter):
 
@@ -210,57 +220,57 @@ class AbstractMetricAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super().get_urls()
-        new_urls = [path('upload-textFile/', self.upload_textFile), ]
+        new_urls = [path('upload-csvFile/', self.upload_csvFile), ]
         return new_urls + urls
 
-    def upload_textFile(self, request, model_name):
+    def upload_csvFile(self, request, model_name):
         if request.method == "POST":
             csv_file = request.FILES["csv_upload"]
-            file_data = csv_file.read().decode("utf-8")
-            csv_data = file_data.replace('\r', '').split("\n")
-            for x in csv_data:
-                fields = x.split(";")
+            file_data = csv_file.read().decode("utf-8-sig")
+            csv_data = csv.reader(file_data.splitlines(), delimiter=';')
+            next(csv_data)
+            for fields in csv_data:
                 model = apps.get_model('mainApp', model_name)
-                if fields[3].lower() == 'none' or fields[3].lower() == 'null' or fields[3] == '':
-                    fields[3] = None
+                if fields[1].lower() == 'none' or fields[1].lower() == 'null' or fields[1] == '':
+                    fields[1] = None
                 try:
-                    metric = model.objects.get(year=fields[0], universityId=University.objects.get(id=fields[1]),
-                                               subjectAreaId=SubjectArea.objects.get(id=fields[2]))
-                    metric.value = fields[3]
+                    metric = model.objects.get(year=fields[0], universityId=University.objects.get(name=fields[2]),
+                                               subjectAreaId=SubjectArea.objects.get(name=fields[3]))
+                    metric.value = fields[1]
                     metric.save()
                 except model.DoesNotExist:
-                    model.objects.create(year=fields[0], value=fields[3],
-                                         universityId=University.objects.get(id=fields[1]),
-                                         subjectAreaId=SubjectArea.objects.get(id=fields[2]))
+                    model.objects.create(year=fields[0], value=fields[1],
+                                         universityId=University.objects.get(name=fields[2]),
+                                         subjectAreaId=SubjectArea.objects.get(name=fields[3]))
             url = reverse(f'admin:mainApp_{model_name.lower()}_changelist')
             return HttpResponseRedirect(url)
         form = CsvImportForm()
         data = {"form": form}
-        return render(request, "admin/textFile_upload.html", data)
+        return render(request, "admin/csvFile_upload.html", data)
 
 
 @admin.register(ScholarlyOutput)
 class ScholarlyOutputAdmin(AbstractMetricAdmin):
-    def upload_textFile(self, request, model_name='ScholarlyOutput'):
-        return super().upload_textFile(request, model_name)
+    def upload_csvFile(self, request, model_name='ScholarlyOutput'):
+        return super().upload_csvFile(request, model_name)
 
 
 @admin.register(CitationCount)
 class CitationCountAdmin(AbstractMetricAdmin):
-    def upload_textFile(self, request, model_name='CitationCount'):
-        return super().upload_textFile(request, model_name)
+    def upload_csvFile(self, request, model_name='CitationCount'):
+        return super().upload_csvFile(request, model_name)
 
 
 @admin.register(CitationsPerPublication)
 class CitationsPerPublicationAdmin(AbstractMetricAdmin):
-    def upload_textFile(self, request, model_name='CitationsPerPublication'):
-        return super().upload_textFile(request, model_name)
+    def upload_csvFile(self, request, model_name='CitationsPerPublication'):
+        return super().upload_csvFile(request, model_name)
 
 
 @admin.register(FieldWeightedCitationImpact)
 class FieldWeightedCitationImpactAdmin(AbstractMetricAdmin):
-    def upload_textFile(self, request, model_name='FieldWeightedCitationImpact'):
-        return super().upload_textFile(request, model_name)
+    def upload_csvFile(self, request, model_name='FieldWeightedCitationImpact'):
+        return super().upload_csvFile(request, model_name)
 
 
 class AbstractCollaborationMetricAdmin(admin.ModelAdmin):
@@ -271,23 +281,23 @@ class AbstractCollaborationMetricAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super().get_urls()
-        new_urls = [path('upload-textFile/', self.upload_textFile), ]
+        new_urls = [path('upload-csvFile/', self.upload_csvFile), ]
         return new_urls + urls
 
-    def upload_textFile(self, request, model_name):
+    def upload_csvFile(self, request, model_name):
         if request.method == "POST":
             csv_file = request.FILES["csv_upload"]
-            file_data = csv_file.read().decode("utf-8")
-            csv_data = file_data.replace('\r', '').split("\n")
-            for x in csv_data:
-                fields = x.split(";")
+            file_data = csv_file.read().decode("utf-8-sig")
+            csv_data = csv.reader(file_data.splitlines(), delimiter=';')
+            next(csv_data)
+            for fields in csv_data:
                 model = apps.get_model('mainApp', model_name)
                 for i in range(3, len(fields)):
                     if fields[i] and (fields[i].lower() == 'none' or fields[i].lower() == 'null' or fields[i] == ''):
                         fields[i] = None
                 try:
-                    metric = model.objects.get(year=fields[0], universityId=University.objects.get(id=fields[1]),
-                                               subjectAreaId=SubjectArea.objects.get(id=fields[2]))
+                    metric = model.objects.get(year=fields[0], universityId=University.objects.get(name=fields[1]),
+                                               subjectAreaId=SubjectArea.objects.get(name=fields[2]))
                     metric.InstitutionalValue = fields[3]
                     metric.InternationalValue = fields[4]
                     metric.NationalValue = fields[5]
@@ -300,38 +310,38 @@ class AbstractCollaborationMetricAdmin(admin.ModelAdmin):
                     metric.save()
                 except model.DoesNotExist:
                     if model_name == "Collaboration":
-                        model.objects.create(year=fields[0], universityId=University.objects.get(id=fields[1]),
-                                             subjectAreaId=SubjectArea.objects.get(id=fields[2]),
+                        model.objects.create(year=fields[0], universityId=University.objects.get(name=fields[1]),
+                                             subjectAreaId=SubjectArea.objects.get(name=fields[2]),
                                              InstitutionalValue=fields[3], InternationalValue=fields[4],
                                              NationalValue=fields[5], SingleAuthorshipValue=fields[6],
                                              InstitutionalPercentageValue=fields[7],
                                              InternationalPercentageValue=fields[8], NationalPercentageValue=fields[9],
                                              SingleAuthorshipPercentageValue=fields[10])
                     else:
-                        model.objects.create(year=fields[0], universityId=University.objects.get(id=fields[1]),
-                                             subjectAreaId=SubjectArea.objects.get(id=fields[2]),
+                        model.objects.create(year=fields[0], universityId=University.objects.get(name=fields[1]),
+                                             subjectAreaId=SubjectArea.objects.get(name=fields[2]),
                                              InstitutionalValue=fields[3], InternationalValue=fields[4],
                                              NationalValue=fields[5], SingleAuthorshipValue=fields[6])
             url = reverse(f'admin:mainApp_{model_name.lower()}_changelist')
             return HttpResponseRedirect(url)
         form = CsvImportForm()
         data = {"form": form}
-        return render(request, "admin/textFile_upload.html", data)
+        return render(request, "admin/csvFile_upload.html", data)
 
 
 @admin.register(Collaboration)
 class CollaborationAdmin(AbstractCollaborationMetricAdmin):
     list_display = (
-        'year', 'universityId', 'subjectAreaId', 'InstitutionalValue', 'InstitutionalPercentageValue',
-        'InternationalValue', 'InternationalPercentageValue', 'NationalValue', 'NationalPercentageValue',
-        'SingleAuthorshipValue', 'SingleAuthorshipPercentageValue')
+        'year', 'universityId', 'subjectAreaId', 'InstitutionalValue', 'InternationalValue', 'NationalValue',
+        'SingleAuthorshipValue', 'InstitutionalPercentageValue',
+        'InternationalPercentageValue', 'NationalPercentageValue', 'SingleAuthorshipPercentageValue')
     list_filter = ('year', 'universityId', 'subjectAreaId', InstitutionalValueRangeFilter, InstitutionalPercentageValueRangeFilter,
                    InternationalValueRangeFilter, InternationalPercentageValueRangeFilter,
                    NationalValueRangeFilter, NationalPercentageValueRangeFilter,
                    SingleAuthorshipValueRangeFilter, SingleAuthorshipPercentageValueRangeFilter)
 
-    def upload_textFile(self, request, model_name='Collaboration'):
-        return super().upload_textFile(request, model_name)
+    def upload_csvFile(self, request, model_name='Collaboration'):
+        return super().upload_csvFile(request, model_name)
 
 
 @admin.register(CollaborationImpact)
@@ -342,8 +352,8 @@ class CollaborationImpactAdmin(AbstractCollaborationMetricAdmin):
     list_filter = ('year', 'universityId', 'subjectAreaId', InstitutionalValueRangeFilter,
                    InternationalValueRangeFilter, NationalValueRangeFilter, SingleAuthorshipValueRangeFilter)
 
-    def upload_textFile(self, request, model_name='CollaborationImpact'):
-        return super().upload_textFile(request, model_name)
+    def upload_csvFile(self, request, model_name='CollaborationImpact'):
+        return super().upload_csvFile(request, model_name)
 
 
 class AbstractTopPercentilesMetricAdmin(admin.ModelAdmin):
@@ -359,23 +369,23 @@ class AbstractTopPercentilesMetricAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super().get_urls()
-        new_urls = [path('upload-textFile/', self.upload_textFile), ]
+        new_urls = [path('upload-csvFile/', self.upload_csvFile), ]
         return new_urls + urls
 
-    def upload_textFile(self, request, model_name):
+    def upload_csvFile(self, request, model_name):
         if request.method == "POST":
             csv_file = request.FILES["csv_upload"]
-            file_data = csv_file.read().decode("utf-8")
-            csv_data = file_data.replace('\r', '').split("\n")
-            for x in csv_data:
-                fields = x.split(";")
+            file_data = csv_file.read().decode("utf-8-sig")
+            csv_data = csv.reader(file_data.splitlines(), delimiter=';')
+            next(csv_data)
+            for fields in csv_data:
                 model = apps.get_model('mainApp', model_name)
                 for i in range(3, len(fields)):
                     if fields[i] and (fields[i].lower() == 'none' or fields[i].lower() == 'null' or fields[i] == ''):
                         fields[i] = None
                 try:
-                    metric = model.objects.get(year=fields[0], universityId=University.objects.get(id=fields[1]),
-                                               subjectAreaId=SubjectArea.objects.get(id=fields[2]))
+                    metric = model.objects.get(year=fields[0], universityId=University.objects.get(name=fields[1]),
+                                               subjectAreaId=SubjectArea.objects.get(name=fields[2]))
                     metric.threshold1Value = fields[3]
                     metric.threshold1PercentageValue = fields[4]
                     metric.threshold5Value = fields[5]
@@ -386,8 +396,8 @@ class AbstractTopPercentilesMetricAdmin(admin.ModelAdmin):
                     metric.threshold25PercentageValue = fields[10]
                     metric.save()
                 except model.DoesNotExist:
-                    model.objects.create(year=fields[0], universityId=University.objects.get(id=fields[1]),
-                                         subjectAreaId=SubjectArea.objects.get(id=fields[2]),
+                    model.objects.create(year=fields[0], universityId=University.objects.get(name=fields[1]),
+                                         subjectAreaId=SubjectArea.objects.get(name=fields[2]),
                                          threshold1Value=fields[3], threshold1PercentageValue=fields[4],
                                          threshold5Value=fields[5], threshold5PercentageValue=fields[6],
                                          threshold10Value=fields[7], threshold10PercentageValue=fields[8],
@@ -396,19 +406,19 @@ class AbstractTopPercentilesMetricAdmin(admin.ModelAdmin):
             return HttpResponseRedirect(url)
         form = CsvImportForm()
         data = {"form": form}
-        return render(request, "admin/textFile_upload.html", data)
+        return render(request, "admin/csvFile_upload.html", data)
 
 
 @admin.register(PublicationsInTopJournalPercentiles)
 class PublicationsInTopJournalPercentilesAdmin(AbstractTopPercentilesMetricAdmin):
-    def upload_textFile(self, request, model_name='PublicationsInTopJournalPercentiles'):
-        return super().upload_textFile(request, model_name)
+    def upload_csvFile(self, request, model_name='PublicationsInTopJournalPercentiles'):
+        return super().upload_csvFile(request, model_name)
 
 
 @admin.register(OutputsInTopCitationPercentiles)
 class OutputsInTopCitationPercentilesAdmin(AbstractTopPercentilesMetricAdmin):
-    def upload_textFile(self, request, model_name='OutputsInTopCitationPercentiles'):
-        return super().upload_textFile(request, model_name)
+    def upload_csvFile(self, request, model_name='OutputsInTopCitationPercentiles'):
+        return super().upload_csvFile(request, model_name)
 
 
 # Function to update all database from API
