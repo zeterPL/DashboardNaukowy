@@ -25,7 +25,9 @@ class CsvImportForm(forms.Form):
 
 import csv
 def save_to_csv(modeladmin, request, queryset):
+    print(modeladmin)
     modelName = str(modeladmin)[len("mainApp."):len(str(modeladmin))-len("Admin")]
+    print(modelName)
     fileName = "{}{}records".format(modelName, str(len(queryset)))
     response = HttpResponse(content_type='text/csv')
     writer = csv.writer(response, delimiter=';')
@@ -144,6 +146,8 @@ class AbstractRangeFilter(admin.SimpleListFilter):
             return queryset.filter(**{f'{self.parameter_name}__gte': 500, f'{self.parameter_name}__lt': 1000})
         elif self.value() == '1000+':
             return queryset.filter(**{f'{self.parameter_name}__gte': 1000})
+
+
 class ValueRangeFilter(AbstractRangeFilter):
     columnName = 'value'
     title, parameter_name = 'przedzial wartosci', columnName
@@ -197,55 +201,45 @@ class Threshold25PercentageValueRangeFilter(AbstractRangeFilter):
     title, parameter_name = 'przedzial wartosci {}'.format(AbstractMetricTopPercentiles._meta.get_field(columnName).help_text), columnName
 
 class AbstractMetricAdmin(admin.ModelAdmin):
+    actions = [save_to_csv]
+    def get_urls(self):
+        urls = super().get_urls()
+        new_urls = [path('upload-csvFile/', self.upload_csvFile), ]
+        return new_urls + urls
+
+    def upload_csvFile(self, request):
+        modelName = str(self.model)[len("<class 'mainApp.models."):len(str(self.model)) - len("'>")]
+        return upload_csvFileUniversal(request, modelName)
+
+class AbstractMetricAdminSimple(AbstractMetricAdmin):
     list_display = ('year', 'value', 'universityId', 'subjectAreaId')
     raw_id_fields = ('universityId', 'subjectAreaId')
     list_filter = ('year', ValueRangeFilter, 'universityId', 'subjectAreaId')
     search_fields = ('year', 'value', 'universityId', 'subjectAreaId')
     ordering = ('subjectAreaId', 'universityId', 'year', 'value')
-    actions = [save_to_csv]
-
-    def get_urls(self):
-        urls = super().get_urls()
-        new_urls = [path('upload-csvFile/', self.upload_csvFile), ]
-        return new_urls + urls
-
-    def upload_csvFile(self, request):
-        modelName = str(self.model)[len("<class 'mainApp.models."):len(str(self.model)) - len("'>")]
-        return upload_csvFileUniversal(request, modelName)
-
 
 @admin.register(ScholarlyOutput)
-class ScholarlyOutputAdmin(AbstractMetricAdmin):
+class ScholarlyOutputAdmin(AbstractMetricAdminSimple):
     pass
 
 @admin.register(CitationCount)
-class CitationCountAdmin(AbstractMetricAdmin):
+class CitationCountAdmin(AbstractMetricAdminSimple):
     pass
 
 @admin.register(CitationsPerPublication)
-class CitationsPerPublicationAdmin(AbstractMetricAdmin):
+class CitationsPerPublicationAdmin(AbstractMetricAdminSimple):
     pass
 
 
 @admin.register(FieldWeightedCitationImpact)
-class FieldWeightedCitationImpactAdmin(AbstractMetricAdmin):
+class FieldWeightedCitationImpactAdmin(AbstractMetricAdminSimple):
     pass
 
 
-class AbstractCollaborationMetricAdmin(admin.ModelAdmin):
+class AbstractCollaborationMetricAdmin(AbstractMetricAdmin):
     raw_id_fields = ('universityId', 'subjectAreaId')
     search_fields = ('year', 'universityId', 'subjectAreaId')
     ordering = ('subjectAreaId', 'universityId', 'year')
-    actions = [save_to_csv]
-
-    def get_urls(self):
-        urls = super().get_urls()
-        new_urls = [path('upload-csvFile/', self.upload_csvFile), ]
-        return new_urls + urls
-
-    def upload_csvFile(self, request):
-        modelName = str(self.model)[len("<class 'mainApp.models."):len(str(self.model)) - len("'>")]
-        return upload_csvFileUniversal(request, modelName)
 
 
 @admin.register(Collaboration)
@@ -269,7 +263,7 @@ class CollaborationImpactAdmin(AbstractCollaborationMetricAdmin):
                    InternationalValueRangeFilter, NationalValueRangeFilter, SingleAuthorshipValueRangeFilter)
 
 
-class AbstractTopPercentilesMetricAdmin(admin.ModelAdmin):
+class AbstractTopPercentilesMetricAdmin(AbstractMetricAdmin):
     list_display = (
         'year', 'universityId', 'subjectAreaId', 'threshold1Value', 'threshold1PercentageValue', 'threshold5Value',
         'threshold5PercentageValue', 'threshold10Value', 'threshold10PercentageValue', 'threshold25Value',
@@ -278,16 +272,6 @@ class AbstractTopPercentilesMetricAdmin(admin.ModelAdmin):
     list_filter = ('year', 'universityId', 'subjectAreaId', Threshold1ValueRangeFilter, Threshold1PercentageValueRangeFilter, Threshold5ValueRangeFilter, Threshold5PercentageValueRangeFilter, Threshold10ValueRangeFilter, Threshold10PercentageValueRangeFilter, Threshold25ValueRangeFilter, Threshold25PercentageValueRangeFilter)
     search_fields = ('year', 'universityId', 'subjectAreaId')
     ordering = ('subjectAreaId', 'universityId', 'year')
-    actions = [save_to_csv]
-
-    def get_urls(self):
-        urls = super().get_urls()
-        new_urls = [path('upload-csvFile/', self.upload_csvFile), ]
-        return new_urls + urls
-
-    def upload_csvFile(self, request):
-        modelName = str(self.model)[len("<class 'mainApp.models."):len(str(self.model)) - len("'>")]
-        return upload_csvFileUniversal(request, modelName)
 
 
 @admin.register(PublicationsInTopJournalPercentiles)
