@@ -8,6 +8,7 @@ from .models import *
 
 from django.shortcuts import render, redirect
 import requests
+import csv
 
 API_KEY = '7f59af901d2d86f78a1fd60c1bf9426a'
 
@@ -23,11 +24,9 @@ API_KEY = '7f59af901d2d86f78a1fd60c1bf9426a'
 class CsvImportForm(forms.Form):
     csv_upload = forms.FileField()
 
-import csv
+
 def save_to_csv(modeladmin, request, queryset):
-    print(modeladmin)
     modelName = str(modeladmin)[len("mainApp."):len(str(modeladmin))-len("Admin")]
-    print(modelName)
     fileName = "{}{}records".format(modelName, str(len(queryset)))
     response = HttpResponse(content_type='text/csv')
     writer = csv.writer(response, delimiter=';')
@@ -38,6 +37,7 @@ def save_to_csv(modeladmin, request, queryset):
         writer.writerow(record_fields)
     response['Content-Disposition'] = f'attachment; filename="{fileName}.csv"'
     return response
+
 save_to_csv.short_description = "Save selected records to CSV file"
 
 
@@ -55,9 +55,9 @@ def upload_csvFileUniversal(request, model_name):
                 if value.lower() == 'none' or value.lower() == 'null' or value.lower() == '':
                     setattr(instance, header, None)
                 else:
-                    if (header == 'universityId'):
+                    if header == 'universityId':
                         setattr(instance, header, University.objects.get(name=value))
-                    elif (header == 'subjectAreaId'):
+                    elif header == 'subjectAreaId':
                         setattr(instance, header, SubjectArea.objects.get(name=value))
                     else:
                         setattr(instance, header, value)
@@ -73,6 +73,7 @@ def upload_csvFileUniversal(request, model_name):
     form = CsvImportForm()
     data = {"form": form}
     return render(request, "admin/csvFile_upload.html", data)
+
 
 @admin.register(University)
 class UniversityAdmin(admin.ModelAdmin):
@@ -118,8 +119,8 @@ class SubjectAreaAdmin(admin.ModelAdmin):
     def upload_csvFile(self, request):
         return upload_csvFileUniversal(request, "SubjectArea")
 
-class AbstractRangeFilter(admin.SimpleListFilter):
 
+class AbstractRangeFilter(admin.SimpleListFilter):
     def lookups(self, request, model_admin):
         return (
             ('0-10', '0-10'),
@@ -200,6 +201,7 @@ class Threshold25PercentageValueRangeFilter(AbstractRangeFilter):
     columnName = 'threshold25PercentageValue'
     title, parameter_name = 'przedzial wartosci {}'.format(AbstractMetricTopPercentiles._meta.get_field(columnName).help_text), columnName
 
+
 class AbstractMetricAdmin(admin.ModelAdmin):
     actions = [save_to_csv]
     def get_urls(self):
@@ -211,12 +213,14 @@ class AbstractMetricAdmin(admin.ModelAdmin):
         modelName = str(self.model)[len("<class 'mainApp.models."):len(str(self.model)) - len("'>")]
         return upload_csvFileUniversal(request, modelName)
 
+
 class AbstractMetricAdminSimple(AbstractMetricAdmin):
     list_display = ('year', 'value', 'universityId', 'subjectAreaId')
     raw_id_fields = ('universityId', 'subjectAreaId')
     list_filter = ('year', ValueRangeFilter, 'universityId', 'subjectAreaId')
     search_fields = ('year', 'value', 'universityId', 'subjectAreaId')
     ordering = ('subjectAreaId', 'universityId', 'year', 'value')
+
 
 @admin.register(ScholarlyOutput)
 class ScholarlyOutputAdmin(AbstractMetricAdminSimple):
@@ -229,7 +233,6 @@ class CitationCountAdmin(AbstractMetricAdminSimple):
 @admin.register(CitationsPerPublication)
 class CitationsPerPublicationAdmin(AbstractMetricAdminSimple):
     pass
-
 
 @admin.register(FieldWeightedCitationImpact)
 class FieldWeightedCitationImpactAdmin(AbstractMetricAdminSimple):
@@ -401,6 +404,18 @@ def saveToDatabaseCollaboration(model_obj, metricType, universityID, subjectArea
                                          InternationalValue=InternationalValue, NationalValue=NationalValue,
                                          SingleAuthorshipValue=SingleAuthorshipValue)
 
+def get12yearsValues(dict5lastYearsValues, dict10yearsValues):
+    last_two_records_percentage = list(dict5lastYearsValues['percentageByYear'].keys())[-2:]
+    dict10yearsValues['percentageByYear'].update(
+        {key: value for key, value in dict5lastYearsValues['percentageByYear'].items() if
+         key in last_two_records_percentage})
+    return dict10yearsValues['valueByYear'], dict10yearsValues['percentageByYear']
+
+def getValuesFromResponses(subject, metricType, university):
+    response, response2 = getRequestsReturnResponses(metricType, university, subject)
+    valuesFromLast10years = response.json()['results'][0]['metrics'][0]['values']
+    valuesFromLast3yearsAndFuture = response2.json()['results'][0]['metrics'][0]['values']
+    return valuesFromLast10years, valuesFromLast3yearsAndFuture
 
 def getValuesFromCollabType(values, valuesNew, collabType, metricType):
     dict10yearsValues = next(item for item in values if item['collabType'] == collabType)
@@ -409,10 +424,7 @@ def getValuesFromCollabType(values, valuesNew, collabType, metricType):
     dict10yearsValues['valueByYear'].update(
         {key: value for key, value in dict5lastYearsValues['valueByYear'].items() if key in last_two_records_value})
     if metricType == "Collaboration":
-        last_two_records_percentage = list(dict5lastYearsValues['percentageByYear'].keys())[-2:]
-        dict10yearsValues['percentageByYear'].update(
-            {key: value for key, value in dict5lastYearsValues['percentageByYear'].items() if key in last_two_records_percentage})
-        return dict10yearsValues['valueByYear'], dict10yearsValues['percentageByYear']
+        return get12yearsValues(dict5lastYearsValues, dict10yearsValues)
     else:
         return dict10yearsValues['valueByYear'], None
 
@@ -424,9 +436,7 @@ def updateTableByApiCollaborationType(metricType, universityList, mainSubjectsLi
         universityId = University.objects.get(id=university)
         for subject in mainSubjectsList:
             subjectAreaId = SubjectArea.objects.get(id=subject)
-            response, response2 = getRequestsReturnResponses(metricType, university, subject)
-            valuesFromLast10years = response.json()['results'][0]['metrics'][0]['values']
-            valuesFromLast3yearsAndFuture = response2.json()['results'][0]['metrics'][0]['values']
+            valuesFromLast10years, valuesFromLast3yearsAndFuture = getValuesFromResponses(subject, metricType, university)
             valueInstitutional, percentagevalueInstitutional = getValuesFromCollabType(valuesFromLast10years, valuesFromLast3yearsAndFuture, 'Institutional collaboration', metricType)
             valueInternational, percentagevalueInternational = getValuesFromCollabType(valuesFromLast10years, valuesFromLast3yearsAndFuture, 'International collaboration', metricType)
             valueNational, percentagevalueNational = getValuesFromCollabType(valuesFromLast10years, valuesFromLast3yearsAndFuture, 'National collaboration', metricType)
@@ -476,10 +486,7 @@ def getValuesFromThresholdType(values, valuesNew, threshold):
     last_two_records_value = list(dict5lastYearsValues['valueByYear'].keys())[-2:]
     dict10yearsValues['valueByYear'].update(
         {key: value for key, value in dict5lastYearsValues['valueByYear'].items() if key in last_two_records_value})
-    last_two_records_percentage = list(dict5lastYearsValues['percentageByYear'].keys())[-2:]
-    dict10yearsValues['percentageByYear'].update(
-        {key: value for key, value in dict5lastYearsValues['percentageByYear'].items() if key in last_two_records_percentage})
-    return dict10yearsValues['valueByYear'], dict10yearsValues['percentageByYear']
+    return get12yearsValues(dict5lastYearsValues, dict10yearsValues)
 
 
 def updateTableByApiTopPercentileType(metricType, universityList, mainSubjectsList):
@@ -489,9 +496,7 @@ def updateTableByApiTopPercentileType(metricType, universityList, mainSubjectsLi
         universityId = University.objects.get(id=university)
         for subject in mainSubjectsList:
             subjectAreaId = SubjectArea.objects.get(id=subject)
-            response, response2 = getRequestsReturnResponses(metricType, university, subject)
-            valuesFromLast10years = response.json()['results'][0]['metrics'][0]['values']
-            valuesFromLast3yearsAndFuture = response2.json()['results'][0]['metrics'][0]['values']
+            valuesFromLast10years, valuesFromLast3yearsAndFuture = getValuesFromResponses(subject, metricType, university)
             valueThreshold1, percentagevalueThreshold1 = getValuesFromThresholdType(valuesFromLast10years,
                                                                                     valuesFromLast3yearsAndFuture, 1)
             valueThreshold5, percentagevalueThreshold5 = getValuesFromThresholdType(valuesFromLast10years,
