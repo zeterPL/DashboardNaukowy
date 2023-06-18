@@ -1,4 +1,6 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import auth
 
@@ -10,8 +12,6 @@ from django.contrib.auth.models import User, auth
 from .forms import EditProfileForm
 
 # Create your views here.
-
-from django.http import HttpResponse
 
 
 def welcome(request):
@@ -90,5 +90,3 @@ def edit(request):
            
     else:
         return redirect('welcome-page')
-
-
