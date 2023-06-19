@@ -2,6 +2,7 @@ from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
 from django import forms
 from .models import SubjectArea, University, CitationCount
+from django.contrib.auth.forms import SetPasswordForm
 
 
 
@@ -81,3 +82,8 @@ class EditProfileForm(UserChangeForm):
             'email',
         )
         exclude = ('password',)
+
+class SetPasswordForm(SetPasswordForm):
+    class Meta:
+        model = User
+        fields = ['new_password1', 'new_password2']

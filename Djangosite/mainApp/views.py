@@ -13,6 +13,8 @@ from django.template import loader
 
 from django.contrib.auth.models import User, auth
 from .forms import EditProfileForm
+from .forms import SetPasswordForm
+
 
 # Charts
 from .models import CitationCount, Collaboration, CollaborationImpact, FieldWeightedCitationImpact, OutputsInTopCitationPercentiles, PublicationsCountPerYear, PublicationsInTopJournalPercentiles, ScholarlyOutput, SubjectArea, University
@@ -67,6 +69,22 @@ def logout(request):
     auth.logout(request)
     return redirect('welcome-page')
 
+@login_required
+def password_change(request):
+    user = request.user
+    if request.method == 'POST':
+        form = SetPasswordForm(user, request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Your password has been changed")
+            return redirect('login')
+        else:
+            print("---------------------------")
+            for error in list(form.errors.values()):
+                print(error)
+                messages.error(request, error)
+    form = SetPasswordForm(user)
+    return render(request, "mainApp/newPassword.html", {'form' : form})
 
 def home(request):
 

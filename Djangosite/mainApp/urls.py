@@ -16,5 +16,7 @@ urlpatterns = [
     path('profile', views.profile, name='profile-page'),
     path('edit', views.edit, name="edit-user-page"),
     path('updateTableFromApiPath/<str:metric_name>/', admin.updateTableByApi, name="updateTableFromApi"),
-    path('updateDatabaseFromApiPath', admin.updateDatabaseByApi, name="updateDatabaseFromApi")
+    path('updateDatabaseFromApiPath', admin.updateDatabaseByApi, name="updateDatabaseFromApi"),
+    path("password_change", views.password_change, name="password_change"),
+
 ]
