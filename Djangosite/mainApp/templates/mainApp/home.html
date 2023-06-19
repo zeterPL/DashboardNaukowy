@@ -1,21 +1,67 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %} Budget planner {% endblock %}
+{% block title %} Ranking Naukowy {% endblock %}
 {% block css_files %} <link rel="stylesheet" href="{% static "mainApp/home.css" %}"> {% endblock %}
 
 {% block content %}
 
-{% if user.is_authenticated %}
-<div>
-    Zalogowano jako {{user.username}} <a class="nav-link" href="{% url "logout" %}">LOGOUT</a> <br/>
-    <a class="nav-link" href="{% url "profile-page" %}">profile</a> <br/>
+{% load widget_tweaks %}
 
+<div class="home-page-container">
+    {% include "mainApp/partials/sidebar.html" %}
+    {% include "mainApp/partials/header.html" %}
 
-    HOME - tutaj główny dashboard
+        <form class="home-content-container" method="POST" action="{% url 'home-page' %}">
+            {% csrf_token %}
+            <div class="universities-tile">
+                <label>Uczelnia</label>
+                {% render_field form.university %}
+            </div>
+
+            <div class="metric-tile tile-layout">        
+                <label>Metryka</label>
+                {% render_field form.metric %}
+            </div>
+            
+            <div class="subject-area-tile tile-layout">        
+                <label>Dziedzina naukowa</label>
+                {% render_field form.subject_area %}
+            </div>
+
+            <div class="form-group start-date-tile tile-layout">        
+                <label>Od</label>
+                {% render_field form.start %}
+            </div>
+
+            <div class="end-date-tile tile-layout">
+                <label>Do</label>
+                {% render_field form.end %}
+            </div>
+
+            <div class="tile-layout">
+                <button class="confirm-button"><i class="fa-solid fa-check"></i></button>
+            </div>
+
+            <div class="chart-tile">
+                {{ chart|safe }}
+            </div>
+        </form>
+        {% comment %} <div class="grid-tile"></div>
+        <div class="grid-tile"></div>
+        <div class="grid-tile"></div>
+
+        <div class="grid-tile"></div>
+        <div class="grid-tile"></div>
+        <div class="grid-tile"></div>
+
+        <div class="grid-tile"></div>
+        <div class="grid-tile"></div>
+        <div class="grid-tile"></div>
+
+        <div class="grid-tile"></div>
+        <div class="grid-tile"></div>
+        <div class="grid-tile"></div> {% endcomment %}
 
 </div>
-{% else %}
-Nie zalogowano :/
-{% endif %}
 {% endblock %}

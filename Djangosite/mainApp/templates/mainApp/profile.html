@@ -1,12 +1,64 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %} Budget planner {% endblock %}
+{% block title %} Ranking Naukowy - Profil uzytkownika {% endblock %}
 {% block css_files %} <link rel="stylesheet" href="{% static "mainApp/profile.css" %}"> {% endblock %}
 
 {% block content %}
 
-PROFIL
+<div class="profile-page-container">
+    {% include "mainApp/partials/sidebar.html" %}
+    {% include "mainApp/partials/header.html" %}
+
+
+    <div class="profile-content-container">
+        <div class="grid-tile profile-header">
+            <div class="header-image-container">
+                <div class="image-tint"></div>
+                <div class="image-tint-black"></div>
+                <img src="https://images.unsplash.com/photo-1634017759716-1784f7c57795?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1935&q=80" class="tile-background-image" />
+            </div>
+
+            <h3 class="header-username">{{user.username}}</h3>
+            <span class="header-description">Stanowisko</span>
+
+            <img src="https://t4.ftcdn.net/jpg/03/64/21/11/360_F_364211147_1qgLVxv1Tcq0Ohz3FawUfrtONzz8nq3e.jpg" class="header-profile-picture" />
+        </div>
+
+        <div class="grid-tile profile-side-tile">
+            <h3 class="tile-title">Profil</h3>
+            <span class="tile-description">Ogólne informacje o użytkowniku</span>
+        </div>
+
+        <div class="grid-tile profile-side-tile">
+            <h3 class="tile-title">Ustawienia profilu</h3>
+            <span class="tile-description">Edycja danych użytkownika</span>
+        </div>
+
+        <div class="grid-tile profile-side-tile">
+            <h3 class="tile-title">Hasło i zabezpieczenia</h3>
+            <span class="tile-description">Zmiana hasła</span>
+        </div>
+
+        <div class="grid-tile profile-side-tile">
+            <h3 class="tile-title">Usuń profil</h3>
+            <span class="tile-description">Usunięcie konta użytkownika</span>
+        </div>
+        
+        <div class="grid-tile profile-right-side-tile">
+            <h3 class="tile-title">Informacje o użytkowniku</h3>
+            <div class="profile-info-row">
+                <div class="profile-info-ro-left">
+                    <span class="tile-description">Imię i nazwisko</span>
+                </div>
+
+                <div class="profile-info-ro-right">
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
 
 {% if user.is_authenticated %}
 <div>

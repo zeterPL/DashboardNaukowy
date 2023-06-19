@@ -1,0 +1,15 @@
+{% load static %}
+
+{% block css_files %}
+    <link rel="stylesheet" href="{% static "mainApp/partials/header.css" %}">
+{% endblock %}
+
+<div id="app-header" class="app-header">
+    <div class="logo-page-title-container">
+        <div class="logo-container">
+            <a href="home" class="logo-link"><span class="logo ranking">Ranking</span><span class="logo naukowy">Naukowy</span></a>
+        </div>
+        <span class="page-title">{{viewName}}</span>
+    </div>
+    <a href="profile" class="username-picture-container">{{user.username}}<img src="https://t4.ftcdn.net/jpg/03/64/21/11/360_F_364211147_1qgLVxv1Tcq0Ohz3FawUfrtONzz8nq3e.jpg" class="profile-picture" /></a>
+</div>
