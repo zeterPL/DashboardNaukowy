@@ -217,12 +217,6 @@ def home(request):
         return redirect('welcome-page')
 
 
-def benchmarking(request):
-    context = {
-        'viewName': 'Porównanie uczelni',
-        'link': 'benchmarking-link'
-    }
-    return render(request, "mainApp/benchmarking.html", context)
 
 
 def profile(request):
