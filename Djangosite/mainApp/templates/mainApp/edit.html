@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %} Budget planner {% endblock %}
-{% block css_files %} <link rel="stylesheet" href="{% static "mainApp/home.css" %}"> {% endblock %}
+{% block css_files %} <link rel="stylesheet" href="{% static 'mainApp/home.css' %}"> {% endblock %}
 
 {% block content %}
 
@@ -14,7 +14,7 @@
       <input type="text" name="first_name" value="{{ user.first_name }}" maxlength="30" id="id_first_name">
      
       <h3>Last</h3>
-      <input type="text" name="last_name" value="{{ user.last_name }}" maxlength="30" id="id_first_name">
+      <input type="text" name="last_name" value="{{ user.last_name }}" maxlength="30" id="id_last_name">
      
       <h3>Username</h3>
       <input type="text" name="username" value="{{ user.username }}" maxlength="150" required="" id="id_username">

@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %} Ranking Naukowy - Profil uzytkownika {% endblock %}
-{% block css_files %} <link rel="stylesheet" href="{% static "mainApp/profile.css" %}"> {% endblock %}
+{% block css_files %} <link rel="stylesheet" href="{% static 'mainApp/profile.css' %}"> {% endblock %}
 
 {% block content %}
 
@@ -61,32 +61,32 @@
 </div>
 
 {% if user.is_authenticated %}
-<div>
-   <a class="nav-link" style="color: #000" href="{% url "logout" %}">LOGOUT</a>
-
     <div>
-        <label>Username: <label>
-        {{user.username}}
+       <a class="nav-link" style="color: #000" href="{% url 'logout' %}">LOGOUT</a>
+
+        <div>
+            <label>Username: </label>
+            {{user.username}}
+        </div>
+
+        <div>
+            <label>Email: </label>
+            {{user.email}}
+        </div>
+
+        <div>
+            <label>First name: </label>
+            {{user.first_name}}
+        </div>
+
+        <div>
+            <label>Last name: </label>
+            {{user.last_name}}
+        </div>
+
     </div>
 
-    <div>
-        <label>Email: <label>
-        {{user.email}}
-    </div>
-
-    <div>
-        <label>First name: <label>
-        {{user.first_name}}
-    </div>
-
-    <div>
-        <label>Last name: <label>
-        {{user.last_name}}
-    </div>
-    
-</div>
-
-<a class="nav-link" style="color: #000" href="{% url "edit-user-page" %}">Edit</a>
+<a class="nav-link" style="color: #000" href="{% url 'edit-user-page' %}">Edit</a>
 {% else %}
 Nie zalogowano :/   
 {% endif %}

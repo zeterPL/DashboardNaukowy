@@ -78,10 +78,19 @@ def home(request):
     # From data
     if request.POST:
         universities = request.POST.getlist('university')
-        metric = request.POST.get('metric')
-        subjectArea = request.POST.get('subject_area')
-        start = int(request.POST.get('start'))
-        end = int(request.POST.get('end'))
+        if len(universities) == 0:
+            universities = ['Białystok University of Technology']
+            metric = 'CitationCount'
+            subjectArea = 'Computer Science'
+            start = 2012
+            end = 2021
+            messages.info(request, 'Proszę wybrać minimum jedną uczelnię')
+            print("dupa")
+        else:
+            metric = request.POST.get('metric')
+            subjectArea = request.POST.get('subject_area')
+            start = int(request.POST.get('start'))
+            end = int(request.POST.get('end'))
 
     # Create dataset
     dataset = []
@@ -120,7 +129,6 @@ def home(request):
 
     for university in universities:
         universityObject = University.objects.get(name=university)
-        print(universityObject.id)
         for x in (range(start, end)):
             value = metricModel.objects.all().filter(
                 year=x,

@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
 from django import forms
-from .models import Abstractmetric, SubjectArea, University, CitationCount
+from .models import AbstractMetric, SubjectArea, University, CitationCount
 
 
 class BenchmarkingForm(forms.Form):

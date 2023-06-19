@@ -81,7 +81,7 @@ class API_Interface:
                             record.save()
 
     # Update given metrics or given uni or given SubjectArea
-    def db_update_metric(self, metric: Abstractmetric):
+    def db_update_metric(self, metric: AbstractMetric):
         try:
             metric.objects.all().delete()
 

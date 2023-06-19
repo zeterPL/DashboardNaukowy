@@ -66,17 +66,6 @@ def getEnglishNameReturnPolishName(english_name):
     return "Brak nazwy"
 
 
-class CitationCount(Abstractmetric):
-    class Meta:
-        verbose_name = "Metryka CitationCount"
-        verbose_name_plural = "Metryki CitationCount"
-
-
-class CitationsPerPublication(Abstractmetric):
-    class Meta:
-        verbose_name = "Metryka CitationsPerPublication"
-        verbose_name_plural = "Metryki CitationsPerPublication"
-
 
 # class Collaboration(Abstractmetric):
 
@@ -104,24 +93,18 @@ class ScholarlyOutput(AbstractMetricOneValue):
     class Meta:
         verbose_name = getEnglishNameReturnPolishName("ScholaryOutput")
         verbose_name_plural = getEnglishNameReturnPolishName("ScholaryOutput")
-        
 class CitationCount(AbstractMetricOneValue):
     class Meta:
         verbose_name = getEnglishNameReturnPolishName("CitationCount")
         verbose_name_plural = getEnglishNameReturnPolishName("CitationCount")
-        
 class CitationsPerPublication(AbstractMetricOneValue):
     class Meta:
         verbose_name =getEnglishNameReturnPolishName( "CitationsPerPublication")
         verbose_name_plural = getEnglishNameReturnPolishName("CitationsPerPublication")
-        
 class FieldWeightedCitationImpact(AbstractMetricOneValue):
     class Meta:
         verbose_name = getEnglishNameReturnPolishName("FieldWeightedCitationImpact")
         verbose_name_plural = getEnglishNameReturnPolishName("FieldWeightedCitationImpact")
-
-
-# class FieldWeightedCitationImpact(Abstractmetric):
 
 class AbstractMetricCollaborationType(AbstractMetric):
     InstitutionalValue = models.FloatField(null=True, blank=True, verbose_name='Wartość calkowita', help_text='Wartość calkowita kolaboracji')
@@ -133,8 +116,6 @@ class AbstractMetricCollaborationType(AbstractMetric):
     class Meta:
         abstract = True
 
-# class PublicationsInTopJournalPercentiles(Abstractmetric):
-
 class Collaboration(AbstractMetricCollaborationType):
     InstitutionalPercentageValue = models.FloatField(null=True, blank=True, verbose_name='Procentowa wartość calkowita', help_text='Procentowa wartość calkowita kolaboracji')
     InternationalPercentageValue = models.FloatField(null=True, blank=True, verbose_name='Procentowa wartość miedzynarodowa', help_text='Procentowa wartość miedzynarodowa kolaboracji')
@@ -142,7 +123,6 @@ class Collaboration(AbstractMetricCollaborationType):
     SingleAuthorshipPercentageValue = models.FloatField(null=True, blank=True, verbose_name='Procentowa wartość pojedynczego autorstwa', help_text='Procentowa wartość pojedynczego autorstwa kolaboracji')
     def __str__(self):
         return "{} InstitutionalPercentageValue={} InternationalPercentageValue={} NationalPercentageValue={} SingleAuthorshipPercentageValue={}".format(super().__str__(), self.InstitutionalPercentageValue, self.InternationalPercentageValue, self.NationalPercentageValue, self.SingleAuthorshipPercentageValue)
-
     class Meta:
         verbose_name = getEnglishNameReturnPolishName("Collaboration")
         verbose_name_plural = getEnglishNameReturnPolishName("Collaboration")
@@ -150,8 +130,6 @@ class CollaborationImpact(AbstractMetricCollaborationType):
     class Meta:
         verbose_name = getEnglishNameReturnPolishName("CollaborationImpact")
         verbose_name_plural = getEnglishNameReturnPolishName("CollaborationImpact")
-
-#class OutputsInTopCitationPercentiles(Abstractmetric):
 
 class AbstractMetricTopPercentiles(AbstractMetric):
     threshold1Value = models.FloatField(null=True, blank=True, verbose_name='Wartość threshold1', help_text='Wartość threshold1')
@@ -166,18 +144,10 @@ class AbstractMetricTopPercentiles(AbstractMetric):
         return "{} {}, threshold1Value={} threshold1PercentageValue={} threshold5Value={} threshold5PercentageValue={} threshold10Value={} threshold10PercentageValue={} threshold25Value={} threshold25PercentageValue={}".format(self.__class__.__name__, super().__str__(), self.threshold1Value, self.threshold1PercentageValue, self.threshold5Value, self.threshold5PercentageValue, self.threshold10Value, self.threshold10PercentageValue, self.threshold25Value, self.threshold25PercentageValue)
     class Meta:
         abstract = True
-
 class PublicationsInTopJournalPercentiles(AbstractMetricTopPercentiles):
-
     class Meta:
         verbose_name = getEnglishNameReturnPolishName("PublicationsInTopJournalPercentiles")
         verbose_name_plural = getEnglishNameReturnPolishName("PublicationsInTopJournalPercentiles")
-
-
-class ScholarlyOutput(Abstractmetric):
-    class Meta:
-        verbose_name = "Metryka ScholaryOutput"
-        verbose_name_plural = "Metryki ScholaryOutput"
 
 class OutputsInTopCitationPercentiles(AbstractMetricTopPercentiles):
     class Meta:
