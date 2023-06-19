@@ -1,0 +1,7 @@
+{% extends "admin/mainApp/baseOperations.html." %}
+{% block object-tools-items %}
+    <li>
+        <a href="{% url 'updateTableFromApi' metric_name=folder_name %}" class="addlink">Zaaktualizuj {{folder_name}}</a>
+    </li>
+    {{ block.super }}
+{% endblock %}

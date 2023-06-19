@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User, auth
+from .forms import EditProfileForm
 
 # Charts
 from .models import CitationCount, Collaboration, CollaborationImpact, FieldWeightedCitationImpact, OutputsInTopCitationPercentiles, PublicationsCountPerYear, PublicationsInTopJournalPercentiles, ScholarlyOutput, SubjectArea, University
@@ -18,12 +19,8 @@ from django.forms.models import model_to_dict
 from django.core import serializers
 import pandas as pd
 
-
 class Object:
     pass
-
-# Create your views here.
-
 
 def welcome(request):
     return render(request, "mainApp/welcome.html")
@@ -197,7 +194,12 @@ def home(request):
         ),
         'chart': chart
     }
-    return render(request, "mainApp/home.html", context)
+
+    if request.user.is_authenticated:    
+         return render(request, "mainApp/home.html", context)
+    else:
+        return redirect('welcome-page')
+
 
 
 def benchmarking(request):
@@ -407,4 +409,29 @@ def statistics(request):
             'dataType': 'Liczba cytowań'
         })
     }
-    return render(request, 'mainApp/statistics.html', context)
+
+    if request.user.is_authenticated:    
+         return render(request, 'mainApp/statistics.html', context)
+    else:
+        return redirect('welcome-page')
+
+
+def edit(request):
+    if request.user.is_authenticated:    
+         if request.method == 'POST':
+            form = EditProfileForm(request.POST, instance=request.user)
+            if form.is_valid:
+                 form.save()
+                 return redirect('profile-page')
+            else:
+                #TODO
+                return render(request, 'mainApp/edit.html', form)
+         else:
+            form = EditProfileForm(instance=request.user)
+            args = {
+            'form': form,
+            }
+            return render(request, 'mainApp/edit.html', args)
+           
+    else:
+        return redirect('welcome-page')

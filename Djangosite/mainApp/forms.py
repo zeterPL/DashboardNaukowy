@@ -1,3 +1,5 @@
+from django.contrib.auth.forms import UserChangeForm
+from django.contrib.auth.models import User
 from django import forms
 from .models import Abstractmetric, SubjectArea, University, CitationCount
 
@@ -65,3 +67,17 @@ class CitationsPerYearForm(forms.Form):
     #         'start': 'Od',
     #         'end': 'Do'
     #     }
+
+
+class EditProfileForm(UserChangeForm):
+
+      class Meta:
+        model = User
+        fields = (
+          'first_name',
+          'last_name',
+          'username',
+          'email',
+        )
+        exclude = ('password',)
+
