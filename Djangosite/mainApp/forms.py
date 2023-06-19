@@ -4,6 +4,7 @@ from django import forms
 from .models import SubjectArea, University, CitationCount
 
 
+
 class BenchmarkingForm(forms.Form):
     # Multiselect dla uczelni
     university = forms.ModelMultipleChoiceField(

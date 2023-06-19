@@ -1,0 +1,25 @@
+2023-05-27 18:09:31,177 - elsapy.elsclient - INFO - Module loaded.
+2023-05-27 18:09:32,531 - elsapy.utils - INFO - Module loaded.
+2023-05-27 18:09:59,696 - elsapy.elsclient - INFO - Module loaded.
+2023-05-27 18:10:00,829 - elsapy.utils - INFO - Module loaded.
+2023-05-27 18:10:00,849 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=ScholarlyOutput&institutionIds=508175%2C508076&yearRange=5yrs&subjectAreaFilterURI=Class%2FASJC%2FCode%2F1301&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=7f59af901d2d86f78a1fd60c1bf9426a
+2023-05-27 18:10:25,869 - elsapy.elsclient - INFO - Module loaded.
+2023-05-27 18:10:27,035 - elsapy.utils - INFO - Module loaded.
+2023-05-27 18:10:27,040 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=ScholarlyOutput&institutionIds=508175%2C508076&yearRange=5yrs&subjectAreaFilterURI=Class%2FASJC%2FCode%2F1301&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=7f59af901d2d86f78a1fd60c1bf9426a
+2023-05-27 18:16:30,663 - elsapy.elsclient - INFO - Module loaded.
+2023-05-27 18:16:31,441 - elsapy.utils - INFO - Module loaded.
+2023-05-27 18:16:31,668 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=ScholarlyOutput&institutionIds=508175%2C508076&yearRange=5yrs&subjectAreaFilterURI=Class%2FASJC%2FCode%2F1301&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=7f59af901d2d86f78a1fd60c1bf9426a
+2023-05-27 18:17:58,956 - elsapy.elsclient - INFO - Module loaded.
+2023-05-27 18:17:59,677 - elsapy.utils - INFO - Module loaded.
+2023-05-27 18:17:59,961 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=ScholarlyOutput&institutionIds=508175%2C508076&yearRange=5yrs&subjectAreaFilterURI=Class%2FASJC%2FCode%2F1301&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=7f59af901d2d86f78a1fd60c1bf9426a
+2023-05-27 18:18:13,778 - elsapy.elsclient - INFO - Module loaded.
+2023-05-27 18:18:14,790 - elsapy.utils - INFO - Module loaded.
+2023-05-27 18:18:14,794 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=ScholarlyOutput&institutionIds=508175%2C508076&yearRange=5yrs&subjectAreaFilterURI=Class%2FASJC%2FCode%2F1301&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=7f59af901d2d86f78a1fd60c1bf9426a
+2023-05-27 18:18:34,566 - elsapy.elsclient - INFO - Module loaded.
+2023-05-27 18:18:35,325 - elsapy.utils - INFO - Module loaded.
+2023-05-27 18:18:35,582 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=ScholarlyOutput&institutionIds=508175%2C508076&yearRange=5yrs&subjectAreaFilterURI=Class%2FASJC%2FCode%2F1301&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=7f59af901d2d86f78a1fd60c1bf9426a
+2023-05-27 18:29:29,305 - elsapy.elsclient - INFO - Module loaded.
+2023-05-27 18:29:31,311 - elsapy.utils - INFO - Module loaded.
+2023-05-27 18:29:31,318 - elsapy.elsclient - INFO - Sending GET request to https://api.elsevier.com/analytics/scival/institution/metrics?metricTypes=ScholarlyOutput&institutionIds=508175%2C508076&yearRange=5yrs&subjectAreaFilterURI=Class%2FASJC%2FCode%2F1301&includeSelfCitations=true&byYear=true&includedDocs=AllPublicationTypes&journalImpactType=CiteScore&showAsFieldWeighted=false&apiKey=7f59af901d2d86f78a1fd60c1bf9426a
+2023-05-27 20:05:12,238 - elsapy.elsclient - INFO - Module loaded.
+2023-05-27 20:05:13,749 - elsapy.utils - INFO - Module loaded.

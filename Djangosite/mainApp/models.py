@@ -76,19 +76,7 @@ def getEnglishNameReturnPolishName(english_name):
     return "Brak nazwy"
 
 
-# class CitationCount(Abstractmetric):
-#     class Meta:
-#         verbose_name = "Metryka CitationCount"
-#         verbose_name_plural = "Metryki CitationCount"
 
-
-# class CitationsPerPublication(Abstractmetric):
-#     class Meta:
-#         verbose_name = "Metryka CitationsPerPublication"
-#         verbose_name_plural = "Metryki CitationsPerPublication"
-
-
-# class Collaboration(Abstractmetric):
 
 class AbstractMetric(models.Model):
     year = models.CharField(
@@ -123,7 +111,6 @@ class ScholarlyOutput(AbstractMetricOneValue):
         verbose_name = getEnglishNameReturnPolishName("ScholaryOutput")
         verbose_name_plural = getEnglishNameReturnPolishName("ScholaryOutput")
 
-
 class CitationCount(AbstractMetricOneValue):
     class Meta:
         verbose_name = getEnglishNameReturnPolishName("CitationCount")
@@ -137,16 +124,12 @@ class CitationsPerPublication(AbstractMetricOneValue):
         verbose_name_plural = getEnglishNameReturnPolishName(
             "CitationsPerPublication")
 
-
 class FieldWeightedCitationImpact(AbstractMetricOneValue):
     class Meta:
         verbose_name = getEnglishNameReturnPolishName(
             "FieldWeightedCitationImpact")
         verbose_name_plural = getEnglishNameReturnPolishName(
             "FieldWeightedCitationImpact")
-
-
-# class FieldWeightedCitationImpact(Abstractmetric):
 
 class AbstractMetricCollaborationType(AbstractMetric):
     InstitutionalValue = models.FloatField(
@@ -164,7 +147,6 @@ class AbstractMetricCollaborationType(AbstractMetric):
     class Meta:
         abstract = True
 
-# class PublicationsInTopJournalPercentiles(Abstractmetric):
 
 
 class Collaboration(AbstractMetricCollaborationType):
@@ -179,7 +161,6 @@ class Collaboration(AbstractMetricCollaborationType):
 
     def __str__(self):
         return "{} InstitutionalPercentageValue={} InternationalPercentageValue={} NationalPercentageValue={} SingleAuthorshipPercentageValue={}".format(super().__str__(), self.InstitutionalPercentageValue, self.InternationalPercentageValue, self.NationalPercentageValue, self.SingleAuthorshipPercentageValue)
-
     class Meta:
         verbose_name = getEnglishNameReturnPolishName("Collaboration")
         verbose_name_plural = getEnglishNameReturnPolishName("Collaboration")
@@ -192,7 +173,6 @@ class CollaborationImpact(AbstractMetricCollaborationType):
             "CollaborationImpact")
 
 # class OutputsInTopCitationPercentiles(Abstractmetric):
-
 
 class AbstractMetricTopPercentiles(AbstractMetric):
     threshold1Value = models.FloatField(
@@ -218,9 +198,7 @@ class AbstractMetricTopPercentiles(AbstractMetric):
     class Meta:
         abstract = True
 
-
 class PublicationsInTopJournalPercentiles(AbstractMetricTopPercentiles):
-
     class Meta:
         verbose_name = getEnglishNameReturnPolishName(
             "PublicationsInTopJournalPercentiles")
@@ -228,10 +206,6 @@ class PublicationsInTopJournalPercentiles(AbstractMetricTopPercentiles):
             "PublicationsInTopJournalPercentiles")
 
 
-# class ScholarlyOutput(Abstractmetric):
-#     class Meta:
-#         verbose_name = "Metryka ScholaryOutput"
-#         verbose_name_plural = "Metryki ScholaryOutput"
 
 class OutputsInTopCitationPercentiles(AbstractMetricTopPercentiles):
     class Meta:
@@ -239,3 +213,4 @@ class OutputsInTopCitationPercentiles(AbstractMetricTopPercentiles):
             "OutputsInTopCitationPercentiles")
         verbose_name_plural = getEnglishNameReturnPolishName(
             "OutputsInTopCitationPercentiles")
+

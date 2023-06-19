@@ -2,7 +2,11 @@
 {% load static %}
 
 {% block title %} Ranking Naukowy {% endblock %}
-{% block css_files %} <link rel="stylesheet" href="{% static "mainApp/home.css" %}"> {% endblock %}
+{% block css_files %} <link rel="stylesheet" href="{% static 'mainApp/home.css' %}"> {% endblock %}
+
+
+
+
 
 {% block content %}
 
@@ -12,10 +16,19 @@
     {% include "mainApp/partials/sidebar.html" %}
     {% include "mainApp/partials/header.html" %}
 
+
+
         <form class="home-content-container" method="POST" action="{% url 'home-page' %}">
             {% csrf_token %}
             <div class="universities-tile">
                 <label>Uczelnia</label>
+                {% if messages %}
+                    <ul style="color:Tomato;">
+                        {% for message in messages %}
+                            {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %} {{ message }} {% endif %}
+                        {% endfor %}
+                    </ul>
+                {% endif %}
                 {% render_field form.university %}
             </div>
 
