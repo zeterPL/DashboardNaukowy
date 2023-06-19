@@ -14,9 +14,9 @@
 
 
     <div class="statistics-content-container">
-        <div class="statistics-header">
+
             <form class="statistics-header-form" method="GET" action="{% url 'statistics' %}">
-                <div class="form-group">
+                <div class="form-group input-university">
                     <label>Uczelnia</label>
                     {% render_field form.university %}
                 </div>
@@ -24,34 +24,36 @@
                 <div class="form-group">        
                     <label>Od</label>
                     {% render_field form.start %}
-
                 </div>
 
                 <div class="form-group">
                     <label>Do</label>
                     {% render_field form.end %}
                 </div>
-    
-                <button class="confirm-button" type="submit" ><i class="fa-solid fa-check"></i></button>
+                
+                <div class="button-container">
+                    <button class="confirm-button" type="submit" ><i class="fa-solid fa-check"></i></button>
+                </div>
             </form>
-        </div>
-        
-        <div class="grid-tile chart-citation-count">
+
+            <form class="donut-chart-form" method="POST" action="{% url 'statistics' %}">
+                {% csrf_token %}
+                <div class="form-group data-type-input">        
+                    <label>Rodzaj danych</label>
+                    {% render_field donutChartForm.dataType %}
+                </div>
+                <div class="button-container">
+                    <button class="confirm-button" type="submit" ><i class="fa-solid fa-check"></i></button>
+                </div>
+            </form>
+
+        <div class="line-chart-container">
             {{ publicationsPerYearChart|safe }}
         </div>
 
-        <div class="grid-tile pie-chart">
-            <form class="donut-chart-form" method="GET" action="{% url 'statistics' %}">
-                <div class="form-group">
-                    {% render_field donutChartForm.dataType %}
-                </div>
-                <button class="confirm-button"><i class="fa-solid fa-check"></i></button>
-            </form>
-            <div class="donut-chart-container">
-                {{ pieChart|safe }}
-            </div>
+        <div class="donut-chart-container">
+            {{ pieChart|safe }}
         </div>
-
         
     </div>
 

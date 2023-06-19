@@ -25,8 +25,10 @@ from django.forms.models import model_to_dict
 from django.core import serializers
 import pandas as pd
 
+
 class Object:
     pass
+
 
 def welcome(request):
     return render(request, "mainApp/welcome.html")
@@ -151,7 +153,7 @@ def home(request):
         x="year",
         y="value",
         color="university",
-        color_discrete_sequence=px.colors.sequential.YlGnBu,
+        color_discrete_sequence=px.colors.qualitative.Set2,
         markers=True)
 
     # Chart settings
@@ -209,11 +211,10 @@ def home(request):
         'chart': chart
     }
 
-    if request.user.is_authenticated:    
-         return render(request, "mainApp/home.html", context)
+    if request.user.is_authenticated:
+        return render(request, "mainApp/home.html", context)
     else:
         return redirect('welcome-page')
-
 
 
 def benchmarking(request):
@@ -249,7 +250,6 @@ def statistics(request):
     start = request.GET.get('start')
     end = request.GET.get('end')
     selectedUniversity = request.GET.get('university')
-    # selectedSubjectAera
 
     # Filter the data according to the form input
     if selectedUniversity:
@@ -285,8 +285,9 @@ def statistics(request):
 
     fig.update_layout(
         autosize=True,
-        height=250,
-        title_pad=dict(l=-30, b=5),
+        height=525,
+        width=625,
+        title_pad=dict(l=-20, r=10, t=30, b=10),
         title_font_size=14,
         title_font_color='white',
         plot_bgcolor="rgba(0, 0, 0, 0)",
@@ -319,24 +320,12 @@ def statistics(request):
     )
 
     chart = fig.to_html()
-
-    # ---- Donut chart ---- #
-    # Dla uczelni wyświetl analizę:
-    #  - Liczba cytowań/wydział
-    #  - Liczba publikacji/wydział
-
-    # Get the data from the database
-    #  - Uczelnie
-    #  - Dziedziny naukowe
-    #  - Cytowania danej uczelni
-
-    # Z formularza wybierz:
-    #  - rodzaj danych (cytowania, publikacje)
-    #  - uczelnię
-    #  - przedział czasowy
+    dataType = 'citations'
 
     # Get the data from the form
-    dataType = request.GET.get('dataType')
+    if request.POST:
+        dataType = request.POST.get('dataType')
+        print(dataType)
 
     # Create dataset based on the form input
     dataSet = []
@@ -352,7 +341,6 @@ def statistics(request):
                 universityId=university.id,
                 year=2012,
                 subjectAreaId=subjectAreaId).values_list('value', flat=True)[0]
-            print(citationCount)
             dataSet.append(citationCount)
             title = 'Dziedziny cytowań'
     else:
@@ -367,10 +355,10 @@ def statistics(request):
     # Create chart
     x = 10
     y = 15
-    print(dataSet)
+
     pull = [0.1 for _ in range(len(dataSet)+10)]
-    pieChart = px.pie(values=dataSet[x: y],
-                      names=subjectAreaNames[x: y],
+    pieChart = px.pie(values=dataSet,
+                      names=subjectAreaNames,
                       hole=.8,
                       color_discrete_sequence=px.colors.sequential.Bluyl)
 
@@ -380,19 +368,22 @@ def statistics(request):
         textinfo='percent+label')
 
     pieChart.update_layout(
+        height=550,
+        showlegend=False,
         font_color="rgba(255, 255, 255, 0.8)",
         uniformtext_minsize=12,
         uniformtext_mode='hide',
         plot_bgcolor="rgba(0, 0, 0, 0)",
         paper_bgcolor="rgba(0, 0, 0, 0)",
         legend=dict(
-            orientation="h",
-            entrywidth=70,
-            yanchor="bottom",
-            y=1.02,
-            xanchor="right",
-            x=1,
-        ))
+            y=0,
+            x=0,
+            font=dict(
+                size=10
+            ),
+            itemwidth=30
+        )
+    )
 
     pieChart.add_annotation(x=0.5, y=0.55,
                             text=title,
@@ -424,29 +415,29 @@ def statistics(request):
         })
     }
 
-    if request.user.is_authenticated:    
-         return render(request, 'mainApp/statistics.html', context)
+    if request.user.is_authenticated:
+        return render(request, 'mainApp/statistics.html', context)
     else:
         return redirect('welcome-page')
 
 
 
 def edit(request):
-    if request.user.is_authenticated:    
-         if request.method == 'POST':
+    if request.user.is_authenticated:
+        if request.method == 'POST':
             form = EditProfileForm(request.POST, instance=request.user)
             if form.is_valid:
-                 form.save()
-                 return redirect('profile-page')
+                form.save()
+                return redirect('profile-page')
             else:
-                #TODO
+                # TODO
                 return render(request, 'mainApp/edit.html', form)
-         else:
+        else:
             form = EditProfileForm(instance=request.user)
             args = {
-            'form': form,
+                'form': form,
             }
             return render(request, 'mainApp/edit.html', args)
-           
+
     else:
         return redirect('welcome-page')

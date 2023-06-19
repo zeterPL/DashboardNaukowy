@@ -22,7 +22,7 @@
 .universities-tile {
     grid-column: 1/4;
     grid-row: 1/11;
-    width: 16rem;
+    width: 14rem;
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -31,7 +31,7 @@
 
 .universities-tile label:nth-of-type(1) {
     color: rgba(255, 255, 255, 0.8);
-    font-size: 18px;
+    font-size: 14px;
 }
 
 #id_university input {
@@ -83,7 +83,7 @@ input[type="checkbox"]:focus {
     align-items: center;
     color: rgba(255, 255, 255, 0.8);
     font-weight: 300;
-    font-size: 15px;
+    font-size: 12px;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
@@ -105,6 +105,7 @@ select {
     border-style: none;
     padding: 0.5rem 1rem;
     cursor: pointer;
+    font-size: 12px;
 }
 
 select:focus {
@@ -114,7 +115,7 @@ select:focus {
 
 .metric-tile label:nth-of-type(1) {
     color: rgba(255, 255, 255, 0.8);
-    font-size: 18px;
+    font-size: 14px;
 }
 
 .subject-area-tile {
@@ -124,7 +125,7 @@ select:focus {
 
 .subject-area-tile label:nth-of-type(1) {
     color: rgba(255, 255, 255, 0.8);
-    font-size: 18px;
+    font-size: 14px;
 }
 
 .start-date-tile {
@@ -134,7 +135,7 @@ select:focus {
 
 .start-date-tile label:nth-of-type(1) {
     color: rgba(255, 255, 255, 0.8);
-    font-size: 18px;
+    font-size: 14px;
 }
 
 
@@ -145,7 +146,7 @@ select:focus {
 
 .end-date-tile label:nth-of-type(1) {
     color: rgba(255, 255, 255, 0.8);
-    font-size: 18px;
+    font-size: 14px;
 }
 
 
